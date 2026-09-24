@@ -1415,6 +1415,7 @@
             },
 
             activeWorkspace: 0,
+            activeLevel: null,
             blocks: [], 
             arrows: [], 
             selectedBlocks: new Set(),
@@ -1616,6 +1617,11 @@
             init() {
                 this.setupPointerEvents();
                 this.setupKeyboard();
+                if (this.dom.nameInput) {
+                    this.dom.nameInput.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter') this.submitName();
+                    });
+                }
                 
                 this.activeWorkspace = parseInt(localStorage.getItem('blockflow_v1_1_active_ws') || '0');
                 this.updateWorkspaceUI();
@@ -1623,12 +1629,18 @@
                 const loaded = this.loadWorkspace(this.activeWorkspace);
                 
                 if (!loaded) {
-                    if (this.activeWorkspace === 0) { 
+                    if (this.activeWorkspace === 1) { 
                         this.buildDefaultGameLoop();
                     } else {
                         this.clearCanvasSilent();
                     }
                     this.saveState(true);
+                }
+
+                Game.load();
+                this.updateGameUI();
+                if (this.activeWorkspace === 0 && !Game.playerName) {
+                    setTimeout(() => this.openNameModal(), 300);
                 }
                 
                 this.applyTransform();
@@ -1673,7 +1685,7 @@
                 
                 const loaded = this.loadWorkspace(this.activeWorkspace);
                 if (!loaded) {
-                    if (this.activeWorkspace === 0) { 
+                    if (this.activeWorkspace === 1) { 
                         this.buildDefaultGameLoop();
                     } else {
                         this.clearCanvasSilent();
@@ -1696,27 +1708,92 @@
 
             updateWorkspaceUI() {
                 const btn = document.getElementById('btn-workspace');
+                const modes = [
+                    { label: '[ KAMPAŇ ]', color: 'var(--accent)', title: 'WS1 KAMPAŇ — learning mode (jméno, XP, certifikáty)' },
+                    { label: '[ VOLNÝ ]', color: 'var(--accent2)', title: 'WS2 VOLNÝ — jablka demo + čistý editor' },
+                    { label: '[ PROFI ]', color: 'var(--accent3)', title: 'WS3 PROFI — všechny nástroje, bez mise' }
+                ];
+                const m = modes[this.activeWorkspace] || modes[0];
                 if (btn) {
-                    if (this.activeWorkspace === 0) {
-                        btn.innerHTML = '[ WS:01 ]';
-                        btn.style.color = 'var(--accent)';
-                        btn.style.borderColor = 'var(--accent)';
-                        btn.style.boxShadow = 'inset 0 0 10px rgba(0, 229, 255, 0.2)';
-                        btn.title = "Pracovní plocha 1 (Výchozí)";
-                    } else if (this.activeWorkspace === 1) {
-                        btn.innerHTML = '[ WS:02 ]';
-                        btn.style.color = 'var(--accent2)';
-                        btn.style.borderColor = 'var(--accent2)';
-                        btn.style.boxShadow = 'inset 0 0 10px rgba(124, 58, 237, 0.2)';
-                        btn.title = "Pracovní plocha 2";
-                    } else {
-                        btn.innerHTML = '[ WS:03 ]';
-                        btn.style.color = 'var(--accent3)';
-                        btn.style.borderColor = 'var(--accent3)';
-                        btn.style.boxShadow = 'inset 0 0 10px rgba(245, 158, 11, 0.2)';
-                        btn.title = "Pracovní plocha 3";
-                    }
+                    btn.innerHTML = m.label;
+                    btn.style.color = m.color;
+                    btn.style.borderColor = m.color;
+                    btn.style.boxShadow = `inset 0 0 10px ${m.color}`;
+                    btn.title = m.title;
                 }
+                this.updateGameUI();
+            },
+
+            // ==== F1: herní vrstva (HUD, kampaň, jméno, reset) ====
+            updateGameUI() {
+                const isCampaign = this.activeWorkspace === 0;
+                if (this.dom.hud) this.dom.hud.classList.toggle('show', isCampaign);
+                if (this.dom.campaignPanel) this.dom.campaignPanel.classList.toggle('show', isCampaign);
+                if (this.dom.hudName) this.dom.hudName.textContent = Game.playerName || '—';
+                if (this.dom.hudRank) this.dom.hudRank.textContent = Game.rank();
+                if (this.dom.hudXp) this.dom.hudXp.textContent = Game.xp + ' XP';
+                if (this.dom.hudStars) this.dom.hudStars.textContent = '★' + Game.totalStars();
+                if (isCampaign) this.renderCampaign();
+            },
+            renderCampaign() {
+                const list = this.dom.campaignList;
+                if (!list) return;
+                list.innerHTML = '';
+                LEVELS.forEach(lvl => {
+                    const done = Game.isLevelDone(lvl.id);
+                    const rec = Game.levels[lvl.id];
+                    const stars = rec ? '★'.repeat(rec.stars) + '☆'.repeat(3 - rec.stars) : '☆☆☆';
+                    const row = document.createElement('div');
+                    row.className = 'camp-level' + (done ? ' done' : '');
+                    row.innerHTML =
+                        '<div class="cl-top"><span class="cl-name">' + lvl.id + '. ' + lvl.name + '</span>' +
+                        '<span class="cl-xp">' + stars + '</span></div>' +
+                        '<div class="cl-goal">' + lvl.goal + '</div>' +
+                        '<div class="cl-state">' + (done ? '✓ splněno' : '▶ hrát') + '</div>';
+                    row.addEventListener('click', () => this.enterCampaignLevel(lvl.id));
+                    list.appendChild(row);
+                });
+            },
+            enterCampaignLevel(id) {
+                const lvl = LEVELS.find(l => l.id === id);
+                if (!lvl) return;
+                if (!Game.playerName) { this.openNameModal(); return; }
+                this.activeLevel = id;
+                this.toast(`Mise ${id}: ${lvl.name} — ${lvl.goal}`, 4000);
+                // Načtení scaffoldingu a testů stupně proběhne ve F5/F6.
+            },
+            openNameModal() {
+                if (!this.dom.nameModal) return;
+                if (this.dom.nameInput) this.dom.nameInput.value = Game.playerName || '';
+                if (this.dom.nameError) this.dom.nameError.textContent = '';
+                this.dom.nameModal.classList.add('show');
+                setTimeout(() => this.dom.nameInput && this.dom.nameInput.focus(), 50);
+            },
+            closeNameModal() {
+                if (this.dom.nameModal) this.dom.nameModal.classList.remove('show');
+            },
+            submitName() {
+                const val = this.dom.nameInput ? this.dom.nameInput.value : '';
+                if (!Game.setPlayerName(val)) {
+                    if (this.dom.nameError) this.dom.nameError.textContent = 'Zadej 1–30 znaků, operátore.';
+                    return;
+                }
+                if (this.dom.nameError) this.dom.nameError.textContent = '';
+                this.closeNameModal();
+                this.updateGameUI();
+                this.toast(`Vítej, ${Game.playerName}! Směna začíná.`, 3000);
+            },
+            promptReset() {
+                const modal = document.getElementById('reset-confirm-modal');
+                if (modal) modal.classList.add('show');
+            },
+            doReset() {
+                Game.reset();
+                const modal = document.getElementById('reset-confirm-modal');
+                if (modal) modal.classList.remove('show');
+                this.updateGameUI();
+                if (this.activeWorkspace === 0) this.openNameModal();
+                this.toast('Směna vynulována. Čistý start.', 3000);
             },
 
             buildDefaultGameLoop() {

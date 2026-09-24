@@ -22,11 +22,15 @@ Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS
 - **UI:** HUD operátora (jméno/hodnost/XP/hvězdy), sekce menu REŽIM/MISE/NÁSTROJE,
   jmenný modál (povinné jméno v KAMPAŇI), červené RESET s potvrzením.
 - **Oprava:** zrušen plovoucí kampaňový panel, který překrýval hamburger menu.
-- **Testy:** `flow_game_tests.js` (56 OK) + `flow_smoke_tests.js` (31 OK, `App.init()`
+- **Cheat pro testování:** `Ctrl+Alt+C` (s aktivním CapsLockem) v KAMPAŇI vyřeší
+  level krok za krokem ze vzorového řešení (`SOLUTIONS` pro všech 6 stupňů):
+  každý stisk přidá další blok/šipku; po dokončení další stisk vyčistí plochu.
+  Slouží k rychlému otestování libovolného levelu a jeho simulace.
+- **Testy:** `flow_game_tests.js` (58 OK) + `flow_smoke_tests.js` (36 OK, `App.init()`
   nad DOM mockem); `flow_test_utils.js` rozšířen o `Game`/`LEVELS`; persistence testy
   přepsány na slot-klíče v2.
-- **Ověření:** syntax OK · flow_tests 21 · flow_game 56 · flow_storage 10 · flow_ui 6 ·
-  flow_smoke 31 (celkem 124 kontrol). Verifikace F1 „3 mise → XP i certifikát" splněna.
+- **Ověření:** syntax OK · flow_tests 21 · flow_game 58 · flow_storage 10 · flow_ui 6 ·
+  flow_smoke 36 (celkem 131 kontrol). Verifikace F1 „3 mise → XP i certifikát" splněna.
 - **Pozn.:** vlastní vyhodnocení misí (Checker/OVĚŘIT) = F2; doladění obsahu
   scaffoldingů = F5/F6; auto-reset 3 h = F4; SVG certifikát = F8.
 

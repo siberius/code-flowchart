@@ -69,6 +69,8 @@ Pro vzdělávací obsah navíc: `md-skills/vzdelavaci-metodiky.md` (RVP/ŠVP, CZ
   - `node flow_smoke_tests.js` (F1) — UI smoke: `App.init()` + HUD/kampaň/jméno/reset
     nad bohatým DOM mockem.
   - Sdílený `flow_test_utils.js` (načtení `App` + `Game` + `LEVELS` z inline `<script>` v Node).
+  - **Dev cheat:** `Ctrl+Alt+C` s aktivním CapsLockem v KAMPAŇI vyřeší aktuální
+    level krok za krokem ze vzorového řešení (`SOLUTIONS`); jen pro testování.
   - Plánováno (F7/F9): plný browser matrix 1440/1024/390/320 px, `prefers-reduced-motion`,
     self-test všech 6 stupňů (až vzniknou).
 - Po každé změně ověřit přiměřeně riziku (MASTER §17); dokončené úkoly eviduj

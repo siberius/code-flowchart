@@ -162,14 +162,12 @@ check('XP smazáno', Game.xp === 0);
 check('otevřel se jmenný modal', App.dom.nameModal.classList.contains('show'));
 
 console.log('\n[cheat Ctrl+Alt+C — krok za krokem]');
-App.enterCampaignLevel(4);
+App.switchWorkspace('lvl4');
 const sol = LEVELS.find(l => l.id === 4).solution;
 const total = sol.blocks.length + sol.arrows.length;
 App.cheatStep = 0;
-console.log('   dbg total', total, 'solBlocks', sol.blocks.length, 'solArrows', sol.arrows.length);
 for (let i = 1; i <= total; i++) {
     App.cheatSolveStep();
-    console.log('   dbg call', i, 'cheatStep', App.cheatStep, 'blocks', App.blocks.length, 'arrows', App.arrows.length);
     if (i === 1) check('1. krok = 1 blok, 0 šipek', App.blocks.length === 1 && App.arrows.length === 0,
         'bloky=' + App.blocks.length + ' šipky=' + App.arrows.length);
 }

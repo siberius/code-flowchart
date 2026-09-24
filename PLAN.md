@@ -209,6 +209,8 @@ Všechny stupně jsou **otevřené** (žák si může hrát napřeskáčku). Ka�
 - **Vstup do mise:** klik na level → načte se **scaffolding** (předpřipravené moduly
   na plátně + omezená paleta) → **level modal** s podrobným zadáním (Typ, Cíl,
   „Co máš udělat", povolené bloky, ověření) + Kompas.
+- **Cheat (jen pro vývoj/testování):** `Ctrl+Alt+C` s aktivním CapsLockem vyřeší
+  aktuální level krok za krokem ze vzorového řešení; po dokončení další stisk vyčistí.
 
 ---
 

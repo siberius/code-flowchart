@@ -199,16 +199,20 @@ Všechny stupně jsou **otevřené** (žák si může hrát napřeskáčku). Ka�
 - Manuální „Zavřít (Enter)" + minimální držení.
 
 ### 7.9 Režimy a pracovní plochy
-- **Režimy** (přepínač v hamburger menu): **KAMPAŇ** / **VOLNÝ** / **PROFI**.
-  Mise jsou integrované v menu (sekce REŽIM · MISE · NÁSTROJE), ne v plovoucím panelu
-  (ten překrýval menu — opraveno ve F1).
+- **Přepínač ploch v horní liště:** `KAMPAŇ · VOLNÝ · PROFI · SPACE 1 · SPACE 2 · SPACE 3`.
+  Aktivní plocha je zvýrazněná; klik přepne plochu (každá má vlastní stav).
 - **KAMPAŇ** — learning mode: 6 stupňů, jméno povinné, XP/certifikáty, 3h hodiny.
   Každý level má **vlastní plochu** (`lvl1…lvl6`) → návrat k misi zachová rozdělanou práci.
 - **VOLNÝ** — **jablka demo** + čistý editor, bez jména, bez hodin (slot `free`).
 - **PROFI** — administrace: všechny nástroje, tisk/RVP mapa, bez mise (slot `profi`).
+- **SPACE 1–3** — prázdné plochy pro vlastní tvorbu (sloty `space1…space3`).
+- **Mise** zůstávají v hamburger menu (MISE) — přepínač režimů už v menu není.
 - **Vstup do mise:** klik na level → načte se **scaffolding** (předpřipravené moduly
   na plátně + omezená paleta) → **level modal** s podrobným zadáním (Typ, Cíl,
   „Co máš udělat", povolené bloky, ověření) + Kompas.
+- **Export/import ploch (JSON):** tlačítka `⭳ WS` / `⭱ WS` v liště uloží/načtou
+  **všechny plochy** (`{app:'blockflow-workspaces', active, workspaces:{slot:stav}}`).
+  Tlačítka IMPORT/EXPORT zůstávají pro jednu aktuální plochu.
 - **Cheat (jen pro vývoj/testování):** `Ctrl+Alt+C` s aktivním CapsLockem vyřeší
   aktuální level krok za krokem ze vzorového řešení; po dokončení další stisk vyčistí.
 

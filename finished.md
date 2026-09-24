@@ -15,6 +15,12 @@ Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS
   (`setMode`), aktivní režim zvýrazněn, topbar tlačítko otevírá menu.
 - **Plochy per level:** slot `lvl1…lvl6`, `free`, `profi`; klíče `blockflow_v2_ws_<slot>`,
   aktivní `blockflow_v2_active_ws`. Návrat k misi zachová rozdělanou práci.
+- **Přepínač ploch v horní liště:** `KAMPAŇ · VOLNÝ · PROFI · SPACE 1–3` (aktivní
+  zvýrazněn, `selectWorkspace`); hamburger menu už obsahuje jen MISE + NÁSTROJE.
+- **SPACE 1–3:** prázdné plochy pro vlastní tvorbu (`space1…space3`).
+- **Export/import ploch (JSON):** `⭳ WS` / `⭱ WS` — všechny plochy
+  (`{app:'blockflow-workspaces', active, workspaces:{slot:stav}}`); IMPORT/EXPORT
+  zůstává pro jednu plochu.
 - **Vstup do mise:** klik v menu → `switchWorkspace('lvlN')` → vykreslí se scaffolding
   (`buildLevelScaffold`) → **level modal** s Typem, Cílem, „Co máš udělat", povolenými
   bloky, ověřením + tlačítko **Kompas** (Cíl/Háček/Postup).
@@ -26,11 +32,11 @@ Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS
   level krok za krokem ze vzorového řešení (`SOLUTIONS` pro všech 6 stupňů):
   každý stisk přidá další blok/šipku; po dokončení další stisk vyčistí plochu.
   Slouží k rychlému otestování libovolného levelu a jeho simulace.
-- **Testy:** `flow_game_tests.js` (58 OK) + `flow_smoke_tests.js` (36 OK, `App.init()`
+- **Testy:** `flow_game_tests.js` (58 OK) + `flow_smoke_tests.js` (44 OK, `App.init()`
   nad DOM mockem); `flow_test_utils.js` rozšířen o `Game`/`LEVELS`; persistence testy
   přepsány na slot-klíče v2.
 - **Ověření:** syntax OK · flow_tests 21 · flow_game 58 · flow_storage 10 · flow_ui 6 ·
-  flow_smoke 36 (celkem 131 kontrol). Verifikace F1 „3 mise → XP i certifikát" splněna.
+  flow_smoke 44 (celkem 139 kontrol). Verifikace F1 „3 mise → XP i certifikát" splněna.
 - **Pozn.:** vlastní vyhodnocení misí (Checker/OVĚŘIT) = F2; doladění obsahu
   scaffoldingů = F5/F6; auto-reset 3 h = F4; SVG certifikát = F8.
 

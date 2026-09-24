@@ -664,6 +664,52 @@
             #btn-simulate, #btn-step, #btn-stop { font-size: 11px; height: 32px; padding: 0 10px; }
             #sim-text, #step-text, #stop-text { display: none; }
         }
+
+        /* ==== F1: HUD operátora, kampaňový panel, jméno, reset ==== */
+        #hud {
+            position: fixed; top: 56px; right: 12px; z-index: 300;
+            background: rgba(10, 14, 22, 0.9); border: 1px solid var(--border);
+            border-radius: 10px; padding: 8px 12px; font-size: 12px;
+            display: none; flex-direction: column; gap: 4px; min-width: 190px;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.5);
+        }
+        #hud.show { display: flex; }
+        #hud .hud-row { display: flex; justify-content: space-between; gap: 10px; }
+        #hud .hud-label { color: var(--accent); letter-spacing: 1px; font-size: 10px; opacity: 0.8; }
+        #hud .hud-val { color: var(--text); font-weight: 600; }
+        #hud #hud-stars { color: var(--accent3); }
+
+        #campaign-panel {
+            position: fixed; top: 56px; left: 12px; z-index: 300;
+            width: 300px; max-height: calc(100vh - 80px); overflow-y: auto;
+            background: rgba(10, 14, 22, 0.94); border: 1px solid var(--border);
+            border-radius: 12px; padding: 14px; display: none;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.5);
+        }
+        #campaign-panel.show { display: block; }
+        #campaign-panel h3 { margin: 0 0 4px; color: var(--accent); font-size: 14px; letter-spacing: 1px; }
+        #campaign-panel .camp-sub { font-size: 11px; opacity: 0.7; margin-bottom: 10px; }
+        .camp-level {
+            border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px;
+            margin-bottom: 8px; cursor: pointer; transition: all 0.15s;
+            background: rgba(255,255,255,0.02);
+        }
+        .camp-level:hover { border-color: var(--accent); box-shadow: inset 0 0 12px rgba(0,229,255,0.12); }
+        .camp-level.done { border-color: rgba(16,185,129,0.5); }
+        .camp-level .cl-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+        .camp-level .cl-name { font-size: 13px; font-weight: 600; }
+        .camp-level .cl-goal { font-size: 11px; opacity: 0.75; margin-top: 3px; }
+        .camp-level .cl-xp { font-size: 11px; color: var(--accent3); white-space: nowrap; }
+        .camp-level .cl-state { font-size: 11px; color: #10b981; }
+
+        #name-modal .modal-box { border-color: rgba(0,229,255,0.3); }
+        #name-input {
+            width: 100%; box-sizing: border-box; margin: 10px 0 6px; padding: 12px;
+            background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 8px;
+            color: var(--text); font-size: 16px; outline: none;
+        }
+        #name-input:focus { border-color: var(--accent); }
+        #name-error { color: #ef4444; font-size: 12px; min-height: 16px; }
     </style>
 </head>
 <body>
@@ -699,11 +745,26 @@
         <button class="top-btn" id="btn-fullscreen" onclick="App.toggleFullscreen()" title="Maximalizovat (Fullscreen)">⛶ MAX</button>
     </div>
 
+    <!-- F1: HUD operátora (learning mode) -->
+    <div id="hud">
+        <div class="hud-row"><span class="hud-label">OPERÁTOR</span> <span class="hud-val" id="hud-name">—</span></div>
+        <div class="hud-row"><span class="hud-label">HODNOST</span> <span class="hud-val" id="hud-rank">Nováček u pásu</span></div>
+        <div class="hud-row"><span class="hud-label">XP</span> <span class="hud-val" id="hud-xp">0</span> <span class="hud-val" id="hud-stars">★0</span></div>
+    </div>
+
+    <!-- F1: Kampaňový panel (WS1 KAMPAŇ) -->
+    <div id="campaign-panel">
+        <h3>MISE</h3>
+        <div class="camp-sub">6 stupňů · jen pozitivní motivace</div>
+        <div id="campaign-list"></div>
+    </div>
+
     <!-- Boční Hamburger Menu -->
     <div id="side-menu">
         <div class="side-menu-link" onclick="App.openHelp()"><span style="font-size: 16px;">📖</span> Nápověda</div>
         <div class="side-menu-link" onclick="App.openAbout()"><span style="font-size: 16px;">ℹ️</span> O programu</div>
         <div class="side-menu-link" onclick="App.openAuthor()"><span style="font-size: 16px;">👨‍💻</span> O autorovi</div>
+        <div class="side-menu-link" onclick="App.promptReset()" style="color:#ef4444; border-top:1px solid rgba(239,68,68,0.25); margin-top:6px;"><span style="font-size: 16px;">🧹</span> RESET (smazat vše)</div>
     </div>
 
     <!-- Skrytý input pro nahrávání JSON souborů -->
@@ -891,6 +952,33 @@
         </div>
     </div>
 
+    <!-- F1: Modál jména (learning mode — povinné) -->
+    <div id="name-modal" class="modal-overlay" style="z-index: 700;">
+        <div class="modal-box">
+            <h3 style="color: var(--accent); text-shadow: 0 0 10px rgba(0,229,255,0.4);">Jak se jmenuješ, operátore?</h3>
+            <p style="color: var(--text); font-size: 13px; opacity: 0.8; margin: 0;">Jméno jde jen na certifikát. Zůstává v prohlížeči.</p>
+            <input id="name-input" type="text" maxlength="30" placeholder="1–30 znaků" autocomplete="off">
+            <div id="name-error"></div>
+            <div class="btn-row">
+                <button class="btn" onclick="App.submitName()" style="flex: 1; padding: 10px; font-size: 13px; background: rgba(0,229,255,0.05); color: var(--accent); border-color: var(--accent); box-shadow: inset 0 0 15px rgba(0,229,255,0.2);">START SMĚNY ▶</button>
+                <button class="btn" onclick="App.closeNameModal()" style="flex: 1; padding: 10px; font-size: 13px; background: rgba(255,255,255,0.03); color: var(--text); border-color: var(--border);">Zatím ne</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- F1: Potvrzení RESET (kompletní výmaz) -->
+    <div id="reset-confirm-modal" class="modal-overlay" style="z-index: 700;">
+        <div class="modal-box" style="border-color: rgba(239, 68, 68, 0.3);">
+            <h3 style="color: #ef4444; text-shadow: 0 0 10px rgba(239, 68, 68, 0.4);">⚠️ RESET — smazat vše</h3>
+            <p style="color: var(--text); font-size: 14px; margin-bottom: 6px;">Smaže jméno, XP, stupně i certifikáty. Nejde vrátit.</p>
+            <p style="color: var(--text); font-size: 12px; opacity: 0.7; margin-bottom: 15px;">Data zůstávají v prohlížeči, dokud nesmažeš (RESET).</p>
+            <div class="btn-row">
+                <button class="btn" onclick="App.doReset()" style="flex: 1; padding: 10px; font-size: 13px; background: rgba(239,68,68,0.05); color: #ef4444; border-color: #ef4444; box-shadow: inset 0 0 15px rgba(239,68,68,0.2);">ANO (Smazat vše)</button>
+                <button class="btn" onclick="document.getElementById('reset-confirm-modal').classList.remove('show')" style="flex: 1; padding: 10px; font-size: 13px; background: rgba(16,185,129,0.05); color: #10b981; border-color: #10b981; box-shadow: inset 0 0 15px rgba(16,185,129,0.2);">NE (Zrušit)</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Modální okna pro Hamburger Menu -->
     <div id="help-modal" class="modal-overlay" style="z-index: 600;">
         <div class="modal-box wide">
@@ -1061,6 +1149,217 @@
 
         document.addEventListener('pointerdown', () => AudioSys.init(), { once: false });
 
+        // ==== F1: Data 6 stupňů (PLAN.md §16) ====
+        const LEVELS = [
+            {
+                id: 1, name: 'Průvodce skladem', type: 'sestav',
+                goal: 'Veronika nezná sklad. Slož jí cestičku: 3 kroky v pořadí.',
+                blocks: ['start', 'process', 'note', 'end'], xpBase: 100,
+                rvp: 'Zápis algoritmu vývojovým diagramem',
+                kompas: {
+                    cil: 'Technik potřebuje vidět cestičku od STARTU do KONCE.',
+                    hacek: 'Můžeš odejít ze skladu, aniž bys zavřel bránu?',
+                    vzor: 'START → Otevři bránu → Vezmi bednu → Zavři bránu → KONEC',
+                    postup: 'Krok 2: spoj AKCE pod sebe ve správném sledu.'
+                },
+                tests: [{ id: 'A', expected: ['Otevři bránu', 'Vezmi bednu', 'Zavři bránu'] }]
+            },
+            {
+                id: 2, name: 'Pokladna', type: 'sestav',
+                goal: 'Načti cenu a kusy. Vypiš mezisoučet.',
+                blocks: ['start', 'io', 'process', 'note', 'end'], xpBase: 120,
+                rvp: 'Proměnné, vstup a výstup',
+                kompas: {
+                    cil: 'Mezisoučet vzniká z dvojice čísel.',
+                    hacek: 'Vyhodí pokladna výsledek sám od sebe?',
+                    vzor: 'START → VSTUP cena → VSTUP kusy → mezisoucet = cena * kusy → VÝSTUP → KONEC',
+                    postup: 'Doplň AKCE mezi vstupy a výstup.'
+                },
+                tests: [
+                    { id: 'A', inputs: { cena: 15, kusy: 3 }, expected: 'Mezisoučet: 45' },
+                    { id: 'B', inputs: { cena: 80, kusy: 5 }, expected: 'Mezisoučet: 400' },
+                    { id: 'C', inputs: { cena: 12.5, kusy: 4 }, expected: 'Mezisoučet: 50' }
+                ]
+            },
+            {
+                id: 3, name: 'Vstupenka 15+', type: 'sestav+oprav',
+                goal: 'Načti věk. ANO=pusť, NE=vykašli se.',
+                blocks: ['start', 'io', 'decision', 'process', 'note', 'end'], xpBase: 140,
+                rvp: 'Větvení (podmínka) + kontrola',
+                kompas: {
+                    cil: 'Přesně 15 let je „dost" — kde to rozseknem?',
+                    hacek: 'Co se stane, když je 15 přesně?',
+                    vzor: 'START → VSTUP vek → vek >= 15 ? ANO→„Vstupenka ANO" / NE→„Vstupenka NE" → KONEC',
+                    postup: 'Sprav obě větve pod PODMÍNKOU.'
+                },
+                tests: [
+                    { id: 'A', inputs: { vek: 18 }, expected: 'Vstupenka ANO' },
+                    { id: 'B', inputs: { vek: 12 }, expected: 'Vstupenka NE' },
+                    { id: 'C', inputs: { vek: 15 }, expected: 'Vstupenka ANO' }
+                ]
+            },
+            {
+                id: 4, name: 'Sběrač jablek 2.0', type: 'sestav',
+                goal: 'Seber 3 jablka. Spočti barvy, co máš rád.',
+                blocks: ['start', 'io', 'process', 'decision', 'loop', 'note', 'end'], xpBase: 200,
+                rvp: 'Cykly (fixní i podmíněný)',
+                kompas: {
+                    cil: 'Potřebuješ 3 otočení: utrhni a zjisti barvu.',
+                    hacek: 'Kolikrát se má opakovat SMYČKA?',
+                    vzor: 'Smyčka krok<3 → uvnitř vstup + podmínka barvy → košík++',
+                    postup: 'Slož tělo smyčky a počítej do proměnných.'
+                },
+                tests: [
+                    { id: 'A', inputs: { jmeno: 'Eda', barva1: 'cervena', barva2: 'modra', barvy: ['cervena', 'cervena', 'zluta'] }, expected: 'Díky Eda! oblíbená: cervena×2, modra×0' },
+                    { id: 'B', inputs: { jmeno: 'Ola', barva1: 'zluta', barva2: 'zelena', barvy: ['zelena', 'zluta', 'zelena'] }, expected: 'Díky Ola! oblíbená: zluta×1, zelena×2' },
+                    { id: 'C', inputs: { jmeno: 'Tim', barva1: 'cervena', barva2: 'zluta', barvy: ['cervena', 'cervena', 'cervena'] }, expected: 'Díky Tim! oblíbená: cervena×3, zluta×0' }
+                ]
+            },
+            {
+                id: 5, name: 'Volání opraváře', type: 'cti+sestav',
+                goal: 'Opravář je zavolán 3×. Zavolej ho správně.',
+                blocks: ['start', 'process', 'call', 'note', 'end'], xpBase: 180,
+                rvp: 'Podprogram, dekompozice',
+                kompas: {
+                    cil: 'Opravář dělá totéž 3× — stačí jedno VOLÁNÍ s odlišným dílem.',
+                    hacek: 'Co se stane, když zavoláš s díl=B?',
+                    vzor: 'oprav(dil=A) → oprav(dil=B) → oprav(dil=C)',
+                    postup: 'Místo ruční AKCE použij blok VOLÁNÍ s parametrem dílu.'
+                },
+                tests: [
+                    { id: 'A', inputs: { dily: ['A', 'B', 'C'] }, expected: ['oprav(A)', 'oprav(B)', 'oprav(C)'] },
+                    { id: 'B', inputs: { dily: ['C', 'A', 'B'] }, expected: ['oprav(C)', 'oprav(A)', 'oprav(B)'] }
+                ]
+            },
+            {
+                id: 6, name: 'Záchrana serveru', type: 'oprav+vyber+tvorba',
+                goal: 'Server padá. Oprav smyčku, vyber čistší tok.',
+                blocks: ['start', 'io', 'process', 'decision', 'loop', 'call', 'note', 'end'], xpBase: 300,
+                rvp: 'Ověření, oprava, výběr, tvorba',
+                kompas: {
+                    cil: 'Najdi, co se opakuje, a nech smyčku doběhnout do konce.',
+                    hacek: 'Skončí smyčka dřív, než zpracuje poslední prvek?',
+                    vzor: 'Smyčka krok <= n → tělo → VÝSTUP „OK: zpracováno {n}"',
+                    postup: 'Oprav podmínky a vyber kratší variantu.'
+                },
+                tests: [
+                    { id: 'A', inputs: { prvky: ['cervena', 'zluta', 'modra'] }, expected: 'OK: zpracováno 3' },
+                    { id: 'B', inputs: { prvky: ['cervena'] }, expected: 'OK: zpracováno 1' },
+                    { id: 'C', inputs: { prvky: ['cervena', 'zluta', 'modra', 'zelena'] }, expected: 'OK: zpracováno 4' }
+                ]
+            }
+        ];
+
+        // ==== F1: Game (learning mode) — jméno, XP, hodnost, stupně, certifikáty ====
+        // Pouze pozitivní motivace: XP se nikdy neodečítá, nápověda nic nestojí.
+        const Game = {
+            RANKS: [
+                { min: 0, name: 'Nováček u pásu' },
+                { min: 450, name: 'Pásový operátor' },
+                { min: 900, name: 'Mistr toku' },
+                { min: 1400, name: 'Legenda déčka' }
+            ],
+            KEY_PLAYER: 'blockflow_v2_player',
+            KEY_PROGRESS: 'blockflow_v2_progress',
+            playerName: '',
+            xp: 0,
+            levels: {},
+            certificates: [],
+
+            isValidName(name) {
+                if (typeof name !== 'string') return false;
+                const t = name.trim();
+                return t.length >= 1 && t.length <= 30;
+            },
+            setPlayerName(name) {
+                if (!this.isValidName(name)) return false;
+                this.playerName = name.trim();
+                this.save();
+                return true;
+            },
+            rankFor(xp) {
+                let r = this.RANKS[0].name;
+                for (const band of this.RANKS) { if (xp >= band.min) r = band.name; }
+                return r;
+            },
+            rank() { return this.rankFor(this.xp); },
+            starsFor(xp, base) {
+                if (!base || base <= 0) return 0;
+                const ratio = xp / base;
+                if (ratio > 1.25) return 3;
+                if (ratio > 1.15) return 2;
+                return 1;
+            },
+            bonusXp(base, opts = {}) {
+                let xp = base;
+                if (opts.noHint) xp += base * 0.20;
+                if (opts.firstTry) xp += base * 0.15;
+                if (opts.efficient) xp += base * 0.10;
+                return Math.round(xp);
+            },
+            isLevelDone(id) { return !!(this.levels[id] && this.levels[id].status === 'done'); },
+            totalStars() {
+                return Object.keys(this.levels).reduce((s, k) => s + (this.levels[k].stars || 0), 0);
+            },
+            completeLevel(levelId, opts = {}) {
+                const level = LEVELS.find(l => l.id === levelId);
+                if (!level) return null;
+                const base = level.xpBase;
+                const gained = this.bonusXp(base, opts);
+                const prev = this.levels[levelId] || {};
+                const firstTime = !prev.status;
+                const bestXp = Math.max(prev.bestXp || 0, gained);
+                const stars = this.starsFor(bestXp, base);
+                if (firstTime) this.xp += gained; // kumulativní hodnost roste jen při prvním splnění
+                this.levels[levelId] = {
+                    status: 'done', bestXp, stars,
+                    attempts: (prev.attempts || 0) + 1,
+                    noHint: !!opts.noHint, firstTry: !!opts.firstTry, efficient: !!opts.efficient
+                };
+                const certificate = {
+                    levelId, levelName: level.name, playerName: this.playerName,
+                    date: new Date().toISOString(), xp: bestXp, stars, rank: this.rank()
+                };
+                this.certificates.push(certificate);
+                this.save();
+                return { xp: gained, bestXp, stars, rank: this.rank(), certificate, firstTime };
+            },
+            load() {
+                try {
+                    const n = localStorage.getItem(this.KEY_PLAYER);
+                    if (n) this.playerName = n;
+                    const p = localStorage.getItem(this.KEY_PROGRESS);
+                    if (p) {
+                        const parsed = JSON.parse(p);
+                        this.xp = parsed.xp || 0;
+                        this.levels = parsed.levels || {};
+                        this.certificates = parsed.certificates || [];
+                    }
+                    return true;
+                } catch (e) { console.error('Chyba načtení profilu', e); return false; }
+            },
+            save() {
+                try {
+                    localStorage.setItem(this.KEY_PLAYER, this.playerName);
+                    localStorage.setItem(this.KEY_PROGRESS, JSON.stringify({
+                        xp: this.xp, levels: this.levels, certificates: this.certificates
+                    }));
+                    return true;
+                } catch (e) { console.error('Chyba uložení profilu', e); return false; }
+            },
+            reset() {
+                this.playerName = '';
+                this.xp = 0;
+                this.levels = {};
+                this.certificates = [];
+                try {
+                    localStorage.removeItem(this.KEY_PLAYER);
+                    localStorage.removeItem(this.KEY_PROGRESS);
+                } catch (e) {}
+                return true;
+            }
+        };
+
         const App = {
             REGEX: {
                 pre: /(?<=.)\s+([\p{L}_][\p{L}0-9_]*\s*[+\-*/%]?=)/gu,
@@ -1186,7 +1485,17 @@
                 svgExportModal: document.getElementById('svg-export-modal'),
                 jsonExportModal: document.getElementById('json-export-modal'),
                 sideMenu: document.getElementById('side-menu'),
-                hamburgerBtn: document.getElementById('hamburger-btn')
+                hamburgerBtn: document.getElementById('hamburger-btn'),
+                hud: document.getElementById('hud'),
+                hudName: document.getElementById('hud-name'),
+                hudRank: document.getElementById('hud-rank'),
+                hudXp: document.getElementById('hud-xp'),
+                hudStars: document.getElementById('hud-stars'),
+                campaignPanel: document.getElementById('campaign-panel'),
+                campaignList: document.getElementById('campaign-list'),
+                nameModal: document.getElementById('name-modal'),
+                nameInput: document.getElementById('name-input'),
+                nameError: document.getElementById('name-error')
             },
 
             toggleMenu(e) {

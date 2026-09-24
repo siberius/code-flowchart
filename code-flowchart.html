@@ -189,6 +189,19 @@
 
         .top-btn:disabled { opacity: 0.3; cursor: not-allowed; filter: grayscale(1); transform: none !important; box-shadow: none !important; border-color: rgba(255,255,255,0.15) !important; color: var(--text) !important; }
 
+        #ws-tabs { display: flex; gap: 4px; align-items: center; overflow-x: auto; max-width: 46vw; }
+        .ws-tab {
+            height: 36px; padding: 0 10px;
+            border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.05);
+            color: #94a3b8; font-size: 11px; cursor: pointer; white-space: nowrap;
+            font-family: 'JetBrains Mono', monospace; font-weight: 700; letter-spacing: 1px;
+            transition: all 0.2s;
+            clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+        }
+        .ws-tab:hover { color: var(--text); border-color: var(--accent); }
+        .ws-tab.active { color: var(--accent); border-color: var(--accent); background: rgba(0,229,255,0.08); box-shadow: inset 0 0 10px rgba(0,229,255,0.35); }
+        @media (max-width: 900px) { #ws-tabs { max-width: 38vw; } .ws-tab { padding: 0 7px; font-size: 10px; } }
+
         #main {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             overflow: hidden;
@@ -736,7 +749,17 @@
         <button class="top-btn" id="btn-undo" onclick="App.undo()" title="Zpět (Ctrl+Z)" disabled>↤ UNDO</button>
         <button class="top-btn" id="btn-redo" onclick="App.redo()" title="Vpřed (Ctrl+Y)" disabled>↦ REDO</button>
         <div style="width: 16px;"></div>
-        <button class="top-btn" id="btn-workspace" onclick="App.toggleMenu(event)" title="Režim a plochy (menu)">[ KAMPAŇ ]</button>
+        <div id="ws-tabs">
+            <button class="ws-tab" data-ws="campaign" onclick="App.selectWorkspace('campaign')" title="Kampaň — mise, jméno, XP">KAMPAŇ</button>
+            <button class="ws-tab" data-ws="free" onclick="App.selectWorkspace('free')" title="Volný režim — jablka demo + čistý editor">VOLNÝ</button>
+            <button class="ws-tab" data-ws="profi" onclick="App.selectWorkspace('profi')" title="Profi — všechny nástroje, bez mise">PROFI</button>
+            <button class="ws-tab" data-ws="space1" onclick="App.selectWorkspace('space1')" title="Prázdná plocha 1">SPACE 1</button>
+            <button class="ws-tab" data-ws="space2" onclick="App.selectWorkspace('space2')" title="Prázdná plocha 2">SPACE 2</button>
+            <button class="ws-tab" data-ws="space3" onclick="App.selectWorkspace('space3')" title="Prázdná plocha 3">SPACE 3</button>
+        </div>
+        <div style="width: 16px;"></div>
+        <button class="top-btn" onclick="document.getElementById('ws-upload').click()" title="Nahrát všechny plochy z PC (JSON)">⭱ WS</button>
+        <button class="top-btn" onclick="App.exportWorkspaces()" title="Uložit všechny plochy do PC (JSON)">⭳ WS</button>
         <button class="top-btn" onclick="document.getElementById('json-upload').click()" title="Nahrát projekt z PC (JSON)">⭱ IMPORT</button>
         <button class="top-btn" onclick="App.promptJsonExport()" title="Uložit projekt do PC (JSON)">⭳ EXPORT</button>
         <button class="top-btn" onclick="App.promptSvgExport()" title="Exportovat do SVG (Ctrl+S)">⍗ SVG</button>
@@ -753,10 +776,6 @@
 
     <!-- Boční Hamburger Menu -->
     <div id="side-menu">
-        <div class="menu-section-title">REŽIM</div>
-        <div class="side-menu-link mode-link" data-mode="campaign" onclick="App.setMode('campaign')"><span style="font-size: 16px;">◈</span> KAMPAŇ</div>
-        <div class="side-menu-link mode-link" data-mode="free" onclick="App.setMode('free')"><span style="font-size: 16px;">▤</span> VOLNÝ</div>
-        <div class="side-menu-link mode-link" data-mode="profi" onclick="App.setMode('profi')"><span style="font-size: 16px;">⚙</span> PROFI</div>
         <div class="menu-section-title">MISE</div>
         <div id="menu-missions"></div>
         <div class="menu-section-title">NÁSTROJE</div>
@@ -768,6 +787,7 @@
 
     <!-- Skrytý input pro nahrávání JSON souborů -->
     <input type="file" id="json-upload" accept=".json" style="display: none;" onchange="App.handleJsonImport(event)">
+    <input type="file" id="ws-upload" accept=".json" style="display: none;" onchange="App.handleWorkspaceImport(event)">
 
     <div id="main">
         <div id="canvas-wrap">
@@ -1425,6 +1445,16 @@
         };
         LEVELS.forEach(l => { if (SOLUTIONS[l.id]) l.solution = SOLUTIONS[l.id]; });
 
+        // ==== F1: registr ploch (horní lišta) — VOLNÝ, PROFI + 3 prázdné SPACE ====
+        const WORKSPACES = [
+            { slot: 'free', label: 'VOLNÝ', mode: 'free' },
+            { slot: 'profi', label: 'PROFI', mode: 'profi' },
+            { slot: 'space1', label: 'SPACE 1', mode: 'space' },
+            { slot: 'space2', label: 'SPACE 2', mode: 'space' },
+            { slot: 'space3', label: 'SPACE 3', mode: 'space' }
+        ];
+        const CAMPAIGN_SLOTS = LEVELS.map(l => 'lvl' + l.id);
+
         // ==== F1: Game (learning mode) — jméno, XP, hodnost, stupně, certifikáty ====
         // Pouze pozitivní motivace: XP se nikdy neodečítá, nápověda nic nestojí.
         const Game = {
@@ -1853,14 +1883,20 @@
 
             // ==== F1: režimy a plochy (slot na level) ====
             modeOf(slot) {
-                if (slot === 'free') return 'free';
-                if (slot === 'profi') return 'profi';
-                return 'campaign';
+                if (typeof slot === 'string' && slot.indexOf('lvl') === 0) return 'campaign';
+                const ws = WORKSPACES.find(w => w.slot === slot);
+                return ws ? ws.mode : 'campaign';
             },
+            workspaceSlots() { return CAMPAIGN_SLOTS.concat(WORKSPACES.map(w => w.slot)); },
             isCampaign() { return this.modeOf(this.activeWorkspace) === 'campaign'; },
             currentLevel() {
                 if (!this.isCampaign()) return null;
                 return LEVELS.find(l => 'lvl' + l.id === this.activeWorkspace) || null;
+            },
+            selectWorkspace(slot) {
+                this.closeMenu();
+                if (slot === 'campaign') { this.setMode('campaign'); return; }
+                this.switchWorkspace(slot);
             },
             setMode(mode) {
                 this.closeMenu();
@@ -1978,26 +2014,12 @@
             },
 
             updateWorkspaceUI() {
-                const btn = document.getElementById('btn-workspace');
                 const mode = this.modeOf(this.activeWorkspace);
-                const map = {
-                    campaign: { color: 'var(--accent)', title: 'KAMPAŇ — learning mode (jméno, XP, certifikáty)' },
-                    free: { color: 'var(--accent2)', title: 'VOLNÝ — jablka demo + čistý editor' },
-                    profi: { color: 'var(--accent3)', title: 'PROFI — všechny nástroje, bez mise' }
-                };
-                const m = map[mode];
-                let label = '[ ' + mode.toUpperCase() + ' ]';
-                if (mode === 'campaign') {
-                    const lvl = this.currentLevel();
-                    label = '[ KAMPAŇ' + (lvl ? ' ' + lvl.id + '/6' : '') + ' ]';
-                }
-                if (btn) {
-                    btn.innerHTML = label;
-                    btn.style.color = m.color;
-                    btn.style.borderColor = m.color;
-                    btn.style.boxShadow = `inset 0 0 10px ${m.color}`;
-                    btn.title = m.title;
-                }
+                document.querySelectorAll('#ws-tabs .ws-tab').forEach(tab => {
+                    const ws = tab.getAttribute('data-ws');
+                    const active = (ws === 'campaign') ? (mode === 'campaign') : (this.activeWorkspace === ws);
+                    tab.classList.toggle('active', active);
+                });
                 this.updateGameUI();
             },
 
@@ -2012,10 +2034,6 @@
                 this.renderMenu();
             },
             renderMenu() {
-                const mode = this.modeOf(this.activeWorkspace);
-                document.querySelectorAll('#side-menu .mode-link').forEach(el => {
-                    el.classList.toggle('active', el.getAttribute('data-mode') === mode);
-                });
                 const list = this.dom.menuMissions;
                 if (!list) return;
                 list.innerHTML = '';
@@ -4001,6 +4019,64 @@
                         console.error(err);
                     }
                     event.target.value = ''; 
+                };
+                reader.readAsText(file);
+            },
+
+            exportWorkspaces() {
+                this.saveWorkspace(this.activeWorkspace);
+                const data = {
+                    app: 'blockflow-workspaces',
+                    version: 2,
+                    exported: new Date().toISOString(),
+                    active: this.activeWorkspace,
+                    workspaces: {}
+                };
+                this.workspaceSlots().forEach(slot => {
+                    const raw = localStorage.getItem('blockflow_v2_ws_' + slot);
+                    if (raw) { try { data.workspaces[slot] = JSON.parse(raw); } catch (e) {} }
+                });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json;charset=utf-8' }));
+                a.download = 'BlockFlow_plochy.json';
+                a.click();
+                this.toast('Všechny plochy exportovány ✓');
+            },
+
+            handleWorkspaceImport(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const parsed = JSON.parse(e.target.result);
+                        const ws = parsed && parsed.workspaces;
+                        if (!ws || typeof ws !== 'object') {
+                            this.toast('Chyba: Neplatný soubor ploch.');
+                            event.target.value = '';
+                            return;
+                        }
+                        let count = 0;
+                        this.workspaceSlots().forEach(slot => {
+                            if (ws[slot]) { localStorage.setItem('blockflow_v2_ws_' + slot, JSON.stringify(ws[slot])); count++; }
+                        });
+                        let target = (parsed.active && this.workspaceSlots().indexOf(parsed.active) !== -1) ? parsed.active : this.activeWorkspace;
+                        this.activeWorkspace = target;
+                        if (this.modeOf(target) === 'campaign') this.lastCampaignSlot = target;
+                        this.loadWorkspace(target);
+                        localStorage.setItem('blockflow_v2_active_ws', target);
+                        this.stateHistory = []; this.historyIndex = -1; this.cheatStep = 0;
+                        this.applyPalette(this.currentPalette());
+                        this.updateWorkspaceUI();
+                        this.renderAll();
+                        this.pushHistory();
+                        setTimeout(() => { this.renderArrows(); this.applyTransform(); }, 50);
+                        this.toast(`Importováno ${count} ploch ✓`);
+                    } catch (err) {
+                        this.toast('Chyba při čtení souboru.');
+                        console.error(err);
+                    }
+                    event.target.value = '';
                 };
                 reader.readAsText(file);
             }

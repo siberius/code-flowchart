@@ -138,9 +138,24 @@ check('HUD skryt ve VOLNÉM', !App.dom.hud.classList.contains('show'));
 check('jablka se postavila (bloky > 0)', App.blocks.length > 0, 'bloky=' + App.blocks.length);
 App.setMode('profi');
 check('režim profi', App.activeWorkspace === 'profi');
-App.setMode('campaign');
+App.selectWorkspace('space1');
+check('plocha space1', App.activeWorkspace === 'space1');
+check('modeOf(space1) = space', App.modeOf('space1') === 'space');
+check('space1 prázdná (jen Start)', App.blocks.length === 1, 'bloky=' + App.blocks.length);
+App.selectWorkspace('space2');
+check('plocha space2', App.activeWorkspace === 'space2');
+App.selectWorkspace('space3');
+check('plocha space3', App.activeWorkspace === 'space3');
+check('aktivní plocha persistována', sandbox.localStorage.getItem('blockflow_v2_active_ws') === 'space3');
+App.selectWorkspace('campaign');
 check('zpět do KAMPAŇě na poslední level', App.activeWorkspace === 'lvl1', App.activeWorkspace);
 check('HUD zpět viditelný', App.dom.hud.classList.contains('show'));
+
+console.log('\n[registr ploch]');
+const slots = App.workspaceSlots();
+check('obsahuje free/profi/space1-3 i lvl1-6',
+    ['free', 'profi', 'space1', 'space2', 'space3', 'lvl1', 'lvl6'].every(s => slots.indexOf(s) !== -1));
+check('celkem 11 ploch (5 + 6)', slots.length === 11, 'got ' + slots.length);
 
 console.log('\n[vstup do mise → level modal]');
 App.enterCampaignLevel(3);

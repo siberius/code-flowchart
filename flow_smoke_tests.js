@@ -90,6 +90,7 @@ new vm.Script(code, { filename: 'code-flowchart.html:inline-script' }).runInCont
 
 const App = sandbox.__App;
 const Game = sandbox.__Game;
+const LEVELS = sandbox.__LEVELS;
 
 let pass = 0, fail = 0;
 const check = (n, c, x = '') => { if (c) { pass++; console.log('  OK   ' + n); } else { fail++; console.error('  FAIL ' + n + (x ? ' -> ' + x : '')); } };
@@ -159,6 +160,24 @@ App.doReset();
 check('jméno smazáno', Game.playerName === '');
 check('XP smazáno', Game.xp === 0);
 check('otevřel se jmenný modal', App.dom.nameModal.classList.contains('show'));
+
+console.log('\n[cheat Ctrl+Alt+C — krok za krokem]');
+App.enterCampaignLevel(4);
+const sol = LEVELS.find(l => l.id === 4).solution;
+const total = sol.blocks.length + sol.arrows.length;
+App.cheatStep = 0;
+console.log('   dbg total', total, 'solBlocks', sol.blocks.length, 'solArrows', sol.arrows.length);
+for (let i = 1; i <= total; i++) {
+    App.cheatSolveStep();
+    console.log('   dbg call', i, 'cheatStep', App.cheatStep, 'blocks', App.blocks.length, 'arrows', App.arrows.length);
+    if (i === 1) check('1. krok = 1 blok, 0 šipek', App.blocks.length === 1 && App.arrows.length === 0,
+        'bloky=' + App.blocks.length + ' šipky=' + App.arrows.length);
+}
+check('plné řešení = všechny bloky', App.blocks.length === sol.blocks.length, App.blocks.length + '/' + sol.blocks.length);
+check('plné řešení = všechny šipky', App.arrows.length === sol.arrows.length, App.arrows.length + '/' + sol.arrows.length);
+App.cheatSolveStep();
+check('další stisk resetuje na prázdno', App.blocks.length === 0 && App.arrows.length === 0);
+check('cheatStep vynulován', App.cheatStep === 0);
 
 console.log(`\nVýsledek: ${pass} OK, ${fail} FAIL`);
 process.exit(fail === 0 ? 0 : 1);

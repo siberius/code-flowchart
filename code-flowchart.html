@@ -1341,6 +1341,90 @@
         };
         LEVELS.forEach(l => { if (SCAFFOLDS[l.id]) l.scaffold = SCAFFOLDS[l.id]; });
 
+        // ==== F1: vzorová řešení (cheat Ctrl+Alt+C s CapsLockem, krok za krokem) ====
+        // Stejný formát jako scaffolding: blocks + arrows = [fromIndex, fromPort, toIndex, toPort].
+        const SOLUTIONS = {
+            1: {
+                blocks: [
+                    { type: 'start', label: 'Začátek', x: 0, y: -220 },
+                    { type: 'process', label: 'Otevři bránu', x: 0, y: -60 },
+                    { type: 'process', label: 'Vezmi bednu', x: 0, y: 100 },
+                    { type: 'process', label: 'Zavři bránu', x: 0, y: 260 },
+                    { type: 'end', label: 'Konec', x: 0, y: 420 }
+                ],
+                arrows: [[0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'], [2, 'bottom', 3, 'top'], [3, 'bottom', 4, 'top']]
+            },
+            2: {
+                blocks: [
+                    { type: 'start', label: 'Začátek', x: 0, y: -220 },
+                    { type: 'io', label: 'cena', ioType: 'input', x: 0, y: -60 },
+                    { type: 'io', label: 'kusy', ioType: 'input', x: 0, y: 100 },
+                    { type: 'process', label: 'mezisoucet = cena * kusy', x: 0, y: 260 },
+                    { type: 'io', label: 'Mezisoučet: {mezisoucet}', ioType: 'output', x: 0, y: 420 },
+                    { type: 'end', label: 'Konec', x: 0, y: 580 }
+                ],
+                arrows: [[0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'], [2, 'bottom', 3, 'top'], [3, 'bottom', 4, 'top'], [4, 'bottom', 5, 'top']]
+            },
+            3: {
+                blocks: [
+                    { type: 'start', label: 'Začátek', x: 0, y: -240 },
+                    { type: 'io', label: 'vek', ioType: 'input', x: 0, y: -80 },
+                    { type: 'decision', label: 'vek >= 15', x: 0, y: 90, yesPort: 'right', noPort: 'left' },
+                    { type: 'io', label: 'Vstupenka ANO', ioType: 'output', x: 320, y: 260 },
+                    { type: 'io', label: 'Vstupenka NE', ioType: 'output', x: -320, y: 260 },
+                    { type: 'end', label: 'Konec', x: 0, y: 450 }
+                ],
+                arrows: [[0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'], [2, 'right', 3, 'top'], [2, 'left', 4, 'top'], [3, 'bottom', 5, 'top'], [4, 'bottom', 5, 'top']]
+            },
+            4: {
+                blocks: [
+                    { type: 'start', label: 'Začátek', x: 0, y: -400 },
+                    { type: 'io', label: 'jméno', ioType: 'input', x: 0, y: -260 },
+                    { type: 'io', label: 'barva1', ioType: 'input', x: 0, y: -120 },
+                    { type: 'io', label: 'barva2', ioType: 'input', x: 0, y: 20 },
+                    { type: 'process', label: 'pocet1 = 0\npocet2 = 0\nkrok = 0', x: 0, y: 160 },
+                    { type: 'loop', label: 'krok < 3', x: 0, y: 320, yesPort: 'bottom', noPort: 'right' },
+                    { type: 'io', label: 'barva', ioType: 'input', x: 0, y: 500 },
+                    { type: 'decision', label: 'barva == barva1', x: 0, y: 660, yesPort: 'right', noPort: 'bottom' },
+                    { type: 'process', label: 'pocet1++\nkrok++', x: 320, y: 660 },
+                    { type: 'decision', label: 'barva == barva2', x: 0, y: 840, yesPort: 'right', noPort: 'bottom' },
+                    { type: 'process', label: 'pocet2++\nkrok++', x: 320, y: 840 },
+                    { type: 'io', label: 'Díky {jméno}! oblíbená: {barva1}×{pocet1}, {barva2}×{pocet2}', ioType: 'output', x: 420, y: 320 },
+                    { type: 'end', label: 'Konec', x: 420, y: 500 }
+                ],
+                arrows: [
+                    [0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'], [2, 'bottom', 3, 'top'], [3, 'bottom', 4, 'top'], [4, 'bottom', 5, 'top'],
+                    [5, 'bottom', 6, 'top'], [6, 'bottom', 7, 'top'],
+                    [7, 'right', 8, 'left'], [8, 'bottom', 5, 'left'],
+                    [7, 'bottom', 9, 'top'], [9, 'right', 10, 'left'], [10, 'bottom', 5, 'left'], [9, 'bottom', 5, 'left'],
+                    [5, 'right', 11, 'left'], [11, 'bottom', 12, 'top']
+                ]
+            },
+            5: {
+                blocks: [
+                    { type: 'start', label: 'Začátek', x: 0, y: -220 },
+                    { type: 'call', label: 'oprav(dil=A)', x: 0, y: -60 },
+                    { type: 'call', label: 'oprav(dil=B)', x: 0, y: 100 },
+                    { type: 'call', label: 'oprav(dil=C)', x: 0, y: 260 },
+                    { type: 'end', label: 'Konec', x: 0, y: 420 }
+                ],
+                arrows: [[0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'], [2, 'bottom', 3, 'top'], [3, 'bottom', 4, 'top']]
+            },
+            6: {
+                blocks: [
+                    { type: 'start', label: 'Začátek', x: 0, y: -300 },
+                    { type: 'io', label: 'n', ioType: 'input', x: 0, y: -140 },
+                    { type: 'process', label: 'krok = 0', x: 0, y: 20 },
+                    { type: 'loop', label: 'krok <= n', x: 0, y: 180, yesPort: 'bottom', noPort: 'right' },
+                    { type: 'process', label: 'krok = krok + 1', x: 0, y: 360 },
+                    { type: 'io', label: 'OK: zpracováno {n}', ioType: 'output', x: 340, y: 180 },
+                    { type: 'end', label: 'Konec', x: 340, y: 360 }
+                ],
+                arrows: [[0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'], [2, 'bottom', 3, 'top'], [3, 'bottom', 4, 'top'], [4, 'bottom', 3, 'left'], [3, 'right', 5, 'left'], [5, 'bottom', 6, 'top']]
+            }
+        };
+        LEVELS.forEach(l => { if (SOLUTIONS[l.id]) l.solution = SOLUTIONS[l.id]; });
+
         // ==== F1: Game (learning mode) — jméno, XP, hodnost, stupně, certifikáty ====
         // Pouze pozitivní motivace: XP se nikdy neodečítá, nápověda nic nestojí.
         const Game = {
@@ -1721,6 +1805,7 @@
                 
                 Game.load();
                 this.activeWorkspace = localStorage.getItem('blockflow_v2_active_ws') || 'lvl1';
+                this.cheatStep = 0;
                 if (this.modeOf(this.activeWorkspace) === 'campaign') {
                     this.lastCampaignSlot = this.activeWorkspace;
                 }
@@ -1796,6 +1881,7 @@
                 this.stateHistory = [];
                 this.historyIndex = -1;
                 this.lastSimStatus = 'untested';
+                this.cheatStep = 0;
 
                 const loaded = this.loadWorkspace(slot);
                 if (!loaded) {
@@ -1851,6 +1937,44 @@
                     const from = created[a[0]], to = created[a[2]];
                     if (from && to) this.addArrowSilent(from.id, a[1], to.id, a[3]);
                 });
+            },
+            cheatSolveStep() {
+                if (this.isSimulating) { this.toast('Cheat nejde během simulace.'); return; }
+                if (!this.isCampaign()) { this.toast('Cheat je dostupný jen v KAMPAŇI.'); return; }
+                const lvl = this.currentLevel();
+                if (!lvl || !lvl.solution) { this.toast('Pro tuto misi není vzorové řešení.'); return; }
+                const total = lvl.solution.blocks.length + lvl.solution.arrows.length;
+                this.cheatStep = (this.cheatStep >= total) ? 0 : this.cheatStep + 1;
+                this.buildCheatSolution(lvl, this.cheatStep);
+                this.applyPalette(this.currentPalette());
+                this.updateWorkspaceUI();
+                this.renderAll();
+                this.pushHistory();
+                setTimeout(() => this.renderArrows(), 50);
+                if (this.cheatStep === 0) this.toast('Cheat: plocha vyčištěna (start znovu)');
+                else if (this.cheatStep >= total) this.toast(`Cheat: hotovo (${total}/${total}) — můžeš spustit ▶`);
+                else this.toast(`Cheat: krok ${this.cheatStep}/${total}`, 1200);
+            },
+            buildCheatSolution(level, reveal) {
+                this.blocks = []; this.arrows = []; this.nextId = 1;
+                this.vx = 0; this.vy = 0; this.vscale = 1;
+                const sol = level.solution;
+                const nBlocks = Math.min(reveal, sol.blocks.length);
+                const created = [];
+                for (let i = 0; i < nBlocks; i++) {
+                    const def = sol.blocks[i];
+                    const b = this.addBlockSilent(def.type, def.label, def.x, def.y);
+                    if (def.ioType) b.ioType = def.ioType;
+                    if (def.yesPort) b.yesPort = def.yesPort;
+                    if (def.noPort) b.noPort = def.noPort;
+                    created.push(b);
+                }
+                const nArrows = Math.max(0, reveal - sol.blocks.length);
+                for (let i = 0; i < nArrows && i < sol.arrows.length; i++) {
+                    const a = sol.arrows[i];
+                    const from = created[a[0]], to = created[a[2]];
+                    if (from && to) this.addArrowSilent(from.id, a[1], to.id, a[3]);
+                }
             },
 
             updateWorkspaceUI() {
@@ -2944,6 +3068,9 @@
                         if (this.resolveInputFn) { this.resolveInputFn(null); this.resolveInputFn = null; }
                         if (this.resolveDecisionFn) { this.resolveDecisionFn(null); this.resolveDecisionFn = null; }
                         document.querySelectorAll('.modal-overlay').forEach(el => el.classList.remove('show'));
+                    } else if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'c' && e.getModifierState && e.getModifierState('CapsLock')) {
+                        e.preventDefault();
+                        this.cheatSolveStep();
                     } else if (e.ctrlKey && e.key.toLowerCase() === 's') { 
                         e.preventDefault(); this.promptSvgExport(); 
                     } else if (e.ctrlKey && e.key.toLowerCase() === 'z' && !e.shiftKey) { 

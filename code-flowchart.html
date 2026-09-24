@@ -1060,6 +1060,17 @@
         </div>
     </div>
 
+    <!-- F2: Výsledek AUTO-kontroly (Checker) -->
+    <div id="check-result-modal" class="modal-overlay" style="z-index: 720;">
+        <div class="modal-box" style="border-color: rgba(245,158,11,0.35);">
+            <h3 id="check-title" style="color: var(--accent3); text-shadow: 0 0 10px rgba(245,158,11,0.4);">Kontrola mise</h3>
+            <div id="check-body" style="text-align: left;"></div>
+            <div class="btn-row">
+                <button class="btn" onclick="App.closeCheckResult()" style="flex: 1; padding: 10px; font-size: 13px; background: rgba(245,158,11,0.05); color: var(--accent3); border-color: var(--accent3); box-shadow: inset 0 0 15px rgba(245,158,11,0.2);">JDU PRACOVAT</button>
+            </div>
+        </div>
+    </div>
+
     <!-- F1: Výsledek mise (hvězdy, XP, hodnost) -->
     <div id="level-result-modal" class="modal-overlay" style="z-index: 720;">
         <div class="modal-box" style="border-color: rgba(16,185,129,0.35);">
@@ -3947,6 +3958,169 @@
                 } catch(e) {
                     this.logConsole(`[CHYBA VÝRAZU] Zpracování výrazu selhalo: '${expr}'`, "error");
                 }
+            },
+
+            // ==== F2: Checker — automatická kontrola proti testovacím vektorům ====
+            // Headless běh bez dotazů: podmínky se vyhodnotí samy, VSTUP jde z vektoru,
+            // VÝSTUP se zachytí a porovná s očekáváním. Ruční běh zůstává pro krokování.
+            evalCondition(label, ram) {
+                try {
+                    let toEval = String(label).trim();
+                    for (const key in ram) {
+                        if (Array.isArray(ram[key])) continue;
+                        let val = ram[key];
+                        if (typeof val === 'string') val = JSON.stringify(val);
+                        toEval = toEval.replace(this.getVarRegex(key), `$1${val}`);
+                    }
+                    return !!Function(`"use strict"; return (${toEval});`)();
+                } catch (e) {
+                    return null;
+                }
+            },
+            inputVarName(label) {
+                const val = String(label);
+                const assignMatch = val.match(/^([\p{L}_][\p{L}0-9_]*)\s*=\s*(?:input|zadej|čti)/iu);
+                const ioMatch = val.match(/(?:input|zadej|čti)\s*\(?['"]?([\p{L}_][\p{L}0-9_]*)['"]?\)?/iu);
+                if (assignMatch) return assignMatch[1];
+                if (ioMatch) return ioMatch[1];
+                if (/^[\p{L}_][\p{L}0-9_]*$/u.test(val.trim())) return val.trim();
+                return 'vstup';
+            },
+            canonOutput(value) {
+                return String(value == null ? '' : value)
+                    .replace(/\s+/g, ' ')
+                    .trim()
+                    .replace(/\d+\.\d{6,}/g, m => String(Number(m)));
+            },
+            runCheckVector(vector) {
+                const blocks = this.blocks;
+                const arrows = this.arrows;
+                const byId = {};
+                blocks.forEach(b => { byId[b.id] = b; });
+                const ram = {};
+                const outputs = [];
+                const trace = [];
+                const stateCounts = {};
+                const inputState = {};
+                let error = null, errorBlock = null, steps = 0;
+
+                const takeInput = (name) => {
+                    const inputs = vector.inputs;
+                    if (!inputs || !Object.prototype.hasOwnProperty.call(inputs, name)) return undefined;
+                    const value = inputs[name];
+                    if (!Array.isArray(value)) return value;
+                    const i = inputState[name] || 0;
+                    inputState[name] = i + 1;
+                    return i < value.length ? value[i] : value[value.length - 1];
+                };
+
+                let cur = blocks.find(b => b.type === 'start') || null;
+                if (!cur) return { id: vector.id, ok: false, message: 'V diagramu chybí blok START.', outputs, trace, errorBlock: null };
+
+                // Běh sdílí sémantiku výrazů s ruční simulací (parseVariable/replaceVars),
+                // jen s potlačeným vykreslováním a vlastní pamětí vektoru.
+                const savedRam = this.visualRAM, savedLog = this.logConsole, savedUpd = this.updateRAM;
+                this.logConsole = () => {}; this.updateRAM = () => {}; this.visualRAM = ram;
+                try {
+                    while (cur) {
+                        steps++;
+                        if (steps > 5000) { error = 'Program se zacyklil (příliš mnoho kroků).'; errorBlock = cur.id; break; }
+                        const key = cur.id + '|' + JSON.stringify(ram);
+                        this.nextStateCount(stateCounts, key);
+                        if (this.isRunaway(stateCounts, key, steps)) { error = 'Zacyklení: tok se opakuje beze změny dat.'; errorBlock = cur.id; break; }
+
+                        const type = cur.type;
+                        if (type === 'end') break;
+                        if (type === 'process') { trace.push(cur.label); this.parseVariable(cur.label); }
+                        else if (type === 'call') { trace.push(cur.label); }
+                        else if (type === 'note') { /* poznámka se neprovádí, tok pokračuje dál */ }
+                        else if (type === 'io') {
+                            if (cur.ioType === 'input') {
+                                const name = this.inputVarName(cur.label);
+                                const raw = takeInput(name);
+                                const value = (raw === undefined || raw === null || raw === '') ? 0 : raw;
+                                const num = Number(value);
+                                ram[name] = (String(value).trim() !== '' && !isNaN(num)) ? num : String(value);
+                            } else {
+                                outputs.push(this.replaceVars(cur.label));
+                            }
+                        }
+                        else if (type === 'decision' || type === 'loop') {
+                            const answer = this.evalCondition(cur.label, ram);
+                            if (answer === null) { error = 'Podmínku nejde vyhodnotit: „' + cur.label + '“.'; errorBlock = cur.id; break; }
+                            const arrow = this.pickNextArrow(cur, answer, arrows);
+                            if (!arrow) {
+                                error = 'Větev ' + (answer ? 'ANO/TĚLO' : 'NE/KONEC') + ' u bloku „' + cur.label + '“ nikam nevede.';
+                                errorBlock = cur.id; break;
+                            }
+                            cur = byId[arrow.to] || null;
+                            continue;
+                        }
+
+                        const outgoing = arrows.filter(a => a.from === cur.id);
+                        if (outgoing.length === 0) { error = 'Slepá ulička za blokem „' + cur.label + '“ — chybí šipka dál.'; errorBlock = cur.id; break; }
+                        cur = byId[outgoing[0].to] || null;
+                    }
+                } finally {
+                    this.visualRAM = savedRam; this.logConsole = savedLog; this.updateRAM = savedUpd;
+                }
+
+                let ok = !error;
+                let message = error || '';
+                if (ok) {
+                    const expected = vector.expected;
+                    if (Array.isArray(expected)) {
+                        const want = expected.map(t => String(t).trim());
+                        const got = trace.map(t => String(t).trim());
+                        ok = want.length === got.length && want.every((v, i) => v === got[i]);
+                        if (!ok) message = 'čekal jsem [' + want.join(' → ') + '], ale máš [' + got.join(' → ') + ']';
+                    } else {
+                        const want = this.canonOutput(expected);
+                        const got = outputs.map(o => this.canonOutput(o)).join(' / ');
+                        ok = got === want;
+                        if (!ok) message = 'čekal jsem „' + want + '“, ale máš „' + (got || 'žádný výstup') + '“';
+                    }
+                }
+                return { id: vector.id, ok, message, outputs, trace, errorBlock };
+            },
+            runCheck(silent) {
+                const lvl = this.currentLevel();
+                if (!lvl) { if (!silent) this.toast('AUTO-kontrola běží jen v MISE.'); return null; }
+                const tests = lvl.tests || [];
+                if (!tests.length) { if (!silent) this.toast('Tato mise zatím nemá testy.'); return null; }
+                if (this.isSimulating) { if (!silent) this.toast('Kontrola až po skončení běhu.'); return null; }
+
+                document.querySelectorAll('.sim-error').forEach(e => e.classList.remove('sim-error'));
+                const results = tests.map(t => this.runCheckVector(t));
+                const passed = results.filter(r => r.ok).length;
+                const allOk = passed === results.length;
+                results.forEach(r => {
+                    if (r.ok || !r.errorBlock) return;
+                    const el = document.getElementById(r.errorBlock);
+                    if (el) el.classList.add('sim-error');
+                });
+                this.lastCheck = { results, passed, total: results.length, allOk };
+                if (allOk) {
+                    this.onLevelSuccess();
+                } else {
+                    if (this.isCampaign()) this.levelFailed = true;
+                    if (!silent) this.showCheckResult(this.lastCheck);
+                }
+                return this.lastCheck;
+            },
+            showCheckResult(check) {
+                if (!this.dom.checkResultModal) return;
+                const rows = check.results.map(r =>
+                    '<div style="border-left:3px solid ' + (r.ok ? '#10b981' : '#ef4444') + ';padding:8px 10px;margin-bottom:8px;background:rgba(0,0,0,0.25);">' +
+                    '<strong style="color:' + (r.ok ? '#10b981' : '#ef4444') + ';">' + (r.ok ? '✓' : '✗') + ' Test ' + r.id + '</strong>' +
+                    '<div style="color:var(--text-dim);font-size:14px;line-height:1.5;">' + (r.ok ? 'Prošlo — výstup odpovídá zadání.' : r.message) + '</div></div>'
+                ).join('');
+                if (this.dom.checkTitle) this.dom.checkTitle.textContent = 'Kontrola: ' + check.passed + '/' + check.total + ' prošlo';
+                if (this.dom.checkBody) this.dom.checkBody.innerHTML = rows;
+                this.dom.checkResultModal.classList.add('show');
+            },
+            closeCheckResult() {
+                if (this.dom.checkResultModal) this.dom.checkResultModal.classList.remove('show');
             },
 
             runLinter() {

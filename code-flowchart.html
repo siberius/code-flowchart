@@ -1,0 +1,3264 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BlockFlow EDU</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;700;800&display=swap');
+
+        :root {
+            --bg: #0d0f14;
+            --surface: #161920;
+            --surface2: #1e2230;
+            --border: #2a2f3d;
+            --accent: #00e5ff;
+            --accent2: #7c3aed;
+            --accent3: #f59e0b;
+            --text: #e2e8f0;
+            --text-dim: #64748b;
+            
+            /* Sémantické barvy bloků */
+            --start-end: #10b981;
+            --process: #3b82f6;
+            --decision: #f59e0b;
+            --io: #8b5cf6;
+            --loop: #ec4899;
+            --call: #06b6d4;
+            --shadow: 0 8px 32px rgba(0,0,0,0.5);
+            --glow: 0 0 25px rgba(0, 229, 255, 0.4);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Syne', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* Cyberpunk Scrollbary (Globální Sci-Fi design posuvníků) */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(13, 15, 20, 0.6); border-left: 1px solid rgba(255, 255, 255, 0.05); }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 229, 255, 0.3); border-radius: 4px; border: 1px solid rgba(0, 229, 255, 0.5); }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(0, 229, 255, 0.6); box-shadow: 0 0 10px rgba(0, 229, 255, 0.8); }
+
+        /* Vizuální Kinetika (Glitch Shake) */
+        @keyframes glitch-shake {
+            0% { transform: translate(0); filter: hue-rotate(0); }
+            20% { transform: translate(-6px, 6px); filter: hue-rotate(90deg); }
+            40% { transform: translate(-6px, -6px); filter: hue-rotate(-90deg); }
+            60% { transform: translate(6px, 6px); filter: hue-rotate(90deg); }
+            80% { transform: translate(6px, -6px); filter: hue-rotate(-90deg); }
+            100% { transform: translate(0); filter: hue-rotate(0); }
+        }
+        .glitch-shake { animation: glitch-shake 0.3s cubic-bezier(.36,.07,.19,.97) both; }
+
+        /* Vizuální Kinetika (Mikro-Jiskra při spojení) */
+        .cyber-spark {
+            position: fixed;
+            width: 10px; height: 10px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 20px 10px var(--accent), 0 0 40px 20px var(--accent);
+            transform: translate(-50%, -50%) scale(0.5);
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 1;
+            transition: all 0.3s cubic-bezier(0.1, 0.9, 0.2, 1);
+        }
+        .cyber-spark.pop {
+            transform: translate(-50%, -50%) scale(3);
+            opacity: 0;
+        }
+
+        /* Vyšší průhlednost skla pro maximální krystalický efekt */
+        #topbar {
+            position: fixed; top: 0; left: 0; right: 0;
+            height: 56px;
+            background: rgba(30, 34, 48, 0.35); 
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex; align-items: center;
+            padding: 0 16px; gap: 12px;
+            z-index: 100;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 -1px 0 rgba(255,255,255,0.05);
+        }
+
+        /* HAMBURGER MENU - Vzhled */
+        #hamburger-btn {
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            width: 36px; height: 36px; cursor: pointer; gap: 5px;
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15);
+            clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+            transition: all 0.2s;
+        }
+        #hamburger-btn span {
+            display: block; width: 18px; height: 2px; background: var(--text);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+        }
+        #hamburger-btn:hover { background: rgba(0, 229, 255, 0.1); border-color: var(--accent); }
+        #hamburger-btn:hover span { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+        #hamburger-btn.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); background: var(--accent); }
+        #hamburger-btn.active span:nth-child(2) { opacity: 0; }
+        #hamburger-btn.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); background: var(--accent); }
+
+        /* BOČNÍ MENU - Drawer */
+        #side-menu {
+            position: fixed; top: 56px; left: -300px; width: 260px; height: fit-content;
+            background: rgba(13, 15, 20, 0.9); backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom-right-radius: 16px;
+            box-shadow: 15px 15px 30px rgba(0,0,0,0.8); z-index: 95;
+            display: flex; flex-direction: column; padding: 20px 0;
+            transition: left 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        #side-menu.open { left: 0; }
+        .side-menu-link {
+            padding: 16px 30px; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700;
+            color: var(--text-dim); text-transform: uppercase; letter-spacing: 2px;
+            cursor: pointer; transition: all 0.2s; border-left: 3px solid transparent;
+            display: flex; align-items: center; gap: 12px;
+        }
+        .side-menu-link:hover { color: var(--accent); background: rgba(0, 229, 255, 0.05); border-left: 3px solid var(--accent); text-shadow: 0 0 8px rgba(0,229,255,0.4); padding-left: 35px; }
+
+        #logo {
+            font-size: 20px; font-weight: 800; letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #c4b5fd, #8b5cf6);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; white-space: nowrap;
+        }
+        #logo span { color: var(--accent); -webkit-text-fill-color: var(--accent); }
+
+        .topbar-sep { flex: 1; }
+
+        .topbar-btn-group { display: flex; gap: 8px; }
+
+        /* Sci-Fi Neon Tlačítka horní lišty */
+        #btn-simulate {
+            background: rgba(0, 255, 170, 0.05);
+            border: 1px solid #00ffaa; color: #00ffaa; height: 36px; padding: 0 16px;
+            font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
+            cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; gap: 8px;
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+            box-shadow: inset 0 0 10px rgba(0,255,170,0.15);
+            text-shadow: 0 0 5px rgba(0,255,170,0.5);
+        }
+        #btn-simulate:hover { background: #00ffaa; color: #000; box-shadow: 0 0 25px rgba(0,255,170,0.6), inset 0 0 15px rgba(0,255,170,0.8); text-shadow: none; transform: scale(1.02); }
+
+        #btn-step {
+            background: rgba(217, 70, 239, 0.05);
+            border: 1px solid #d946ef; color: #d946ef; height: 36px; padding: 0 16px;
+            font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
+            cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; gap: 8px;
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+            box-shadow: inset 0 0 10px rgba(217, 70, 239, 0.15);
+            text-shadow: 0 0 5px rgba(217, 70, 239, 0.5);
+        }
+        #btn-step:hover { background: #d946ef; color: #fff; box-shadow: 0 0 25px rgba(217, 70, 239, 0.6), inset 0 0 15px rgba(217, 70, 239, 0.8); text-shadow: none; transform: scale(1.02); }
+
+        /* Dedikované STOP tlačítko */
+        #btn-stop {
+            background: rgba(255, 0, 60, 0.05); border: 1px solid #ff003c; color: #ff003c; height: 36px; padding: 0 16px;
+            font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
+            cursor: pointer; transition: all 0.2s;
+            display: none; align-items: center; gap: 8px;
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+            box-shadow: inset 0 0 10px rgba(255,0,60,0.15);
+            text-shadow: 0 0 5px rgba(255,0,60,0.5);
+        }
+        #btn-stop:hover { background: #ff003c; color: #fff; box-shadow: 0 0 25px rgba(255,0,60,0.6), inset 0 0 15px rgba(255,0,60,0.8); text-shadow: none; transform: scale(1.02); }
+
+        .top-btn {
+            height: 36px; padding: 0 14px;
+            border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.05);
+            color: var(--text); font-size: 12px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s;
+            font-family: 'JetBrains Mono', monospace; font-weight: 700; letter-spacing: 1px;
+            clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+            backdrop-filter: blur(4px);
+        }
+        .top-btn:hover { background: rgba(0, 229, 255, 0.1); border-color: var(--accent); color: var(--accent); box-shadow: 0 0 15px rgba(0, 229, 255, 0.4); transform: scale(1.05); }
+
+        .top-btn:disabled { opacity: 0.3; cursor: not-allowed; filter: grayscale(1); transform: none !important; box-shadow: none !important; border-color: rgba(255,255,255,0.15) !important; color: var(--text) !important; }
+
+        #main {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            overflow: hidden;
+        }
+
+        #canvas-wrap {
+            width: 100%; height: 100%;
+            position: relative; overflow: hidden;
+            background: var(--bg);
+            background-image: radial-gradient(circle, #2a2f3d 1px, transparent 1px);
+            background-size: 28px 28px;
+            background-position: center;
+        }
+
+        #canvas {
+            position: absolute; top: 0; left: 0;
+            width: 8000px; height: 8000px;
+            transform-origin: 0 0;
+            will-change: transform;
+        }
+
+        #arrows-svg {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            overflow: visible;
+        }
+
+        /* Ochranná známka / Copyright Footer */
+        #copyright-footer {
+            position: fixed;
+            bottom: 8px;
+            right: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.25);
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        /* Animace pro Data-Scan u bloku Volání */
+        @keyframes cyber-scan {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+        .block-scanline {
+            position: absolute; inset: 0; border-radius: inherit; pointer-events: none; overflow: hidden; z-index: -1; display: none;
+        }
+        .block-call.sim-active .block-scanline { display: block; }
+        .block-call.sim-active .block-scanline::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 200%;
+            background: linear-gradient(to bottom, transparent 40%, rgba(6, 182, 212, 0.8) 50%, transparent 60%);
+            animation: cyber-scan 0.8s linear infinite;
+        }
+
+        .block {
+            position: absolute;
+            min-width: 180px; min-height: 60px;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            cursor: grab; touch-action: none;
+            z-index: 10;
+            gap: 4px; padding: 14px 20px;
+            transition: filter 0.2s, transform 0.1s, opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateZ(0);
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5));
+        }
+        .block:active { cursor: grabbing; filter: drop-shadow(0 5px 8px rgba(0,0,0,0.6)); }
+        .block.selected { z-index: 20; filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.2)); }
+        .block.sim-active { filter: drop-shadow(0 0 25px rgba(0, 229, 255, 0.8)) brightness(1.3); transform: scale(1.05) translateZ(0); z-index: 30;}
+        .block.sim-error { filter: drop-shadow(0 0 35px rgba(239, 68, 68, 0.9)) brightness(1.5); z-index: 40; }
+        .block.sim-warning { filter: drop-shadow(0 0 25px rgba(245, 158, 11, 0.9)) brightness(1.2); }
+        .block.sim-warning::before { border-color: #f59e0b !important; }
+
+        .block-label {
+            font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 1px; opacity: 0.6; pointer-events: none;
+        }
+
+        .block-code {
+            font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600;
+            text-align: center; word-break: break-word; white-space: pre-wrap; max-width: 220px; line-height: 1.4; pointer-events: none;
+        }
+
+        .block-start, .block-end { color: var(--start-end); border-radius: 50px; }
+        .block-start::before, .block-end::before {
+            content: ''; position: absolute; inset: 0; z-index: -1; border-radius: 50px;
+            background: linear-gradient(135deg, #064e3b, #042f2e);
+            border: 2px solid var(--start-end);
+            box-shadow: inset 0 3px 6px rgba(255,255,255,0.3), inset 0 -4px 8px rgba(0,0,0,0.5);
+        }
+        
+        .block-process { color: #93c5fd; border-radius: 8px; }
+        .block-process::before {
+            content: ''; position: absolute; inset: 0; z-index: -1; border-radius: 8px;
+            background: linear-gradient(135deg, #1e3a5f, #0f172a);
+            border: 2px solid var(--process);
+            box-shadow: inset 0 3px 6px rgba(255,255,255,0.2), inset 0 -4px 8px rgba(0,0,0,0.6);
+        }
+
+        .block-decision { color: var(--decision); min-width: 200px; min-height: 120px; border-radius: 0; justify-content: center; }
+        .block-decision::before {
+            content: ''; position: absolute; inset: 0; z-index: -1;
+            background: linear-gradient(180deg, #b45309 0%, #78350f 100%);
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+        }
+        .block-decision::after {
+            content: ''; position: absolute; inset: -2px; z-index: -2;
+            background: var(--decision);
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+        }
+
+        .block-io { color: #c4b5fd; min-width: 200px; border-radius: 0; }
+        .block-io::before {
+            content: ''; position: absolute; inset: 0; z-index: -1;
+            background: linear-gradient(180deg, #4c1d95 0%, #2e1065 100%);
+            clip-path: polygon(8% 0%, 100% 0%, 92% 100%, 0% 100%);
+        }
+        .block-io::after {
+            content: ''; position: absolute; inset: -2px; z-index: -2;
+            background: var(--io);
+            clip-path: polygon(8% 0%, 100% 0%, 92% 100%, 0% 100%);
+        }
+
+        /* Dynamická barevná paleta pro Výstup */
+        .block-io-out { color: #fed7aa; min-width: 200px; border-radius: 0; }
+        .block-io-out::before {
+            content: ''; position: absolute; inset: 0; z-index: -1;
+            background: linear-gradient(180deg, #9a3412 0%, #431407 100%);
+            clip-path: polygon(8% 0%, 100% 0%, 92% 100%, 0% 100%);
+        }
+        .block-io-out::after {
+            content: ''; position: absolute; inset: -2px; z-index: -2;
+            background: #f97316;
+            clip-path: polygon(8% 0%, 100% 0%, 92% 100%, 0% 100%);
+        }
+
+        .block-loop { color: #fbcfe8; min-width: 190px; border-radius: 20px 8px 8px 20px; }
+        .block-loop::before {
+            content: ''; position: absolute; inset: 0; z-index: -1; border-radius: 20px 8px 8px 20px;
+            background: linear-gradient(135deg, #831843 0%, #500724 100%);
+            border: 2px solid var(--loop);
+            box-shadow: inset 0 3px 6px rgba(255,255,255,0.2), inset 0 -4px 8px rgba(0,0,0,0.6);
+        }
+
+        .block-call { color: #67e8f9; border-radius: 4px; border-left: 6px solid var(--call); border-right: 6px solid var(--call); padding: 14px 26px; }
+        .block-call::before {
+            content: ''; position: absolute; inset: 0; z-index: -1; border-radius: 2px;
+            background: linear-gradient(135deg, #082f49 0%, #0c4a6e 100%);
+            border-top: 2px solid var(--call); border-bottom: 2px solid var(--call);
+            box-shadow: inset 0 3px 6px rgba(255,255,255,0.2), inset 0 -4px 8px rgba(0,0,0,0.6);
+        }
+
+        /* Nový blok Poznámka (Anotace) */
+        .block-note {
+            color: #fde047; min-width: 160px; border-radius: 0;
+            background: rgba(253, 224, 71, 0.05); backdrop-filter: blur(8px);
+            border-left: 4px solid #fde047;
+            border-top: 1px solid rgba(253,224,71,0.2); border-bottom: 1px solid rgba(253,224,71,0.2); border-right: 1px solid rgba(253,224,71,0.2);
+            font-family: 'JetBrains Mono', monospace; font-size: 12px;
+        }
+        .block-note .block-code { text-align: left; max-width: 300px; } /* Zajištění čistého čtení poznámek */
+
+        /* Breakpointy */
+        .breakpoint-zone {
+            position: absolute; left: -12px; top: 0; bottom: 0; width: 24px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; z-index: 40;
+        }
+        .breakpoint-dot {
+            width: 14px; height: 14px; border-radius: 50%; background: transparent;
+            transition: all 0.2s; border: 2px solid transparent;
+        }
+        .breakpoint-zone:hover .breakpoint-dot { border-color: #ef4444; background: rgba(239,68,68,0.3); }
+        .breakpoint-dot.active { background: #ef4444; border-color: #ef4444; box-shadow: 0 0 12px #ef4444; }
+
+        .block-controls { position: absolute; top: -36px; right: 0; display: none; gap: 4px; }
+        .block.selected .block-controls { display: flex; }
+        .block-ctrl-btn {
+            width: 28px; height: 28px; border-radius: 4px; border: 1px solid var(--border);
+            background: var(--surface2); color: var(--text); font-size: 12px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; transition: all 0.12s;
+        }
+        .block-ctrl-btn.del:hover { border-color: #ef4444; color: #ef4444; }
+        .block-ctrl-btn.edit:hover { border-color: var(--accent); color: var(--accent); }
+
+        .block-ports { position: absolute; inset: 0; pointer-events: none; }
+        .port {
+            position: absolute; width: 14px; height: 14px;
+            border-radius: 50%; border: 2px solid #fff; background: var(--surface);
+            pointer-events: all; cursor: crosshair; transform: translate(-50%, -50%);
+            transition: all 0.12s; z-index: 30; opacity: 0;
+        }
+        .block:hover .port, .block.selected .port { opacity: 1; }
+        .port:hover { background: var(--accent); transform: translate(-50%, -50%) scale(1.4); }
+        .port.top    { top: 0;    left: 50%; }
+        .port.bottom { top: 100%; left: 50%; }
+        .port.left   { top: 50%;  left: 0;  }
+        .port.right  { top: 50%;  left: 100%; }
+
+        .arrow-line { stroke: var(--text-dim); stroke-width: 3; fill: none; transition: stroke 0.15s; }
+        .arrow-line:hover { stroke: var(--accent); stroke-width: 4; cursor: pointer; }
+        .arrow-line.selected { stroke: var(--accent); stroke-width: 4; }
+        .arrow-hit { pointer-events: stroke; cursor: pointer; }
+        .arrow-line.sim-active { stroke: var(--accent); filter: drop-shadow(0 0 8px var(--accent)); }
+
+        /* Vizuální trasování toku (Path Tracing) */
+        .arrow-line.highlight { stroke: var(--accent); stroke-width: 6; filter: drop-shadow(0 0 12px var(--accent)); z-index: 100; transition: all 0.2s; }
+        .arrow-line.dimmed { opacity: 0.15; transition: all 0.2s; }
+        .block.dimmed { opacity: 0.3; filter: grayscale(60%); z-index: 5; transition: opacity 0.3s, filter 0.3s; pointer-events: none; }
+
+        #toolbar {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background: rgba(30, 34, 48, 0.35); /* Zvýšená průhlednost */
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 40px; padding: 10px 16px; display: flex; gap: 6px; align-items: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1); z-index: 90;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s;
+        }
+        #toolbar.hidden {
+            transform: translate(-50%, 150px);
+            opacity: 0;
+            pointer-events: none;
+        }
+        .tool-btn {
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+            padding: 8px 14px; border-radius: 28px; border: 1px solid transparent;
+            background: transparent; color: var(--text-dim); font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700;
+            cursor: pointer; transition: all 0.2s; position: relative;
+        }
+        .tool-btn:hover { color: var(--text); background: var(--surface2); transform: translateY(-3px);}
+        .tool-btn .icon { font-size: 18px; line-height: 1; font-family: 'JetBrains Mono', monospace; font-weight: 800;}
+        .tool-sep { width: 1px; height: 32px; background: var(--border); margin: 0 4px; }
+        
+        .tooltip {
+            position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%) translateY(-10px);
+            background: var(--surface); border: 1px solid var(--border); color: var(--text);
+            padding: 6px 12px; border-radius: 6px; font-size: 11px; font-family: 'JetBrains Mono', monospace;
+            opacity: 0; pointer-events: none; transition: all 0.2s; white-space: nowrap; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+        .tool-btn:hover .tooltip { opacity: 1; transform: translateX(-50%) translateY(-5px); }
+
+        #toast {
+            position: fixed; bottom: 96px; left: 50%; transform: translateX(-50%) translateY(20px);
+            background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 20px;
+            font-size: 13px; font-weight: 700; opacity: 0; transition: all 0.3s; z-index: 300; pointer-events: none;
+            box-shadow: var(--shadow);
+        }
+        #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        /* Vylepšená konzole - Layout */
+        #console-panel {
+            position: fixed; bottom: 0; left: 0; right: 0; height: 300px;
+            background: rgba(13, 15, 20, 0.95); backdrop-filter: blur(15px);
+            border-top: 1px solid var(--border); border-radius: 16px 16px 0 0;
+            transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 200; display: flex; flex-direction: column; box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+        }
+        #console-panel.open { transform: translateY(0); }
+        .console-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 20px; border-bottom: 1px solid var(--border); font-weight: 700; color: var(--text-dim);
+        }
+        .close-console { cursor: pointer; color: var(--text); font-size: 20px; transition: color 0.2s; }
+        .close-console:hover { color: #ef4444; }
+        
+        .sim-controls { display: flex; gap: 12px; align-items: center; }
+        #sim-speed-select {
+            background: var(--surface2); color: var(--text); border: 1px solid var(--border);
+            padding: 6px 12px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 11px;
+            outline: none; cursor: pointer; transition: border-color 0.2s;
+        }
+        #sim-speed-select:focus, #sim-speed-select:hover { border-color: var(--accent); }
+
+        .console-layout { display: flex; flex: 1; overflow: hidden; }
+        .console-left { flex: 2; display: flex; flex-direction: column; border-right: 1px solid var(--border); }
+        .console-right { flex: 1; display: flex; flex-direction: column; background: rgba(0,0,0,0.2); }
+
+        #console-output {
+            flex: 1; padding: 16px; overflow-y: auto;
+            font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.5;
+        }
+        .log-entry { margin-bottom: 6px; display: flex; gap: 12px; }
+        .log-time { color: var(--text-dim); flex-shrink: 0; }
+        .log-msg { flex: 1; word-break: break-word; }
+        .log-info .log-msg { color: #93c5fd; }
+        .log-success .log-msg { color: #10b981; }
+        .log-warning .log-msg { color: #f59e0b; }
+        .log-error .log-msg { color: #ef4444; font-weight: bold; text-shadow: 0 0 5px rgba(239, 68, 68, 0.4); }
+        .log-io .log-msg { color: #c4b5fd; font-weight: bold; }
+
+        .ram-header {
+            padding: 12px 16px; font-size: 11px; font-weight: 800; color: var(--text-dim);
+            text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--border);
+        }
+        #ram-output {
+            flex: 1; padding: 16px; overflow-y: auto; font-family: 'JetBrains Mono', monospace; font-size: 13px;
+            display: flex; flex-direction: column; gap: 8px;
+        }
+        .ram-var {
+            display: flex; justify-content: space-between; background: var(--surface2);
+            padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .ram-var-name { color: var(--accent); font-weight: bold; text-shadow: 0 0 5px rgba(0, 229, 255, 0.4); }
+        .ram-var-val { color: var(--text); font-weight: bold; }
+
+        #btn-next-step {
+            background: linear-gradient(135deg, var(--accent2), #5b21b6); color: white; border: none; padding: 6px 14px;
+            border-radius: 6px; cursor: pointer; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 12px;
+            transition: all 0.2s; box-shadow: 0 4px 10px rgba(124, 58, 237, 0.4);
+        }
+        #btn-next-step:hover { transform: scale(1.05); }
+
+        #sim-token {
+            position: absolute; width: 18px; height: 18px; background: #fff;
+            border-radius: 50%; box-shadow: 0 0 15px 5px #00e5ff, 0 0 30px 10px #00e5ff;
+            z-index: 100; pointer-events: none; display: none;
+        }
+
+        .glass-wheel {
+            position: absolute; top: -15px; left: -15px;
+            width: 38px; height: 38px; border-radius: 50%;
+            background: rgba(22, 25, 32, 0.9); backdrop-filter: blur(8px);
+            border: 2px solid var(--accent3); color: white;
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer; z-index: 50; transition: all 0.2s; font-size: 18px;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+        }
+        .glass-wheel:hover { transform: rotate(90deg) scale(1.15); color: #000; background: var(--accent3); }
+        
+        .io-switch:hover { transform: rotate(90deg) scale(1.15); color: #fff; }
+
+        .port-label {
+            position: absolute; font-size: 11px; font-weight: 800; pointer-events: none; opacity: 0.9;
+            font-family: 'JetBrains Mono', monospace; text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+        }
+        .port-label.top { top: -20px; left: calc(50% + 28px); transform: translateX(-50%); }
+        .port-label.bottom { bottom: -20px; left: calc(50% + 28px); transform: translateX(-50%); }
+        .port-label.left { top: calc(50% - 20px); left: -26px; transform: translateY(-50%); }
+        .port-label.right { top: calc(50% - 20px); right: -26px; transform: translateY(-50%); }
+
+        .sim-prompt {
+            position: absolute; top: -75px; left: 50%; transform: translateX(-50%);
+            background: rgba(13, 15, 20, 0.95); backdrop-filter: blur(12px);
+            border: 2px solid var(--accent); border-radius: 12px;
+            padding: 12px 20px; display: flex; gap: 12px; z-index: 300;
+            box-shadow: 0 10px 30px rgba(0, 229, 255, 0.3);
+            opacity: 0; pointer-events: none; transition: opacity 0.3s, transform 0.3s;
+        }
+        .sim-prompt.show { opacity: 1; pointer-events: all; transform: translateX(-50%) translateY(10px); }
+        .sim-prompt button {
+            padding: 10px 24px; border-radius: 8px; font-weight: 800; font-size: 14px; border: none; cursor: pointer;
+            font-family: 'Syne', sans-serif; transition: transform 0.1s, box-shadow 0.2s; white-space: nowrap;
+        }
+        .sim-prompt button:active { transform: scale(0.95); }
+        .sim-prompt-yes { background: #10b981; color: white; box-shadow: 0 4px 15px rgba(16,185,129,0.4); }
+        .sim-prompt-yes:hover { background: #059669; transform: scale(1.05); }
+        .sim-prompt-no { background: #ef4444; color: white; box-shadow: 0 4px 15px rgba(239,68,68,0.4); }
+        .sim-prompt-no:hover { background: #dc2626; transform: scale(1.05); }
+
+        .modal-overlay {
+            position: fixed; inset: 0; background: transparent;
+            z-index: 400; display: none; align-items: center; justify-content: center;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal-box {
+            background: rgba(30, 34, 48, 0.35); backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px;
+            width: min(420px, 90vw); padding: 28px; display: flex; flex-direction: column; gap: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+        .modal-box h3 { font-size: 18px; font-weight: 800; color: var(--accent); margin-bottom: 8px; text-shadow: 0 0 10px rgba(0,229,255,0.4); }
+        
+        /* Širší modální okna pro nápovědu a info */
+        .modal-box.wide { width: min(800px, 95vw); max-height: 90vh; overflow: hidden; padding-bottom: 28px; }
+        
+        /* Vnitřní rolovací oblast pro nápovědu */
+        .help-content-wrapper { overflow-y: auto; flex: 1; min-height: 0; padding-right: 14px; margin-right: -14px; }
+        .help-content-wrapper::-webkit-scrollbar { width: 6px; }
+        .help-content-wrapper::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.2); border-radius: 3px; }
+        .help-content-wrapper::-webkit-scrollbar-thumb { background: rgba(245, 158, 11, 0.3); border-radius: 3px; }
+        .help-content-wrapper::-webkit-scrollbar-thumb:hover { background: rgba(245, 158, 11, 0.6); }
+
+        /* Mřížka pro nápovědu */
+        .help-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .help-section { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 16px; box-shadow: inset 0 2px 10px rgba(0,0,0,0.2); }
+        .help-section h4 { font-family: 'Syne', sans-serif; color: var(--accent2); margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px; }
+        .help-item { margin-bottom: 12px; font-size: 13px; line-height: 1.5; color: var(--text); }
+        .help-item strong { color: var(--accent); }
+        .help-code { font-family: 'JetBrains Mono', monospace; background: rgba(0,0,0,0.6); padding: 2px 6px; border-radius: 4px; color: #a5b4fc; font-size: 12px; border: 1px solid rgba(255,255,255,0.05); }
+        
+        .input-dark {
+            width: 100%; padding: 12px 16px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px; color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 14px; outline: none;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+        }
+        .input-dark:focus { border-color: var(--accent); box-shadow: inset 0 2px 5px rgba(0,0,0,0.5), 0 0 10px rgba(0,229,255,0.3); }
+        .btn-row { display: flex; gap: 8px; }
+        .btn {
+            padding: 10px 16px; border-radius: 8px; border: 1px solid var(--border);
+            background: var(--surface2); color: var(--text); font-family: 'Syne', sans-serif; font-weight: 700;
+            cursor: pointer; transition: all 0.15s; flex: 1;
+        }
+        .btn:hover { border-color: var(--text); }
+        .btn-primary { background: var(--accent2); border-color: var(--accent2); color: #fff; }
+        .btn-primary:hover { background: #6d28d9; }
+
+        /* Cyber-Edge tlačítka pro rozhodování (Hard Sci-Fi Vibe) */
+        .btn-yes-large {
+            background: rgba(0, 255, 170, 0.05);
+            color: #00ffaa; border: 1px solid #00ffaa;
+            font-size: 15px; padding: 14px;
+            font-weight: 800; font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 2px;
+            clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
+            box-shadow: inset 0 0 15px rgba(0, 255, 170, 0.2);
+            text-shadow: 0 0 8px rgba(0, 255, 170, 0.6);
+            transition: all 0.2s;
+        }
+        .btn-yes-large:hover { background: #00ffaa; color: #000; box-shadow: 0 0 35px rgba(0, 255, 170, 0.8), inset 0 0 20px rgba(0, 255, 170, 1); text-shadow: none; transform: scale(1.03); }
+
+        .btn-no-large {
+            background: rgba(255, 0, 60, 0.05);
+            color: #ff003c; border: 1px solid #ff003c;
+            font-size: 15px; padding: 14px;
+            font-weight: 800; font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 2px;
+            clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
+            box-shadow: inset 0 0 15px rgba(255, 0, 60, 0.2);
+            text-shadow: 0 0 8px rgba(255, 0, 60, 0.6);
+            transition: all 0.2s;
+        }
+        .btn-no-large:hover { background: #ff003c; color: #fff; box-shadow: 0 0 35px rgba(255, 0, 60, 0.8), inset 0 0 20px rgba(255, 0, 60, 1); text-shadow: none; transform: scale(1.03); }
+
+        /* Cyber-Edge Submit Tlačítko (Azurový neon pro Odeslat) */
+        .btn-submit-large {
+            background: rgba(0, 229, 255, 0.05);
+            color: #00e5ff; border: 1px solid #00e5ff;
+            font-size: 15px; padding: 14px;
+            font-weight: 800; font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 2px;
+            clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
+            box-shadow: inset 0 0 15px rgba(0, 229, 255, 0.2);
+            text-shadow: 0 0 8px rgba(0, 229, 255, 0.6);
+            transition: all 0.2s;
+        }
+        .btn-submit-large:hover { background: #00e5ff; color: #000; box-shadow: 0 0 35px rgba(0, 229, 255, 0.8), inset 0 0 20px rgba(0, 229, 255, 1); text-shadow: none; transform: scale(1.03); }
+
+
+        #temp-arrow { position: fixed; top:0; left:0; width: 100%; height: 100%; pointer-events: none; z-index: 50; }
+        #temp-path { stroke: var(--accent); stroke-width: 3; stroke-dasharray: 6 4; fill: none; }
+
+        /* Responzivní úpravy pro menší displeje */
+        @media (max-width: 768px) {
+            #toolbar {
+                width: 95%; max-width: none; overflow-x: auto; flex-wrap: nowrap;
+                justify-content: flex-start; padding: 10px; border-radius: 24px;
+            }
+            .tool-btn { min-width: 55px; }
+            #console-panel { height: 40vh; }
+            .console-layout { flex-direction: column; }
+            .console-left { border-right: none; border-bottom: 1px solid var(--border); flex: 1; }
+            .console-right { flex: 1; }
+            #topbar { padding: 0 8px; gap: 6px; }
+            #logo { font-size: 16px; }
+            .top-btn { width: 32px; height: 32px; font-size: 14px; }
+            #btn-simulate, #btn-step, #btn-stop { font-size: 11px; height: 32px; padding: 0 10px; }
+            #sim-text, #step-text, #stop-text { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="topbar">
+        <div id="hamburger-btn" onclick="App.toggleMenu(event)" title="Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div id="logo">Block<span>Flow</span></div>
+        <div class="topbar-sep"></div>
+        <div class="topbar-btn-group">
+            <button id="btn-simulate" onclick="App.toggleSimulation(false)">
+                <span id="sim-icon">▶</span> <span id="sim-text">Spustit</span>
+            </button>
+            <button id="btn-step" onclick="App.toggleSimulation(true)">
+                <span id="step-icon">⏯</span> <span id="step-text">Krokovat</span>
+            </button>
+            <button id="btn-stop" onclick="App.stopSimulation(true)" title="Ukončit běh a vrátit se do editace">
+                <span id="stop-icon">⏹</span> <span id="stop-text">Zastavit</span>
+            </button>
+        </div>
+        <div style="width: 16px;"></div>
+        <button class="top-btn" id="btn-undo" onclick="App.undo()" title="Zpět (Ctrl+Z)" disabled>↤ UNDO</button>
+        <button class="top-btn" id="btn-redo" onclick="App.redo()" title="Vpřed (Ctrl+Y)" disabled>↦ REDO</button>
+        <div style="width: 16px;"></div>
+        <button class="top-btn" id="btn-workspace" onclick="App.toggleWorkspace()" title="Přepnout pracovní plochu (1, 2, 3)">[ WS:01 ]</button>
+        <button class="top-btn" onclick="document.getElementById('json-upload').click()" title="Nahrát projekt z PC (JSON)">⭱ IMPORT</button>
+        <button class="top-btn" onclick="App.promptJsonExport()" title="Uložit projekt do PC (JSON)">⭳ EXPORT</button>
+        <button class="top-btn" onclick="App.promptSvgExport()" title="Exportovat do SVG (Ctrl+S)">⍗ SVG</button>
+        <button class="top-btn" onclick="App.promptClearCanvas()" title="Vymazat dočista">∅ WIPE</button>
+        <button class="top-btn" id="btn-fullscreen" onclick="App.toggleFullscreen()" title="Maximalizovat (Fullscreen)">⛶ MAX</button>
+    </div>
+
+    <!-- Boční Hamburger Menu -->
+    <div id="side-menu">
+        <div class="side-menu-link" onclick="App.openHelp()"><span style="font-size: 16px;">📖</span> Nápověda</div>
+        <div class="side-menu-link" onclick="App.openAbout()"><span style="font-size: 16px;">ℹ️</span> O programu</div>
+        <div class="side-menu-link" onclick="App.openAuthor()"><span style="font-size: 16px;">👨‍💻</span> O autorovi</div>
+    </div>
+
+    <!-- Skrytý input pro nahrávání JSON souborů -->
+    <input type="file" id="json-upload" accept=".json" style="display: none;" onchange="App.handleJsonImport(event)">
+
+    <div id="main">
+        <div id="canvas-wrap">
+            <div id="canvas">
+                <svg id="arrows-svg">
+                    <defs>
+                        <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
+                            <polygon points="0 0, 8 3, 0 6" fill="#64748b"/>
+                        </marker>
+                        <marker id="arrowhead-sel" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
+                            <polygon points="0 0, 8 3, 0 6" fill="#00e5ff"/>
+                        </marker>
+                    </defs>
+                </svg>
+                <!-- Překryvný obdélník pro hromadný výběr (Marquee Selection) -->
+                <div id="marquee" style="display:none; position:absolute; border: 1px dashed var(--accent); background: rgba(0, 229, 255, 0.1); z-index: 1000; pointer-events: none;"></div>
+            </div>
+            <!-- Ochranná známka plátna -->
+            <div id="copyright-footer">
+                GPLv3 © 2026 Luděk Sušický
+            </div>
+        </div>
+    </div>
+
+    <svg id="temp-arrow">
+        <path id="temp-path" d="" />
+    </svg>
+
+    <div id="sim-token"></div>
+
+    <div id="toolbar">
+        <button class="tool-btn" onclick="App.addBlock('start')">
+            <span class="icon" style="color: var(--start-end)">▶</span>Start
+            <div class="tooltip">Počáteční bod algoritmu</div>
+        </button>
+        <button class="tool-btn" onclick="App.addBlock('process')">
+            <span class="icon" style="color: var(--process)">▬</span>Akce
+            <div class="tooltip">Výpočet, změna proměnné</div>
+        </button>
+        <button class="tool-btn" onclick="App.addBlock('decision')">
+            <span class="icon" style="color: var(--decision)">◆</span>Podmínka
+            <div class="tooltip">Rozhodování (ANO/NE)</div>
+        </button>
+        <button class="tool-btn" onclick="App.addBlock('io')">
+            <span class="icon" style="color: var(--io)">▱</span>Vstup/Výstup
+            <div class="tooltip">Načtení nebo výpis dat</div>
+        </button>
+        <button class="tool-btn" onclick="App.addBlock('loop')">
+            <span class="icon" style="color: var(--loop)">↻</span>Smyčka
+            <div class="tooltip">Opakování (cyklus for/while)</div>
+        </button>
+        <button class="tool-btn" onclick="App.addBlock('call')">
+            <span class="icon" style="color: var(--call)">ƒx</span>Volání
+            <div class="tooltip">Odskok do podprogramu (funkce)</div>
+        </button>
+        <button class="tool-btn" onclick="App.addBlock('note')">
+            <span class="icon" style="color: #fde047">//</span>Pozn.
+            <div class="tooltip">Volná poznámka (neovlivní běh)</div>
+        </button>
+        <button class="tool-btn" onclick="App.addBlock('end')">
+            <span class="icon" style="color: var(--start-end)">⏹</span>Konec
+            <div class="tooltip">Ukončení programu</div>
+        </button>
+    </div>
+
+    <div id="console-panel">
+        <div class="console-header">
+            <div style="display: flex; gap: 16px; align-items: center;">
+                <span>Terminal // BlockFlow Execution Engine v1.1</span>
+                <div class="sim-controls">
+                    <select id="sim-speed-select" onchange="App.setSpeed(this.value)" title="Rychlost simulace">
+                        <option value="1">Rychlost 1x</option>
+                        <option value="2">Rychlost 2x</option>
+                        <option value="100">BLESKOVĚ (MAX)</option>
+                    </select>
+                    <button id="btn-next-step" onclick="App.nextStep()" style="display:none;">Další krok ⏭</button>
+                </div>
+            </div>
+            <span class="close-console" onclick="App.stopSimulation(true)">✖</span>
+        </div>
+        <div class="console-layout">
+            <div class="console-left">
+                <div id="console-output"></div>
+            </div>
+            <div class="console-right">
+                <div class="ram-header">Visual RAM (Paměť Proměnných)</div>
+                <div id="ram-output"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modální okno: Editace -->
+    <div id="edit-modal" class="modal-overlay">
+        <div class="modal-box">
+            <h3>✎ Editovat blok</h3>
+            <textarea id="edit-input" class="input-dark" placeholder="Zadejte text... (Shift+Enter pro nový řádek)" rows="3" style="resize: vertical; min-height: 80px;"></textarea>
+            <div class="btn-row">
+                <button class="btn" onclick="App.closeEdit()">Zrušit</button>
+                <button class="btn btn-primary" onclick="App.saveEdit()">Uložit</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="sim-input-modal" class="modal-overlay" style="z-index: 500;">
+        <div class="modal-box">
+            <h3 id="sim-input-title">Zadejte hodnotu</h3>
+            <input type="text" id="sim-input-field" class="input-dark" placeholder="Hodnota...">
+            <div class="btn-row" style="margin-top: 10px;">
+                <button class="btn btn-submit-large" onclick="App.resolveInputPrompt()" style="width: 100%">ODESLAT (ENTER)</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="sim-decision-modal" class="modal-overlay" style="z-index: 500;">
+        <div class="modal-box">
+            <h3 id="sim-decision-title">Rozhodnutí</h3>
+            <div class="btn-row" style="margin-top: 10px;">
+                <button class="btn btn-yes-large" id="sim-btn-yes" onclick="App.resolveDecisionPrompt(true)" style="flex: 1;">ANO</button>
+                <button class="btn btn-no-large" id="sim-btn-no" onclick="App.resolveDecisionPrompt(false)" style="flex: 1;">NE</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="sim-output-modal" class="modal-overlay" style="z-index: 500;">
+        <div class="modal-box" style="text-align: center; border-color: rgba(196, 181, 253, 0.3); box-shadow: 0 10px 40px rgba(0,0,0,0.5), inset 0 0 20px rgba(139, 92, 246, 0.1);">
+            <h3 style="color: #c4b5fd; text-shadow: 0 0 10px rgba(196,181,253,0.4);">VÝSTUP PROGRAMU</h3>
+            <div id="sim-output-text" class="input-dark" style="font-size: 16px; padding: 20px; margin-top: 5px; word-break: break-word; color: #fff; text-shadow: 0 0 8px rgba(255,255,255,0.5); pointer-events: none; text-align: center;"></div>
+        </div>
+    </div>
+
+    <!-- Modál pro dotaz ohledně exportu SVG s názvem souboru -->
+    <div id="svg-export-modal" class="modal-overlay" style="z-index: 600;">
+        <div class="modal-box">
+            <h3 style="color: var(--accent);">Exportovat Schéma (SVG)</h3>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="font-size: 12px; color: var(--text-dim); margin-bottom: 4px; display: block;">Název souboru:</label>
+                <input type="text" id="svg-filename-input" class="input-dark" value="BlockFlow_Schema" placeholder="Zadejte název...">
+            </div>
+
+            <p style="color: var(--text); font-size: 14px; margin-bottom: 15px;">Přejete si do obrázku zahrnout i aktuální záznam z terminálu?</p>
+            <div class="btn-row">
+                <button class="btn btn-yes-large" onclick="App.executeSvgExport(true)" style="flex: 1; padding: 10px; font-size: 13px;">ANO (S konzolí)</button>
+                <button class="btn btn-no-large" onclick="App.executeSvgExport(false)" style="flex: 1; padding: 10px; font-size: 13px;">NE (Jen schéma)</button>
+            </div>
+            <div class="btn-row" style="margin-top: 10px;">
+                <button class="btn" onclick="document.getElementById('svg-export-modal').classList.remove('show')" style="width: 100%;">Zrušit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modál pro uložení projektu do JSON s názvem souboru -->
+    <div id="json-export-modal" class="modal-overlay" style="z-index: 600;">
+        <div class="modal-box">
+            <h3 style="color: var(--accent);">Uložit Projekt (JSON)</h3>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="font-size: 12px; color: var(--text-dim); margin-bottom: 4px; display: block;">Název souboru:</label>
+                <input type="text" id="json-filename-input" class="input-dark" value="BlockFlow_Projekt" placeholder="Zadejte název...">
+            </div>
+
+            <p style="color: var(--text); font-size: 14px; margin-bottom: 15px;">Tento soubor si můžete později znovu nahrát (tlačítko ⭱ IMPORT).</p>
+            <div class="btn-row">
+                <button class="btn btn-submit-large" onclick="App.executeJsonExport()" style="flex: 1; padding: 10px; font-size: 13px;">ULOŽIT DO PC</button>
+            </div>
+            <div class="btn-row" style="margin-top: 10px;">
+                <button class="btn" onclick="document.getElementById('json-export-modal').classList.remove('show')" style="width: 100%;">Zrušit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modál pro bezpečnostní potvrzení smazání plátna -->
+    <div id="clear-confirm-modal" class="modal-overlay" style="z-index: 600;">
+        <div class="modal-box" style="border-color: rgba(239, 68, 68, 0.3);">
+            <h3 style="color: #ef4444; text-shadow: 0 0 10px rgba(239, 68, 68, 0.4);">⚠️ Smazat plátno</h3>
+            <p style="color: var(--text); font-size: 14px; margin-bottom: 15px;">Opravdu chcete vymazat aktuální plochu? Tuto akci nelze vrátit zpět!</p>
+            <div class="btn-row">
+                <button class="btn btn-yes-large" onclick="App.executeClearCanvas()" style="flex: 1; padding: 10px; font-size: 13px; background: rgba(239,68,68,0.05); color: #ef4444; border-color: #ef4444; box-shadow: inset 0 0 15px rgba(239,68,68,0.2); text-shadow: 0 0 8px rgba(239,68,68,0.6);">ANO (Smazat)</button>
+                <button class="btn btn-no-large" onclick="document.getElementById('clear-confirm-modal').classList.remove('show')" style="flex: 1; padding: 10px; font-size: 13px; background: rgba(16,185,129,0.05); color: #10b981; border-color: #10b981; box-shadow: inset 0 0 15px rgba(16,185,129,0.2); text-shadow: 0 0 8px rgba(16,185,129,0.6);">NE (Zrušit)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modální okna pro Hamburger Menu -->
+    <div id="help-modal" class="modal-overlay" style="z-index: 600;">
+        <div class="modal-box wide">
+            <h3>📖 Nápověda — BlockFlow EDU</h3>
+            <div class="help-content-wrapper">
+                <div class="help-grid">
+                    <div class="help-section">
+                        <h4>Základní syntaxe v bloku AKCE</h4>
+                        <div class="help-item"><strong>x = 5</strong><br>Přiřazení čísla</div>
+                        <div class="help-item"><strong>jmeno = "Jana"</strong><br>Přiřazení textu v uvozovkách</div>
+                        <div class="help-item"><strong>soucet = a + b</strong><br>Aritmetické sčítání (též <span class="help-code">- * / % **</span>)</div>
+                        <div class="help-item"><strong>x++</strong> nebo <strong>x--</strong><br>Zvýšení / snížení o jedna</div>
+                        <div class="help-item"><strong>x += 3</strong><br>Zkrácený zápis pro x = x + 3</div>
+                    </div>
+                    
+                    <div class="help-section">
+                        <h4>Podmínky a Smyčky</h4>
+                        <div class="help-item"><strong>==</strong> (Rovná se), <strong>!=</strong> (Nerovná se)</div>
+                        <div class="help-item"><strong>&gt;</strong> (Větší), <strong>&gt;=</strong> (Větší nebo rovno)</div>
+                        <div class="help-item"><strong>&lt;</strong> (Menší), <strong>&lt;=</strong> (Menší nebo rovno)</div>
+                        <div class="help-item"><strong>x &gt; 0 && x &lt; 10</strong><br>Logické AND (A zároveň)</div>
+                        <div class="help-item"><strong>x &lt; 0 || x &gt; 10</strong><br>Logické OR (Nebo)</div>
+                        <div class="help-item" style="color:#ef4444;"><em>⚠️ Uvnitř podmínky nesmí být znak = bez ! < >. Linter by to odhalil jako chybu.</em></div>
+                    </div>
+
+                    <div class="help-section">
+                        <h4>Práce se Vstupy a Výstupy</h4>
+                        <div class="help-item"><strong>VSTUP:</strong> Do bloku napiš pouze název proměnné (např. <span class="help-code">vek</span>). Po spuštění se zobrazí okno pro zadání.</div>
+                        <div class="help-item"><strong>VÝSTUP:</strong> Můžeš psát text a vkládat proměnné do složených závorek. Např.: <span class="help-code">Máš {skore} bodů.</span></div>
+                        <div class="help-item"><em>Přepínání Vstup/Výstup:</em> Klikni na malou ikonku kolečka přímo uvnitř fialového bloku.</div>
+                    </div>
+
+                    <div class="help-section">
+                        <h4>Klávesové zkratky</h4>
+                        <div class="help-item"><strong>Ctrl + Z</strong> / <strong>Ctrl + Y</strong><br>Zpět / Vpřed (Undo/Redo)</div>
+                        <div class="help-item"><strong>Delete / Backspace</strong><br>Smazání vybraného bloku nebo šipky</div>
+                        <div class="help-item"><strong>Shift + tah myší</strong><br>Hromadný výběr bloků (Obdélník)</div>
+                        <div class="help-item"><strong>Ctrl + S</strong><br>Rychlý export do SVG</div>
+                        <div class="help-item"><strong>Mezerník + tah</strong><br>Rychlý posun plátna</div>
+                        <div class="help-item"><strong>F</strong><br>Vystředit a zacentrovat všechny bloky</div>
+                    </div>
+                </div>
+            </div>
+            <div class="btn-row" style="margin-top: 10px; flex-shrink: 0;">
+                <button class="btn btn-yes-large" onclick="App.closeHelp()" style="width: 100%; border-color: var(--accent3); color: var(--accent3); box-shadow: inset 0 0 15px rgba(245, 158, 11, 0.2); text-shadow: 0 0 8px rgba(245, 158, 11, 0.6);">ZAVŘÍT</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="about-modal" class="modal-overlay" style="z-index: 600;">
+        <div class="modal-box">
+            <h3>ℹ️ O programu</h3>
+            <p style="color: var(--text-dim); line-height: 1.6; font-size: 14px; margin-bottom: 10px;">BlockFlow EDU je moderní, plně interaktivní výukový nástroj navržený pro snadné a vizuální pochopení logických struktur, algoritmů a stavových proměnných. Spojuje návrh vývojových diagramů s krokovacím enginem a Visual RAM pamětí v reálném čase.</p>
+            <p style="color: var(--text-dim); line-height: 1.6; font-size: 14px;">Tato aplikace slouží jako ukázka pokročilé <strong style="color: var(--text);">SPA (Single Page Application)</strong> architektury. Je kompletně obsažena v jediném HTML souboru a byla vytvořena za asistence umělé inteligence <strong style="color: var(--accent);">Google Gemini 3.1 Pro</strong> v roce 2026.</p>
+            <p style="color: var(--accent2); font-family: 'JetBrains Mono', monospace; font-size: 12px; margin-top: 15px;">Verze jádra: 1.4<br>Codename: CyberCanvas</p>
+            <div class="btn-row" style="margin-top: 20px;">
+                <button class="btn btn-yes-large" onclick="App.closeAbout()" style="width: 100%; border-color: var(--accent3); color: var(--accent3); box-shadow: inset 0 0 15px rgba(245, 158, 11, 0.2); text-shadow: 0 0 8px rgba(245, 158, 11, 0.6);">ZAVŘÍT</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="author-modal" class="modal-overlay" style="z-index: 600;">
+        <div class="modal-box" style="border-color: rgba(245, 158, 11, 0.3);">
+            <h3 style="color: var(--accent3); text-shadow: 0 0 10px rgba(245, 158, 11, 0.4);">👨‍💻 O autorovi</h3>
+            <h4 style="font-size: 18px; margin-bottom: 5px;">Luděk Sušický</h4>
+            
+            <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 15px; line-height: 1.5;">
+                SŠ a VŠ učitel Informatiky zabývající se AI ve vzdělávání a vibecodingu.
+                <br><br>
+                <span style="color: var(--text);">Email:</span> <a href="mailto:ludek.susicky@gmail.com" style="color: var(--accent); text-decoration: none;">ludek.susicky@gmail.com</a><br>
+                <span style="color: var(--text);">X:</span> <a href="https://x.com/ludeksusicky" target="_blank" style="color: var(--accent); text-decoration: none;">@ludeksusicky</a><br>
+                <span style="color: var(--text);">LinkedIn:</span> <a href="https://www.linkedin.com/in/ludek-susicky/" target="_blank" style="color: var(--accent); text-decoration: none;">ludek-susicky</a>
+            </p>
+
+            <div style="background: rgba(0,0,0,0.4); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+                <div style="color: var(--accent);">Licence: <span style="color: var(--text);">GPLv3</span></div>
+                <div style="color: var(--accent); margin-top: 6px;">Rok vydání: <span style="color: var(--text);">2026</span></div>
+            </div>
+            <div class="btn-row" style="margin-top: 20px;">
+                <button class="btn btn-yes-large" onclick="App.closeAuthor()" style="width: 100%; border-color: var(--accent3); color: var(--accent3); box-shadow: inset 0 0 15px rgba(245, 158, 11, 0.2); text-shadow: 0 0 8px rgba(245, 158, 11, 0.6);">ZAVŘÍT</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast"></div>
+
+    <script>
+        const AudioSys = {
+            ctx: null,
+            init() {
+                if (!this.ctx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if(AudioContext) this.ctx = new AudioContext();
+                }
+                if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+            },
+            playClick() {
+                if (!this.ctx) return;
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(1200, this.ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(300, this.ctx.currentTime + 0.05);
+                    gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.05);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.05);
+                } catch(e) {}
+            },
+            playError() {
+                if (!this.ctx) return;
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(60, this.ctx.currentTime);
+                    osc.frequency.linearRampToValueAtTime(40, this.ctx.currentTime + 0.5);
+                    gain.gain.setValueAtTime(0.4, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.5);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.5);
+                } catch(e) {}
+            },
+            playSuccess() {
+                if (!this.ctx) return;
+                try {
+                    [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => { 
+                        const osc = this.ctx.createOscillator();
+                        const gain = this.ctx.createGain();
+                        osc.type = 'triangle';
+                        osc.frequency.value = freq;
+                        const startTime = this.ctx.currentTime + (i * 0.05);
+                        gain.gain.setValueAtTime(0, startTime);
+                        gain.gain.linearRampToValueAtTime(0.15, startTime + 0.1);
+                        gain.gain.exponentialRampToValueAtTime(0.01, startTime + 1.5);
+                        osc.connect(gain);
+                        gain.connect(this.ctx.destination);
+                        osc.start(startTime);
+                        osc.stop(startTime + 1.5);
+                    });
+                } catch(e) {}
+            },
+            playDataScan() {
+                if (!this.ctx) return;
+                try {
+                    for (let i = 0; i < 5; i++) {
+                        const osc = this.ctx.createOscillator();
+                        const gain = this.ctx.createGain();
+                        osc.type = 'square';
+                        osc.frequency.value = 800 + Math.random() * 400; 
+                        const startTime = this.ctx.currentTime + (i * 0.08);
+                        gain.gain.setValueAtTime(0, startTime);
+                        gain.gain.linearRampToValueAtTime(0.05, startTime + 0.02);
+                        gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.06);
+                        osc.connect(gain);
+                        gain.connect(this.ctx.destination);
+                        osc.start(startTime);
+                        osc.stop(startTime + 0.08);
+                    }
+                } catch(e) {}
+            }
+        };
+
+        document.addEventListener('pointerdown', () => AudioSys.init(), { once: false });
+
+        const App = {
+            REGEX: {
+                pre: /(?<=.)\s+([\p{L}_][\p{L}0-9_]*\s*[+\-*/%]?=)/gu,
+                push: /^([\p{L}_][\p{L}0-9_]*)\.push\((.+)\)$/u,
+                inc: /^([\p{L}_][\p{L}0-9_]*)\s*\+\+$/u,
+                dec: /^([\p{L}_][\p{L}0-9_]*)\s*--$/u,
+                assign: /^([\p{L}_][\p{L}0-9_]*)\s*([+\-*/%]?=)\s*(.+)$/u
+            },
+            _reCache: {},
+            getVarRegex(key) {
+                if (!this._reCache[key]) {
+                    const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    this._reCache[key] = new RegExp(`(^|[^\\p{L}0-9_])(${escapedKey})(?=[^\\p{L}0-9_]|$)`, 'gu');
+                }
+                return this._reCache[key];
+            },
+
+            activeWorkspace: 0,
+            blocks: [], 
+            arrows: [], 
+            selectedBlocks: new Set(),
+            selectedArrow: null,
+            nextId: 1,
+
+            vx: 0, vy: 0, vscale: 1.0,
+            
+            activePointers: new Map(),
+            isDraggingCanvas: false,
+            isPinching: false,
+            panPointerId: null,
+            canvasDragStart: null,
+            initialPinchDist: 1,
+            initialVscale: 1,
+            initialPinchCenter: {x:0, y:0},
+            initialVx: 0,
+            initialVy: 0,
+
+            isMarquee: false,
+            marqueeStart: { x: 0, y: 0 },
+
+            draggingBlock: null,
+            dragOffsets: {},
+            hasMoved: false,
+
+            drawingArrow: false,
+            arrowFrom: null,
+            arrowFromPort: null,
+
+            stateHistory: [],
+            historyIndex: -1,
+            isRestoringHistory: false,
+            simSpeed: 1,
+
+            isSimulating: false,
+            isStepping: false,
+            simAbortController: null,
+            resolveStep: null, 
+            visualRAM: {}, 
+            lastSimStatus: 'untested', 
+            internalClipboard: null,
+
+            LABELS: { start: 'START', end: 'END', process: 'Skóre += 1', decision: 'Je skóre > 10?', io: 'Zadej věk', loop: 'Pro každý prvek', call: 'Vykresli_Mapu()', note: 'Zde je poznámka k bloku...' },
+
+            dom: {
+                canvas: document.getElementById('canvas'),
+                canvasWrap: document.getElementById('canvas-wrap'),
+                arrowsSvg: document.getElementById('arrows-svg'),
+                tempPath: document.getElementById('temp-path'),
+                toast: document.getElementById('toast'),
+                consoleOut: document.getElementById('console-output'),
+                ramOut: document.getElementById('ram-output'),
+                consolePanel: document.getElementById('console-panel'),
+                simToken: document.getElementById('sim-token'),
+                editModal: document.getElementById('edit-modal'),
+                editInput: document.getElementById('edit-input'),
+                simInputModal: document.getElementById('sim-input-modal'),
+                simInputField: document.getElementById('sim-input-field'),
+                simInputTitle: document.getElementById('sim-input-title'),
+                btnNextStep: document.getElementById('btn-next-step'),
+                simDecisionModal: document.getElementById('sim-decision-modal'),
+                simDecisionTitle: document.getElementById('sim-decision-title'),
+                btnSimYes: document.getElementById('sim-btn-yes'),
+                btnSimNo: document.getElementById('sim-btn-no'),
+                simOutputModal: document.getElementById('sim-output-modal'),
+                simOutputText: document.getElementById('sim-output-text'),
+                svgExportModal: document.getElementById('svg-export-modal'),
+                jsonExportModal: document.getElementById('json-export-modal'),
+                sideMenu: document.getElementById('side-menu'),
+                hamburgerBtn: document.getElementById('hamburger-btn')
+            },
+
+            toggleMenu(e) {
+                if (e) e.stopPropagation();
+                const isOpen = this.dom.sideMenu.classList.contains('open');
+                if (isOpen) {
+                    this.dom.sideMenu.classList.remove('open');
+                    this.dom.hamburgerBtn.classList.remove('active');
+                } else {
+                    this.dom.sideMenu.classList.add('open');
+                    this.dom.hamburgerBtn.classList.add('active');
+                }
+            },
+            closeMenu() {
+                this.dom.sideMenu.classList.remove('open');
+                this.dom.hamburgerBtn.classList.remove('active');
+            },
+
+            openHelp() { this.closeMenu(); document.getElementById('help-modal').classList.add('show'); },
+            closeHelp() { document.getElementById('help-modal').classList.remove('show'); },
+            openAbout() { this.closeMenu(); document.getElementById('about-modal').classList.add('show'); },
+            closeAbout() { document.getElementById('about-modal').classList.remove('show'); },
+            openAuthor() { this.closeMenu(); document.getElementById('author-modal').classList.add('show'); },
+            closeAuthor() { document.getElementById('author-modal').classList.remove('show'); },
+
+            updateSelectionDOM() {
+                this.blocks.forEach(b => {
+                    const el = document.getElementById(b.id);
+                    if (el) {
+                        if (this.selectedBlocks.has(b.id)) el.classList.add('selected');
+                        else el.classList.remove('selected');
+                    }
+                });
+            },
+
+            resolveCollisions() {
+                let moved = true;
+                let iterations = 0;
+
+                while (moved && iterations < 20) {
+                    moved = false;
+                    for (let i = 0; i < this.blocks.length; i++) {
+                        for (let j = i + 1; j < this.blocks.length; j++) {
+                            let b1 = this.blocks[i];
+                            let b2 = this.blocks[j];
+                            
+                            const el1 = document.getElementById(b1.id);
+                            const el2 = document.getElementById(b2.id);
+                            
+                            const w1 = el1 && el1.offsetWidth > 0 ? el1.offsetWidth : 200;
+                            const h1 = el1 && el1.offsetHeight > 0 ? el1.offsetHeight : 80;
+                            const w2 = el2 && el2.offsetWidth > 0 ? el2.offsetWidth : 200;
+                            const h2 = el2 && el2.offsetHeight > 0 ? el2.offsetHeight : 80;
+                            
+                            const cx1 = b1.x + w1 / 2;
+                            const cy1 = b1.y + h1 / 2;
+                            const cx2 = b2.x + w2 / 2;
+                            const cy2 = b2.y + h2 / 2;
+                            
+                            const dx = cx1 - cx2;
+                            const dy = cy1 - cy2;
+                            
+                            const marginX = 30; 
+                            const marginY = 30;
+                            
+                            const minDistX = (w1 + w2) / 2 + marginX;
+                            const minDistY = (h1 + h2) / 2 + marginY;
+                            
+                            if (Math.abs(dx) < minDistX && Math.abs(dy) < minDistY) {
+                                moved = true;
+                                let overlapX = minDistX - Math.abs(dx);
+                                let overlapY = minDistY - Math.abs(dy);
+                                
+                                if (overlapX < overlapY) {
+                                    let push = (overlapX / 2) + 2;
+                                    let sign = dx >= 0 ? 1 : -1;
+                                    if (dx === 0) sign = (i % 2 === 0) ? 1 : -1;
+                                    b1.x += push * sign;
+                                    b2.x -= push * sign;
+                                } else {
+                                    let push = (overlapY / 2) + 2;
+                                    let sign = dy >= 0 ? 1 : -1;
+                                    if (dy === 0) sign = (i % 2 === 0) ? 1 : -1;
+                                    b1.y += push * sign;
+                                    b2.y -= push * sign;
+                                }
+                            }
+                        }
+                    }
+                    iterations++;
+                }
+                
+                if (iterations > 0) {
+                    this.blocks.forEach(b => {
+                        const el = document.getElementById(b.id);
+                        if (el) {
+                            el.style.left = b.x + 'px';
+                            el.style.top = b.y + 'px';
+                        }
+                    });
+                }
+            },
+
+            createSpark(x, y) {
+                const spark = document.createElement('div');
+                spark.className = 'cyber-spark';
+                spark.style.left = x + 'px';
+                spark.style.top = y + 'px';
+                document.body.appendChild(spark);
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        spark.classList.add('pop');
+                    });
+                });
+                setTimeout(() => spark.remove(), 400);
+            },
+
+            init() {
+                this.setupPointerEvents();
+                this.setupKeyboard();
+                
+                this.activeWorkspace = parseInt(localStorage.getItem('blockflow_v1_1_active_ws') || '0');
+                this.updateWorkspaceUI();
+
+                const loaded = this.loadWorkspace(this.activeWorkspace);
+                
+                if (!loaded) {
+                    if (this.activeWorkspace === 0) { 
+                        this.buildDefaultGameLoop();
+                    } else {
+                        this.clearCanvasSilent();
+                    }
+                    this.saveState(true);
+                }
+                
+                this.applyTransform();
+                this.renderAll();
+                this.pushHistory();
+
+                setTimeout(() => {
+                    this.renderArrows();
+                    if (!loaded) this.fitToScreen();
+                }, 150);
+
+                setInterval(() => this.saveState(true), 3000);
+
+                window.addEventListener('resize', () => {
+                    clearTimeout(this.resizeTimer);
+                    this.resizeTimer = setTimeout(() => this.fitToScreen(), 200);
+                });
+
+                document.addEventListener('fullscreenchange', () => {
+                    const btn = document.getElementById('btn-fullscreen');
+                    if (btn) btn.innerText = document.fullscreenElement ? '◰ MIN' : '⛶ MAX';
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!this.dom.sideMenu.contains(e.target) && !this.dom.hamburgerBtn.contains(e.target)) {
+                        this.closeMenu();
+                    }
+                });
+            },
+
+            toggleWorkspace() {
+                if (this.isSimulating) {
+                    this.toast("Nelze přepínat plochu během běžící simulace.");
+                    return;
+                }
+                
+                this.saveWorkspace(this.activeWorkspace);
+                this.activeWorkspace = (this.activeWorkspace + 1) % 3;
+                this.stateHistory = [];
+                this.historyIndex = -1;
+                this.lastSimStatus = 'untested';
+                
+                const loaded = this.loadWorkspace(this.activeWorkspace);
+                if (!loaded) {
+                    if (this.activeWorkspace === 0) { 
+                        this.buildDefaultGameLoop();
+                    } else {
+                        this.clearCanvasSilent();
+                    }
+                    this.saveWorkspace(this.activeWorkspace);
+                }
+
+                this.updateWorkspaceUI();
+                this.applyTransform();
+                this.renderAll();
+                this.pushHistory();
+                
+                setTimeout(() => {
+                    this.renderArrows();
+                    if (!loaded) this.fitToScreen();
+                }, 50);
+
+                this.toast(`Přepnuto na Pracovní plochu ${this.activeWorkspace + 1}`);
+            },
+
+            updateWorkspaceUI() {
+                const btn = document.getElementById('btn-workspace');
+                if (btn) {
+                    if (this.activeWorkspace === 0) {
+                        btn.innerHTML = '[ WS:01 ]';
+                        btn.style.color = 'var(--accent)';
+                        btn.style.borderColor = 'var(--accent)';
+                        btn.style.boxShadow = 'inset 0 0 10px rgba(0, 229, 255, 0.2)';
+                        btn.title = "Pracovní plocha 1 (Výchozí)";
+                    } else if (this.activeWorkspace === 1) {
+                        btn.innerHTML = '[ WS:02 ]';
+                        btn.style.color = 'var(--accent2)';
+                        btn.style.borderColor = 'var(--accent2)';
+                        btn.style.boxShadow = 'inset 0 0 10px rgba(124, 58, 237, 0.2)';
+                        btn.title = "Pracovní plocha 2";
+                    } else {
+                        btn.innerHTML = '[ WS:03 ]';
+                        btn.style.color = 'var(--accent3)';
+                        btn.style.borderColor = 'var(--accent3)';
+                        btn.style.boxShadow = 'inset 0 0 10px rgba(245, 158, 11, 0.2)';
+                        btn.title = "Pracovní plocha 3";
+                    }
+                }
+            },
+
+            buildDefaultGameLoop() {
+                this.blocks = []; this.arrows = []; this.nextId = 1;
+                this.vx = 0;
+                this.vy = 0;
+
+                const cx = 0;
+                const cy = 0;
+
+                const b1 = this.addBlockSilent('start', 'Začátek Sběru', cx - 250, cy - 140);
+                const b_note1 = this.addBlockSilent('note', 'ÚVOD:\nNejprve zadáme jméno a definujeme\ndvě barvy, které chceme sbírat.\nPak vynulujeme počítadla a krok.', cx + 320, cy - 20);
+                
+                const b2 = this.addBlockSilent('io', 'jméno', cx, cy);
+                b2.ioType = 'input';
+                
+                const b3 = this.addBlockSilent('io', 'barva1', cx - 250, cy + 140);
+                b3.ioType = 'input';
+
+                const b4 = this.addBlockSilent('io', 'barva2', cx, cy + 280);
+                b4.ioType = 'input';
+                
+                const b5 = this.addBlockSilent('process', 'skore1 = 0\nskore2 = 0\nkrok = 0', cx, cy + 420);
+                
+                const b6 = this.addBlockSilent('loop', 'krok < 3', cx, cy + 560);
+                const b_note2 = this.addBlockSilent('note', 'SMYČKA:\nOpakujeme 3x (krok < 3).\nV každém kroku "utrhneme" jablko\na zeptáme se na jeho barvu.', cx - 380, cy + 500);
+
+                const b7 = this.addBlockSilent('io', 'nalezena_barva', cx, cy + 720);
+                b7.ioType = 'input';
+                
+                const b8 = this.addBlockSilent('decision', 'nalezena_barva == barva1', cx, cy + 860);
+                
+                const b9 = this.addBlockSilent('process', 'skore1++\nkrok++', cx + 300, cy + 860);
+                const b10 = this.addBlockSilent('process', 'skore2++\nkrok++', cx, cy + 1020);
+                const b_note3 = this.addBlockSilent('note', 'ROZHODOVÁNÍ:\nZkontrolujeme, zda se nalezené\njablko shoduje s 1. barvou.\nPodle toho zvedneme správné skóre.', cx + 350, cy + 1020);
+
+                const b11 = this.addBlockSilent('io', 'Díky jméno!\nMáš skore1 x barva1\na skore2 x barva2 jablek.', cx + 380, cy + 560);
+                b11.ioType = 'output';
+                
+                const b12 = this.addBlockSilent('end', 'Konec Hry', cx + 700, cy + 560);
+
+                b6.yesPort = 'bottom'; b6.noPort = 'right';
+                b8.yesPort = 'right';  b8.noPort = 'bottom';
+
+                this.addArrowSilent(b1.id, 'bottom', b2.id, 'top');
+                this.addArrowSilent(b2.id, 'bottom', b3.id, 'top');
+                this.addArrowSilent(b3.id, 'bottom', b4.id, 'top');
+                this.addArrowSilent(b4.id, 'bottom', b5.id, 'top');
+                this.addArrowSilent(b5.id, 'bottom', b6.id, 'top');
+                
+                this.addArrowSilent(b6.id, 'bottom', b7.id, 'top');
+                this.addArrowSilent(b7.id, 'bottom', b8.id, 'top');
+                
+                this.addArrowSilent(b8.id, 'right', b9.id, 'left');   
+                this.addArrowSilent(b8.id, 'bottom', b10.id, 'top');  
+                
+                this.addArrowSilent(b9.id, 'bottom', b6.id, 'left');  
+                this.addArrowSilent(b10.id, 'bottom', b6.id, 'left'); 
+                
+                this.addArrowSilent(b6.id, 'right', b11.id, 'left');  
+                this.addArrowSilent(b11.id, 'right', b12.id, 'left'); 
+            },
+
+            addBlockSilent(type, label, x, y) {
+                const block = {
+                    id: 'b' + (this.nextId++), type: type, label: label, x: x, y: y,
+                    yesPort: (type === 'decision' || type === 'loop') ? 'bottom' : null,
+                    noPort: (type === 'decision' || type === 'loop') ? 'right' : null,
+                    ioType: type === 'io' ? 'input' : null,
+                    isBreakpoint: false
+                };
+                this.blocks.push(block);
+                return block;
+            },
+
+            addArrowSilent(fromId, fromPort, toId, toPort) {
+                this.arrows.push({ id: 'a' + (this.nextId++), from: fromId, fromPort: fromPort, to: toId, toPort: toPort });
+            },
+
+            applyTransform() {
+                this.dom.canvas.style.transform = `translate(${this.vx}px, ${this.vy}px) scale(${this.vscale})`;
+            },
+
+            zoom(factor) {
+                const newScale = Math.min(3, Math.max(0.2, this.vscale * factor));
+                const wrap = this.dom.canvasWrap;
+                const cx = wrap.clientWidth / 2;
+                const cy = wrap.clientHeight / 2;
+                const f = newScale / this.vscale;
+                this.vx = cx - f * (cx - this.vx);
+                this.vy = cy - f * (cy - this.vy);
+                this.vscale = newScale;
+                this.applyTransform();
+                clearTimeout(this.wheelSaveTimeout);
+                this.wheelSaveTimeout = setTimeout(() => this.saveState(), 500);
+            },
+
+            fitToScreen() {
+                if (this.blocks.length === 0) return;
+                let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+                this.blocks.forEach(b => {
+                    const el = document.getElementById(b.id);
+                    const w = (el && el.offsetWidth > 0) ? el.offsetWidth : 200;
+                    const h = (el && el.offsetHeight > 0) ? el.offsetHeight : 100;
+                    minX = Math.min(minX, b.x);
+                    minY = Math.min(minY, b.y);
+                    maxX = Math.max(maxX, b.x + w);
+                    maxY = Math.max(maxY, b.y + h);
+                });
+
+                const wrap = this.dom.canvasWrap;
+                const wrapW = wrap.clientWidth;
+                const wrapH = wrap.clientHeight;
+                
+                if (wrapW === 0 || wrapH === 0) return;
+
+                const padX = wrapW < 600 ? 40 : 120;
+                const padY = wrapH < 600 ? 60 : 120;
+                
+                const dw = Math.max(maxX - minX, 1);
+                const dh = Math.max(maxY - minY, 1);
+                
+                const scaleX = (wrapW - padX * 2) / dw;
+                const scaleY = (wrapH - padY * 2) / dh;
+
+                this.vscale = Math.min(1.2, Math.max(0.2, Math.min(scaleX, scaleY)));
+                
+                this.vx = (wrapW / 2) - (minX + dw / 2) * this.vscale;
+                this.vy = (wrapH / 2) - (minY + dh / 2) * this.vscale;
+
+                this.dom.canvas.style.transition = "transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)";
+                this.applyTransform();
+                setTimeout(() => { this.dom.canvas.style.transition = ""; }, 600);
+            },
+
+            toast(msg, duration = 2500) {
+                this.dom.toast.textContent = msg;
+                this.dom.toast.classList.add('show');
+                clearTimeout(this.toastTimer);
+                this.toastTimer = setTimeout(() => this.dom.toast.classList.remove('show'), duration);
+            },
+
+            toggleFullscreen() {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(err => this.toast(`Nelze maximalizovat: ${err.message}`));
+                } else {
+                    if (document.exitFullscreen) document.exitFullscreen();
+                }
+            },
+
+            addBlock(type, forceX = null, forceY = null) {
+                if (type === 'start' && this.blocks.some(b => b.type === 'start')) {
+                    this.toast("Chyba: Ve schématu smí být pouze jeden blok START.");
+                    this.pulseBlock(this.blocks.find(b => b.type === 'start').id); return;
+                }
+                if (type === 'end' && this.blocks.some(b => b.type === 'end')) {
+                    this.toast("Chyba: Ve schématu smí být pouze jeden blok KONEC.");
+                    this.pulseBlock(this.blocks.find(b => b.type === 'end').id); return;
+                }
+
+                const rect = this.dom.canvasWrap.getBoundingClientRect();
+                const cx = forceX !== null ? forceX : (rect.width / 2 - this.vx) / this.vscale - 90;
+                const cy = forceY !== null ? forceY : (rect.height / 2 - this.vy) / this.vscale - 40;
+                
+                const b = this.addBlockSilent(type, this.LABELS[type] || type, cx, cy);
+                
+                this.renderBlock(b);
+                this.resolveCollisions();
+                this.renderArrows(); 
+                this.saveState();
+                
+                if (type === 'note') this.toast(`Přidána Poznámka`);
+                else this.toast(`Přidán blok: ${this.LABELS[type]}`);
+            },
+
+            pulseBlock(id) {
+                const el = document.getElementById(id);
+                if(el) {
+                    el.style.filter = "drop-shadow(var(--glow)) brightness(1.5)"; el.style.transform = "scale(1.1)";
+                    setTimeout(() => { el.style.filter = ""; el.style.transform = ""; }, 400);
+                }
+            },
+
+            highlightPath(blockId) {
+                if (this.isDraggingCanvas || this.drawingArrow || this.isMarquee || this.draggingBlock || this.isSimulating) return;
+
+                const relatedArrows = this.arrows.filter(a => a.from === blockId || a.to === blockId);
+                const relatedArrowIds = new Set(relatedArrows.map(a => a.id));
+                const relatedBlockIds = new Set([blockId]);
+                
+                relatedArrows.forEach(a => {
+                    relatedBlockIds.add(a.from);
+                    relatedBlockIds.add(a.to);
+                });
+
+                this.arrows.forEach(a => {
+                    const pathEl = document.getElementById(`path_${a.id}`);
+                    if (pathEl) {
+                        if (relatedArrowIds.has(a.id)) {
+                            pathEl.classList.add('highlight');
+                        } else {
+                            pathEl.classList.add('dimmed');
+                        }
+                    }
+                });
+
+                this.blocks.forEach(b => {
+                    const el = document.getElementById(b.id);
+                    if (el && !relatedBlockIds.has(b.id)) {
+                        el.classList.add('dimmed');
+                    }
+                });
+            },
+
+            clearHighlight() {
+                this.arrows.forEach(a => {
+                    const pathEl = document.getElementById(`path_${a.id}`);
+                    if (pathEl) {
+                        pathEl.classList.remove('highlight');
+                        pathEl.classList.remove('dimmed');
+                    }
+                });
+                this.blocks.forEach(b => {
+                    const el = document.getElementById(b.id);
+                    if (el) el.classList.remove('dimmed');
+                });
+            },
+
+            renderBlock(b) {
+                let el = document.getElementById(b.id);
+                if (!el) {
+                    el = document.createElement('div'); el.id = b.id;
+                    this.dom.canvas.appendChild(el); this.attachBlockPointer(el, b);
+                }
+                
+                let typeClass = b.type;
+                if (b.type === 'io' && b.ioType === 'output') typeClass = 'io-out';
+                el.className = `block block-${typeClass}`;
+                
+                el.style.left = b.x + 'px'; el.style.top = b.y + 'px';
+
+                const safeLabel = b.label.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                
+                let typeName = b.type.toUpperCase();
+                if (b.type === 'end') typeName = 'KONEC';
+                if (b.type === 'decision') typeName = 'PODMÍNKA';
+                if (b.type === 'loop') typeName = 'SMYČKA';
+                if (b.type === 'process') typeName = 'AKCE';
+                if (b.type === 'call') typeName = 'VOLÁNÍ';
+                if (b.type === 'io') typeName = b.ioType === 'input' ? 'VSTUP' : 'VÝSTUP';
+                if (b.type === 'note') typeName = 'POZNÁMKA';
+
+                let specialUI = '';
+                if (b.type === 'decision') {
+                    specialUI = `
+                        <div class="glass-wheel" onclick="App.rotatePorts('${b.id}', event)" title="Otočit větve (ANO/NE)">🔄</div>
+                        <div class="port-label ${b.yesPort}" style="color: #10b981;">ANO</div>
+                        <div class="port-label ${b.noPort}" style="color: #ef4444;">NE</div>
+                    `;
+                } else if (b.type === 'loop') {
+                    specialUI = `
+                        <div class="glass-wheel" onclick="App.rotatePorts('${b.id}', event)" title="Otočit větve" style="border-color: var(--loop);">🔄</div>
+                        <div class="port-label ${b.yesPort}" style="color: #fbcfe8;">TĚLO</div>
+                        <div class="port-label ${b.noPort}" style="color: #f472b6;">KONEC</div>
+                    `;
+                } else if (b.type === 'io') {
+                    b.ioType = b.ioType || 'input';
+                    const isInput = b.ioType === 'input';
+                    const icon = isInput ? '📥' : '📤';
+                    const title = isInput ? 'Režim: VSTUP DAT' : 'Režim: VÝSTUP DAT';
+                    const color = isInput ? '#10b981' : '#ec4899';
+                    specialUI = `<div class="glass-wheel io-switch" onclick="App.toggleIOType('${b.id}', event)" title="${title}" style="color: ${color}; border-color: ${color}; text-shadow: 0 0 10px ${color}80;">${icon}</div>`;
+                }
+
+                let portsHTML = '';
+                if (b.type !== 'note') {
+                    portsHTML = `
+                        <div class="block-ports">
+                            <div class="port top" data-port="top"></div><div class="port bottom" data-port="bottom"></div>
+                            <div class="port left" data-port="left"></div><div class="port right" data-port="right"></div>
+                        </div>
+                    `;
+                }
+
+                el.innerHTML = `
+                    <div class="block-scanline"></div>
+                    <div class="breakpoint-zone" onclick="App.toggleBreakpoint('${b.id}', event)" title="Přepnout Breakpoint" style="display: ${b.type === 'note' ? 'none' : 'flex'}">
+                        <div class="breakpoint-dot ${b.isBreakpoint ? 'active' : ''}"></div>
+                    </div>
+                    <div class="block-label">${typeName}</div>
+                    <div class="block-code">${safeLabel}</div>
+                    ${specialUI}
+                    <div class="block-controls">
+                        <button class="block-ctrl-btn edit" onclick="App.openEdit('${b.id}')" title="Editovat">&#9998;</button>
+                        <button class="block-ctrl-btn del" onclick="App.deleteBlock('${b.id}')" title="Smazat">&#10005;</button>
+                    </div>
+                    ${portsHTML}
+                `;
+
+                if (this.selectedBlocks.has(b.id)) el.classList.add('selected');
+
+                el.onmouseenter = () => this.highlightPath(b.id);
+                el.onmouseleave = () => this.clearHighlight();
+
+                const ports = el.querySelectorAll('.port');
+                ports.forEach(port => {
+                    port.addEventListener('pointerdown', e => {
+                        e.stopPropagation(); this.startArrow(b.id, port.dataset.port, e);
+                    });
+                });
+            },
+
+            renderAll() {
+                const canvasBlocks = this.dom.canvas.querySelectorAll('.block');
+                canvasBlocks.forEach(el => { if (!this.blocks.find(b => b.id === el.id)) el.remove(); });
+                this.blocks.forEach(b => this.renderBlock(b));
+                this.renderArrows();
+            },
+
+            getPortPos(blockId, portName) {
+                const b = this.blocks.find(x => x.id === blockId);
+                const el = document.getElementById(blockId);
+                if (!b || !el) return null;
+                const w = el.offsetWidth > 0 ? el.offsetWidth : 200;
+                const h = el.offsetHeight > 0 ? el.offsetHeight : 80;
+                const map = { top: { x: b.x + w/2, y: b.y }, bottom: { x: b.x + w/2, y: b.y + h }, left: { x: b.x, y: b.y + h/2 }, right: { x: b.x + w, y: b.y + h/2 } };
+                return map[portName] || map['bottom'];
+            },
+
+            getArrowPathStr(from, to, fromPort, toPort, ox = 0, oy = 0) {
+                let dx = to.x - from.x;
+                let dy = to.y - from.y;
+                
+                let cx1 = from.x;
+                let cy1 = from.y;
+                let cx2 = to.x;
+                let cy2 = to.y;
+
+                let tension = Math.max(40, Math.hypot(dx, dy) * 0.4);
+                if (Math.abs(dx) < 20 && dy > 0 && dy < 100) {
+                    tension = Math.min(tension, dy * 0.4);
+                }
+
+                if (fromPort === 'top') cy1 -= tension;
+                else if (fromPort === 'bottom') cy1 += tension;
+                else if (fromPort === 'left') cx1 -= tension;
+                else if (fromPort === 'right') cx1 += tension;
+
+                if (toPort === 'top') cy2 -= tension;
+                else if (toPort === 'bottom') cy2 += tension;
+                else if (toPort === 'left') cx2 -= tension;
+                else if (toPort === 'right') cx2 += tension;
+
+                if (fromPort === 'bottom' && dy < -10) { 
+                    cy1 += Math.max(60, Math.abs(dy) * 0.5); 
+                    const sidePush = Math.max(120, Math.abs(dx) * 0.8);
+                    if (to.x <= from.x) {
+                        cx1 -= sidePush; 
+                        if (toPort === 'left') cx2 -= sidePush;
+                    } else {
+                        cx1 += sidePush; 
+                        if (toPort === 'right') cx2 += sidePush;
+                    }
+                }
+
+                if (fromPort === 'left' && toPort === 'left') {
+                    const push = Math.max(120, Math.abs(dy) * 0.6);
+                    cx1 = Math.min(cx1, Math.min(from.x, to.x) - push);
+                    cx2 = Math.min(cx2, Math.min(from.x, to.x) - push);
+                }
+                if (fromPort === 'right' && toPort === 'right') {
+                    const push = Math.max(120, Math.abs(dy) * 0.6);
+                    cx1 = Math.max(cx1, Math.max(from.x, to.x) + push);
+                    cx2 = Math.max(cx2, Math.max(from.x, to.x) + push);
+                }
+
+                if ((fromPort === 'left' || fromPort === 'right') && dy < -50) {
+                    cy1 += Math.abs(dy) * 0.4;
+                }
+
+                return `M ${from.x - ox} ${from.y - oy} C ${cx1 - ox} ${cy1 - oy}, ${cx2 - ox} ${cy2 - oy}, ${to.x - ox} ${to.y - oy}`;
+            },
+
+            renderArrows() {
+                const existing = this.dom.arrowsSvg.querySelectorAll('.arrow-line, .arrow-hit');
+                existing.forEach(e => e.remove());
+
+                this.arrows.forEach(a => {
+                    const from = this.getPortPos(a.from, a.fromPort);
+                    const to = this.getPortPos(a.to, a.toPort);
+                    if (!from || !to) return;
+
+                    const pathStr = this.getArrowPathStr(from, to, a.fromPort, a.toPort);
+                    const isSelected = (a.id === this.selectedArrow);
+
+                    const hit = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    hit.setAttribute('d', pathStr); hit.setAttribute('stroke', 'transparent'); hit.setAttribute('stroke-width', '24'); hit.setAttribute('fill', 'none'); hit.setAttribute('class', 'arrow-hit');
+                    hit.addEventListener('click', e => { e.stopPropagation(); this.selectedArrow = this.selectedArrow === a.id ? null : a.id; this.renderArrows(); });
+                    hit.addEventListener('dblclick', e => { e.stopPropagation(); this.arrows = this.arrows.filter(x => x.id !== a.id); this.selectedArrow = null; this.renderArrows(); this.saveState(); this.toast('Spojení smazáno'); });
+
+                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    path.setAttribute('d', pathStr); path.id = `path_${a.id}`; path.setAttribute('class', `arrow-line ${isSelected ? 'selected' : ''}`); path.setAttribute('marker-end', isSelected ? 'url(#arrowhead-sel)' : 'url(#arrowhead)');
+
+                    this.dom.arrowsSvg.appendChild(hit); this.dom.arrowsSvg.appendChild(path);
+                });
+            },
+
+            attachBlockPointer(el, b) {
+                let pId = null;
+                el.addEventListener('pointerdown', e => {
+                    if (e.target.classList.contains('port') || e.target.closest('.block-controls') || e.target.closest('.glass-wheel') || e.target.closest('.sim-prompt') || e.target.closest('.breakpoint-zone')) return;
+                    e.preventDefault(); e.stopPropagation();
+                    el.setPointerCapture(e.pointerId); pId = e.pointerId;
+
+                    const rect = this.dom.canvas.getBoundingClientRect();
+                    const mx = (e.clientX - rect.left) / this.vscale; const my = (e.clientY - rect.top) / this.vscale;
+
+                    if (!e.shiftKey && !this.selectedBlocks.has(b.id)) this.selectedBlocks.clear();
+                    this.selectedBlocks.add(b.id); 
+                    
+                    this.updateSelectionDOM();
+                    
+                    this.draggingBlock = b.id; this.hasMoved = false; this.dragOffsets = {};
+
+                    this.selectedBlocks.forEach(id => {
+                        const blk = this.blocks.find(x => x.id === id);
+                        if (blk) this.dragOffsets[id] = { dx: mx - blk.x, dy: my - blk.y };
+                    });
+                });
+
+                el.addEventListener('pointermove', e => {
+                    if (this.draggingBlock !== b.id || e.pointerId !== pId) return;
+                    const rect = this.dom.canvas.getBoundingClientRect();
+                    const mx = (e.clientX - rect.left) / this.vscale; const my = (e.clientY - rect.top) / this.vscale;
+
+                    this.selectedBlocks.forEach(id => {
+                        const blk = this.blocks.find(x => x.id === id);
+                        if (blk && this.dragOffsets[id]) {
+                            blk.x = Math.round((mx - this.dragOffsets[id].dx) / 14) * 14;
+                            blk.y = Math.round((my - this.dragOffsets[id].dy) / 14) * 14;
+                            const el2 = document.getElementById(id);
+                            if (el2) { el2.style.left = blk.x + 'px'; el2.style.top = blk.y + 'px'; }
+                        }
+                    });
+                    this.hasMoved = true; this.renderArrows();
+                });
+
+                el.addEventListener('pointerup', e => {
+                    if (this.draggingBlock !== b.id) return;
+                    this.draggingBlock = null; el.releasePointerCapture(e.pointerId);
+                    if (this.hasMoved) {
+                        this.resolveCollisions();
+                        this.renderArrows();
+                        this.saveState();
+                    }
+                });
+
+                el.addEventListener('dblclick', e => { e.stopPropagation(); this.openEdit(b.id); });
+            },
+
+            setupPointerEvents() {
+                document.addEventListener('pointermove', e => {
+                    if (!this.drawingArrow) return;
+                    const from = this.getPortPos(this.arrowFrom, this.arrowFromPort);
+                    if (!from) return;
+                    const rect = this.dom.canvasWrap.getBoundingClientRect();
+                    const screenX = from.x * this.vscale + this.vx + rect.left; const screenY = from.y * this.vscale + this.vy + rect.top;
+                    this.dom.tempPath.setAttribute('d', `M ${screenX} ${screenY} L ${e.clientX} ${e.clientY}`);
+                });
+
+                document.addEventListener('pointerup', e => {
+                    if (!this.drawingArrow) return;
+                    this.drawingArrow = false; this.dom.tempPath.setAttribute('d', '');
+
+                    const el = document.elementFromPoint(e.clientX, e.clientY);
+                    if (el && el.classList.contains('port')) {
+                        const toBlockId = el.closest('.block').id; const toPort = el.dataset.port;
+                        if (toBlockId !== this.arrowFrom) {
+                            const exists = this.arrows.find(a => a.from === this.arrowFrom && a.fromPort === this.arrowFromPort && a.to === toBlockId && a.toPort === toPort);
+                            if (!exists) {
+                                // --- INJEKCE: Prevence vícenásobného odchozího vlákna (Replacement) ---
+                                const existingOutgoingIndex = this.arrows.findIndex(a => a.from === this.arrowFrom && a.fromPort === this.arrowFromPort);
+                                if (existingOutgoingIndex !== -1) {
+                                    this.arrows.splice(existingOutgoingIndex, 1); // Odstraní staré vlákno z tohoto portu
+                                }
+                                // --- KONEC INJEKCE ---
+
+                                this.addArrowSilent(this.arrowFrom, this.arrowFromPort, toBlockId, toPort);
+                                this.renderArrows(); this.saveState();
+                                const targetEl = document.getElementById(toBlockId);
+                                targetEl.style.filter = "drop-shadow(var(--glow)) brightness(1.5)"; setTimeout(() => targetEl.style.filter = "", 300);
+                                
+                                this.createSpark(e.clientX, e.clientY);
+                                AudioSys.playClick();
+                            }
+                        }
+                    }
+                    this.arrowFrom = null;
+                });
+
+                this.dom.canvasWrap.addEventListener('pointerdown', e => {
+                    if (e.target.closest('.block') || e.target.closest('.arrow-hit')) return;
+                    e.preventDefault();
+                    this.activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+                    if (e.shiftKey && this.activePointers.size === 1) {
+                        this.isMarquee = true;
+                        const rect = this.dom.canvas.getBoundingClientRect();
+                        this.marqueeStart = {
+                            x: (e.clientX - rect.left) / this.vscale,
+                            y: (e.clientY - rect.top) / this.vscale
+                        };
+                        const marqueeEl = document.getElementById('marquee');
+                        if (marqueeEl) {
+                            marqueeEl.style.left = this.marqueeStart.x + 'px';
+                            marqueeEl.style.top = this.marqueeStart.y + 'px';
+                            marqueeEl.style.width = '0px';
+                            marqueeEl.style.height = '0px';
+                            marqueeEl.style.display = 'block';
+                        }
+                        if (!e.ctrlKey) {
+                            this.selectedBlocks.clear();
+                            this.updateSelectionDOM();
+                        }
+                        return;
+                    }
+
+                    if (this.activePointers.size === 1) {
+                        this.isDraggingCanvas = true;
+                        this.panPointerId = e.pointerId;
+                        this.canvasDragStart = { x: e.clientX - this.vx, y: e.clientY - this.vy };
+                        this.selectedBlocks.clear(); this.selectedArrow = null; 
+                        
+                        this.updateSelectionDOM();
+                        this.renderArrows();
+                        
+                    } else if (this.activePointers.size === 2) {
+                        this.isDraggingCanvas = false;
+                        this.isPinching = true;
+                        const pts = Array.from(this.activePointers.values());
+                        this.initialPinchDist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+                        this.initialVscale = this.vscale;
+                        this.initialPinchCenter = { x: (pts[0].x + pts[1].x)/2, y: (pts[0].y + pts[1].y)/2 };
+                        this.initialVx = this.vx;
+                        this.initialVy = this.vy;
+                    }
+                });
+
+                this.dom.canvasWrap.addEventListener('pointermove', e => {
+                    if (!this.activePointers.has(e.pointerId)) return;
+                    this.activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+                    if (this.isMarquee && this.activePointers.size === 1) {
+                        const rect = this.dom.canvas.getBoundingClientRect();
+                        const curX = (e.clientX - rect.left) / this.vscale;
+                        const curY = (e.clientY - rect.top) / this.vscale;
+
+                        const x = Math.min(this.marqueeStart.x, curX);
+                        const y = Math.min(this.marqueeStart.y, curY);
+                        const w = Math.abs(curX - this.marqueeStart.x);
+                        const h = Math.abs(curY - this.marqueeStart.y);
+
+                        const marqueeEl = document.getElementById('marquee');
+                        if (marqueeEl) {
+                            marqueeEl.style.left = x + 'px';
+                            marqueeEl.style.top = y + 'px';
+                            marqueeEl.style.width = w + 'px';
+                            marqueeEl.style.height = h + 'px';
+                        }
+                        return;
+                    }
+
+                    if (this.activePointers.size === 1 && this.isDraggingCanvas && e.pointerId === this.panPointerId) {
+                        this.vx = e.clientX - this.canvasDragStart.x;
+                        this.vy = e.clientY - this.canvasDragStart.y;
+                        this.applyTransform();
+                    } else if (this.activePointers.size === 2 && this.isPinching) {
+                        const pts = Array.from(this.activePointers.values());
+                        const dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+                        const center = { x: (pts[0].x + pts[1].x)/2, y: (pts[0].y + pts[1].y)/2 };
+
+                        const scaleFactor = dist / (this.initialPinchDist || 1);
+                        const newScale = Math.min(3, Math.max(0.2, this.initialVscale * scaleFactor));
+
+                        const factor = newScale / this.initialVscale;
+                        const rect = this.dom.canvasWrap.getBoundingClientRect();
+                        const cx = this.initialPinchCenter.x - rect.left;
+                        const cy = this.initialPinchCenter.y - rect.top;
+
+                        const dx = center.x - this.initialPinchCenter.x;
+                        const dy = center.y - this.initialPinchCenter.y;
+
+                        this.vx = this.initialVx + dx - (cx - this.initialVx) * (factor - 1);
+                        this.vy = this.initialVy + dy - (cy - this.initialVy) * (factor - 1);
+                        this.vscale = newScale;
+
+                        this.applyTransform();
+                    }
+                });
+
+                const pointerUpHandler = e => {
+                    if (this.isMarquee) {
+                        this.isMarquee = false;
+                        const marqueeEl = document.getElementById('marquee');
+                        if (marqueeEl) marqueeEl.style.display = 'none';
+
+                        const rect = this.dom.canvas.getBoundingClientRect();
+                        const curX = (e.clientX - rect.left) / this.vscale;
+                        const curY = (e.clientY - rect.top) / this.vscale;
+
+                        const minX = Math.min(this.marqueeStart.x, curX);
+                        const minY = Math.min(this.marqueeStart.y, curY);
+                        const maxX = Math.max(this.marqueeStart.x, curX);
+                        const maxY = Math.max(this.marqueeStart.y, curY);
+
+                        let count = 0;
+                        this.blocks.forEach(b => {
+                            const el = document.getElementById(b.id);
+                            const bw = el && el.offsetWidth > 0 ? el.offsetWidth : 200;
+                            const bh = el && el.offsetHeight > 0 ? el.offsetHeight : 80;
+                            
+                            if (b.x < maxX && b.x + bw > minX && b.y < maxY && b.y + bh > minY) {
+                                this.selectedBlocks.add(b.id);
+                                count++;
+                            }
+                        });
+
+                        this.updateSelectionDOM();
+                        if (count > 0) this.toast(`Vybráno bloků: ${count}`);
+
+                        this.activePointers.delete(e.pointerId);
+                        return;
+                    }
+
+                    this.activePointers.delete(e.pointerId);
+                    if (this.activePointers.size === 0) {
+                        if (this.isDraggingCanvas || this.isPinching) this.saveState();
+                        this.isDraggingCanvas = false;
+                        this.isPinching = false;
+                    } else if (this.activePointers.size === 1) {
+                        if (this.isPinching) this.saveState();
+                        this.isPinching = false;
+                        const id = Array.from(this.activePointers.keys())[0];
+                        const pt = this.activePointers.get(id);
+                        this.isDraggingCanvas = true;
+                        this.panPointerId = id;
+                        this.canvasDragStart = { x: pt.x - this.vx, y: pt.y - this.vy };
+                    }
+                };
+
+                this.dom.canvasWrap.addEventListener('pointerup', pointerUpHandler);
+                this.dom.canvasWrap.addEventListener('pointercancel', pointerUpHandler);
+                this.dom.canvasWrap.addEventListener('pointerleave', pointerUpHandler);
+
+                this.dom.canvasWrap.addEventListener('wheel', e => {
+                    e.preventDefault(); if(e.ctrlKey) return; 
+                    const delta = e.deltaY > 0 ? 0.9 : 1.1; const newScale = Math.min(3, Math.max(0.2, this.vscale * delta)); const factor = newScale / this.vscale;
+                    const rect = this.dom.canvasWrap.getBoundingClientRect(); const cx = e.clientX - rect.left; const cy = e.clientY - rect.top;
+                    this.vx = cx - factor * (cx - this.vx); this.vy = cy - factor * (cy - this.vy); this.vscale = newScale; this.applyTransform();
+                    
+                    clearTimeout(this.wheelSaveTimeout);
+                    this.wheelSaveTimeout = setTimeout(() => this.saveState(), 500);
+                }, { passive: false });
+            },
+
+            startArrow(blockId, portName, e) { this.drawingArrow = true; this.arrowFrom = blockId; this.arrowFromPort = portName; },
+
+            pushHistory() {
+                if (this.isRestoringHistory) return;
+                if (this.historyIndex < this.stateHistory.length - 1) {
+                    this.stateHistory = this.stateHistory.slice(0, this.historyIndex + 1);
+                }
+                const state = JSON.stringify({ blocks: this.blocks, arrows: this.arrows, nextId: this.nextId });
+                this.stateHistory.push(state);
+                if (this.stateHistory.length > 50) this.stateHistory.shift();
+                else this.historyIndex++;
+                this.updateHistoryButtons();
+            },
+
+            updateHistoryButtons() {
+                const btnUndo = document.getElementById('btn-undo');
+                const btnRedo = document.getElementById('btn-redo');
+                if (btnUndo) btnUndo.disabled = this.historyIndex <= 0;
+                if (btnRedo) btnRedo.disabled = this.historyIndex >= this.stateHistory.length - 1;
+            },
+
+            undo() {
+                if (this.historyIndex > 0) {
+                    this.historyIndex--;
+                    this.restoreHistoryState(this.stateHistory[this.historyIndex]);
+                    this.toast("Krok zpět ↶");
+                }
+            },
+
+            redo() {
+                if (this.historyIndex < this.stateHistory.length - 1) {
+                    this.historyIndex++;
+                    this.restoreHistoryState(this.stateHistory[this.historyIndex]);
+                    this.toast("Krok vpřed ↷");
+                }
+            },
+
+            restoreHistoryState(stateStr) {
+                this.isRestoringHistory = true;
+                const parsed = JSON.parse(stateStr);
+                this.blocks = parsed.blocks || [];
+                this.arrows = parsed.arrows || [];
+                this.nextId = parsed.nextId || 1;
+                this.selectedBlocks.clear();
+                this.selectedArrow = null;
+                this.renderAll();
+                this.saveState(true);
+                this.updateHistoryButtons();
+                this.isRestoringHistory = false;
+            },
+
+            toggleBreakpoint(id, event) {
+                event.stopPropagation();
+                const b = this.blocks.find(x => x.id === id);
+                if (b) {
+                    b.isBreakpoint = !b.isBreakpoint;
+                    this.renderBlock(b);
+                    this.saveState();
+                }
+            },
+
+            setSpeed(val) {
+                this.simSpeed = parseFloat(val);
+            },
+
+            saveState(isAutoSave = false) {
+                if (!isAutoSave) {
+                    this.lastSimStatus = 'untested'; 
+                    this.pushHistory();
+                }
+                this.saveWorkspace(this.activeWorkspace);
+            },
+
+            saveWorkspace(index) {
+                const state = JSON.stringify({ 
+                    blocks: this.blocks, 
+                    arrows: this.arrows, 
+                    nextId: this.nextId,
+                    vx: this.vx,
+                    vy: this.vy,
+                    vscale: this.vscale
+                });
+                localStorage.setItem(`blockflow_v1_1_ws_${index}`, state);
+                localStorage.setItem('blockflow_v1_1_active_ws', this.activeWorkspace.toString());
+            },
+            
+            rotatePorts(blockId, event) {
+                event.stopPropagation();
+                if (this.isSimulating && !this.isStepping) return;
+                const b = this.blocks.find(x => x.id === blockId);
+                if (!b || (b.type !== 'decision' && b.type !== 'loop')) return;
+                const pairs = [{y: 'bottom', n: 'right'}, {y: 'bottom', n: 'left'}, {y: 'left', n: 'bottom'}, {y: 'right', n: 'bottom'}, {y: 'right', n: 'left'}, {y: 'left', n: 'right'}];
+                let currIdx = pairs.findIndex(p => p.y === b.yesPort && p.n === b.noPort);
+                let nextIdx = (currIdx + 1) % pairs.length;
+                b.yesPort = pairs[nextIdx].y; b.noPort = pairs[nextIdx].n;
+                this.renderBlock(b); this.saveState();
+            },
+
+            toggleIOType(blockId, event) {
+                event.stopPropagation();
+                if (this.isSimulating && !this.isStepping) return;
+                const b = this.blocks.find(x => x.id === blockId);
+                if (!b || b.type !== 'io') return;
+                b.ioType = b.ioType === 'input' ? 'output' : 'input';
+                this.renderBlock(b); this.saveState();
+                
+                this.toast(`Režim bloku přepnut na: ${b.ioType === 'input' ? 'VSTUP' : 'VÝSTUP'}`, 2500);
+                const el = document.getElementById(b.id);
+                if (el) {
+                    el.style.transform = "scale(1.1)";
+                    setTimeout(() => el.style.transform = "translateZ(0)", 150);
+                }
+            },
+
+            loadWorkspace(index) {
+                try {
+                    const saved = localStorage.getItem(`blockflow_v1_1_ws_${index}`);
+                    if (saved) {
+                        const parsed = JSON.parse(saved);
+                        this.blocks = parsed.blocks || []; 
+                        this.arrows = parsed.arrows || []; 
+                        this.nextId = parsed.nextId || 1;
+                        
+                        if (typeof parsed.vx === 'number') this.vx = parsed.vx;
+                        if (typeof parsed.vy === 'number') this.vy = parsed.vy;
+                        if (typeof parsed.vscale === 'number') this.vscale = parsed.vscale;
+                        return true;
+                    }
+                } catch(e) { console.error("Chyba načtení", e); }
+                return false;
+            },
+
+            deleteBlock(id) {
+                this.blocks = this.blocks.filter(b => b.id !== id); this.arrows = this.arrows.filter(a => a.from !== id && a.to !== id);
+                this.selectedBlocks.delete(id); document.getElementById(id)?.remove(); this.renderArrows(); this.saveState();
+            },
+
+            deleteSelected() {
+                if (this.selectedArrow) {
+                    this.arrows = this.arrows.filter(a => a.id !== this.selectedArrow); this.selectedArrow = null; this.toast('Spojení smazáno');
+                } else if (this.selectedBlocks.size > 0) {
+                    this.selectedBlocks.forEach(id => {
+                        this.blocks = this.blocks.filter(b => b.id !== id); this.arrows = this.arrows.filter(a => a.from !== id && a.to !== id);
+                        document.getElementById(id)?.remove();
+                    });
+                    this.selectedBlocks.clear(); this.toast('Bloky smazány');
+                }
+                this.renderArrows(); this.saveState();
+            },
+
+            clearCanvasSilent() {
+                this.blocks = []; this.arrows = []; this.nextId = 1;
+                this.vx = 0; this.vy = 0;
+                this.addBlockSilent('start', 'Start', 0, 0);
+            },
+
+            promptClearCanvas() {
+                document.getElementById('clear-confirm-modal').classList.add('show');
+            },
+
+            executeClearCanvas() {
+                document.getElementById('clear-confirm-modal').classList.remove('show');
+                this.clearCanvasSilent();
+                this.renderAll();
+                setTimeout(() => this.fitToScreen(), 50);
+                this.toast('Plocha úspěšně vymazána');
+                this.saveState();
+            },
+
+            resetToTemplate() {
+                this.toast('Pro návrat k výchozí šabloně použijte tlačítko Přepnout plochu (1️⃣ / 2️⃣ / 3️⃣)');
+            },
+
+            pasteBlocks(copiedBlocks, copiedArrows) {
+                if (!copiedBlocks || copiedBlocks.length === 0) return;
+
+                const idMap = {};
+                this.selectedBlocks.clear();
+
+                let currentMaxX = -Infinity;
+                let currentMinY = Infinity;
+                if (this.blocks.length > 0) {
+                    this.blocks.forEach(b => {
+                        const el = document.getElementById(b.id);
+                        const w = (el && el.offsetWidth > 0) ? el.offsetWidth : 200;
+                        currentMaxX = Math.max(currentMaxX, b.x + w);
+                        currentMinY = Math.min(currentMinY, b.y);
+                    });
+                }
+
+                let copiedMinX = Infinity;
+                let copiedMinY = Infinity;
+                copiedBlocks.forEach(b => {
+                    copiedMinX = Math.min(copiedMinX, b.x);
+                    copiedMinY = Math.min(copiedMinY, b.y);
+                });
+
+                let offsetX = 30;
+                let offsetY = 30;
+                
+                if (this.blocks.length > 0 && currentMaxX !== -Infinity) {
+                    offsetX = (currentMaxX + 120) - copiedMinX;
+                    offsetY = currentMinY - copiedMinY;
+                }
+
+                copiedBlocks.forEach(b => {
+                    const newId = 'b' + (this.nextId++);
+                    idMap[b.id] = newId;
+                    
+                    const newBlock = { ...b, id: newId, x: b.x + offsetX, y: b.y + offsetY };
+                    this.blocks.push(newBlock);
+                    this.selectedBlocks.add(newId);
+                });
+
+                if (copiedArrows) {
+                    copiedArrows.forEach(a => {
+                        if (idMap[a.from] && idMap[a.to]) {
+                            this.arrows.push({
+                                ...a,
+                                id: 'a' + (this.nextId++),
+                                from: idMap[a.from],
+                                to: idMap[a.to]
+                            });
+                        }
+                    });
+                }
+
+                this.renderAll();
+                this.toast('Vloženo ze schránky');
+
+                setTimeout(() => {
+                    this.resolveCollisions();
+                    this.renderArrows();
+                    
+                    let pasteMinX = Infinity, pasteMaxX = -Infinity;
+                    let pasteMinY = Infinity, pasteMaxY = -Infinity;
+                    
+                    this.selectedBlocks.forEach(id => {
+                        const b = this.blocks.find(x => x.id === id);
+                        if (b) {
+                            const el = document.getElementById(b.id);
+                            const w = (el && el.offsetWidth > 0) ? el.offsetWidth : 200;
+                            const h = (el && el.offsetHeight > 0) ? el.offsetHeight : 100;
+                            pasteMinX = Math.min(pasteMinX, b.x);
+                            pasteMaxX = Math.max(pasteMaxX, b.x + w);
+                            pasteMinY = Math.min(pasteMinY, b.y);
+                            pasteMaxY = Math.max(pasteMaxY, b.y + h);
+                        }
+                    });
+
+                    const wrap = this.dom.canvasWrap;
+                    const wrapW = wrap.clientWidth;
+                    const wrapH = wrap.clientHeight;
+                    
+                    if (wrapW > 0 && wrapH > 0 && pasteMinX !== Infinity) {
+                        const cx = (pasteMinX + pasteMaxX) / 2;
+                        const cy = (pasteMinY + pasteMaxY) / 2;
+                        
+                        this.vx = (wrapW / 2) - cx * this.vscale;
+                        this.vy = (wrapH / 2) - cy * this.vscale;
+                        
+                        this.dom.canvas.style.transition = "transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)";
+                        this.applyTransform();
+                        setTimeout(() => { this.dom.canvas.style.transition = ""; }, 500);
+                    }
+                    this.saveState();
+                }, 50);
+            },
+
+            setupKeyboard() {
+                document.addEventListener('keydown', e => {
+                    if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
+                    
+                    if (e.key === 'Delete' || e.key === 'Backspace') {
+                        this.deleteSelected();
+                    } else if (e.key === 'Escape') {
+                        if (this.isSimulating) {
+                            this.stopSimulation(true);
+                        }
+                        this.selectedBlocks.clear(); this.selectedArrow = null; 
+                        
+                        this.updateSelectionDOM(); this.renderArrows(); 
+                        
+                        this.closeEdit();
+                        this.closeMenu();
+                        if (this.resolveInputFn) { this.resolveInputFn(null); this.resolveInputFn = null; }
+                        if (this.resolveDecisionFn) { this.resolveDecisionFn(null); this.resolveDecisionFn = null; }
+                        document.querySelectorAll('.modal-overlay').forEach(el => el.classList.remove('show'));
+                    } else if (e.ctrlKey && e.key.toLowerCase() === 's') { 
+                        e.preventDefault(); this.promptSvgExport(); 
+                    } else if (e.ctrlKey && e.key.toLowerCase() === 'z' && !e.shiftKey) { 
+                        e.preventDefault(); this.undo(); 
+                    } else if (e.ctrlKey && (e.key.toLowerCase() === 'y' || (e.key.toLowerCase() === 'z' && e.shiftKey))) { 
+                        e.preventDefault(); this.redo(); 
+                    } else if (e.ctrlKey && e.key.toLowerCase() === 'a') {
+                        e.preventDefault();
+                        this.blocks.forEach(b => this.selectedBlocks.add(b.id));
+                        this.updateSelectionDOM();
+                        this.toast("Vybráno vše");
+                    } else if (e.key.toLowerCase() === 'f' && !e.ctrlKey && !e.shiftKey) {
+                        e.preventDefault();
+                        this.fitToScreen();
+                    } else if (e.key === ' ') {
+                        e.preventDefault();
+                        this.vx = 0; this.vy = 0; this.vscale = 1; this.applyTransform();
+                        this.toast("Střed pohledu");
+                    } else if (e.key === '+' || e.key === '=') {
+                        e.preventDefault();
+                        this.zoom(1.1);
+                    } else if (e.key === '-' || e.key === '_') {
+                        e.preventDefault();
+                        this.zoom(0.9);
+                    }
+                });
+
+                document.addEventListener('copy', e => {
+                    if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+                    if (this.selectedBlocks.size === 0) return;
+                    e.preventDefault();
+                    
+                    const copiedBlocks = this.blocks.filter(b => this.selectedBlocks.has(b.id));
+                    const copiedArrows = this.arrows.filter(a => this.selectedBlocks.has(a.from) && this.selectedBlocks.has(a.to));
+                    
+                    const clipData = { type: 'blockflow_clip', blocks: copiedBlocks, arrows: copiedArrows };
+                    const jsonString = JSON.stringify(clipData);
+                    
+                    const svgString = this.getSvgContent(false, copiedBlocks, copiedArrows, true);
+
+                    if (e.clipboardData) {
+                        const encodedJson = encodeURIComponent(jsonString);
+                        const base64Svg = btoa(unescape(encodeURIComponent(svgString)));
+                        
+                        const htmlPayload = `<html data-blockflow="${encodedJson}"><body><!--StartFragment--><img src="data:image/svg+xml;base64,${base64Svg}" alt="BlockFlow Diagram"><!--EndFragment--></body></html>`;
+
+                        e.clipboardData.setData('text/html', htmlPayload);
+                        e.clipboardData.setData('text/plain', '[BlockFlow Vector] Vložte schéma do programu, který podporuje obrázky (např. Word, PowerPoint, LibreOffice).');
+                    }
+                    this.internalClipboard = clipData;
+                    this.toast('Zkopírováno do schránky');
+                });
+
+                document.addEventListener('paste', e => {
+                    if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+                    e.preventDefault();
+                    
+                    let clipData = null;
+                    if (e.clipboardData) {
+                        const htmlData = e.clipboardData.getData('text/html');
+                        if (htmlData) {
+                            const match = htmlData.match(/data-blockflow="([^"]+)"/);
+                            if (match) {
+                                try {
+                                    const parsed = JSON.parse(decodeURIComponent(match[1]));
+                                    if (parsed.type === 'blockflow_clip') clipData = parsed;
+                                } catch(err) {}
+                            }
+                        }
+                        
+                        if (!clipData) {
+                            const textData = e.clipboardData.getData('text/plain') || e.clipboardData.getData('application/json');
+                            try {
+                                const parsed = JSON.parse(textData);
+                                if (parsed.type === 'blockflow_clip') clipData = parsed;
+                            } catch(err) {}
+                        }
+                    }
+                    if (!clipData) clipData = this.internalClipboard;
+                    
+                    if (clipData && clipData.type === 'blockflow_clip') {
+                        this.pasteBlocks(clipData.blocks, clipData.arrows);
+                    }
+                });
+
+                this.dom.simInputField.addEventListener('keydown', e => { if (e.key === 'Enter') this.resolveInputPrompt(); });
+                this.dom.editInput.addEventListener('keydown', e => { 
+                    if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey) { 
+                        e.preventDefault(); 
+                        this.saveEdit(); 
+                    } 
+                });
+            },
+
+            currentEditId: null,
+            openEdit(id) {
+                const b = this.blocks.find(x => x.id === id); if (!b) return;
+                this.currentEditId = id; this.dom.editInput.value = b.label; this.dom.editModal.classList.add('show');
+                setTimeout(() => this.dom.editInput.focus(), 50);
+            },
+            closeEdit() { this.dom.editModal.classList.remove('show'); this.currentEditId = null; },
+            saveEdit() {
+                if (!this.currentEditId) return;
+                const b = this.blocks.find(x => x.id === this.currentEditId);
+                if (b) { 
+                    b.label = this.dom.editInput.value.trim() || this.LABELS[b.type]; 
+                    this.renderBlock(b); 
+                    
+                    setTimeout(() => {
+                        this.resolveCollisions();
+                        this.renderArrows();
+                        this.saveState();
+                    }, 10);
+                }
+                this.closeEdit();
+            },
+
+            logConsole(msg, type="info") {
+                const d = new Date();
+                const time = `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}:${d.getSeconds().toString().padStart(2,'0')}`;
+                
+                const entry = document.createElement('div'); 
+                entry.className = `log-entry log-${type}`;
+                
+                const timeEl = document.createElement('div');
+                timeEl.className = 'log-time';
+                timeEl.innerText = `[${time}]`;
+                
+                const msgEl = document.createElement('div');
+                msgEl.className = 'log-msg';
+                
+                entry.appendChild(timeEl);
+                entry.appendChild(msgEl);
+                
+                this.dom.consoleOut.appendChild(entry); 
+                
+                if (this.simSpeed >= 100 || type === 'sys') {
+                    msgEl.innerHTML = msg;
+                    this.dom.consoleOut.scrollTop = this.dom.consoleOut.scrollHeight;
+                } else {
+                    let i = 0;
+                    const typeInterval = setInterval(() => {
+                        msgEl.innerHTML += msg.charAt(i);
+                        i++;
+                        this.dom.consoleOut.scrollTop = this.dom.consoleOut.scrollHeight;
+                        if (i >= msg.length) clearInterval(typeInterval);
+                    }, 10);
+                }
+            },
+
+            updateRAM(vars) {
+                this.dom.ramOut.innerHTML = '';
+                for (let k in vars) {
+                    let valDisplay = vars[k];
+                    if (Array.isArray(vars[k])) {
+                        valDisplay = `<span style="color:#fbcfe8">[${vars[k].join(', ')}]</span>`;
+                    }
+                    this.dom.ramOut.innerHTML += `<div class="ram-var"><span class="ram-var-name">${k}</span><span class="ram-var-val">${valDisplay}</span></div>`;
+                }
+            },
+            
+            parseVariable(expr) {
+                try {
+                    let processedExpr = expr.replace(this.REGEX.pre, '\n$1');
+                    
+                    const lines = processedExpr.split('\n');
+
+                    for (let line of lines) {
+                        line = line.trim();
+                        if (!line) continue;
+
+                        if (!line.match(/[+\-*/%=]|(?:\+\+|--)/)) {
+                            continue;
+                        }
+
+                        const pushMatch = line.match(this.REGEX.push);
+                        if (pushMatch) {
+                            const varName = pushMatch[1];
+                            let valToPush = pushMatch[2].trim();
+                            if (valToPush.startsWith('"') || valToPush.startsWith("'")) valToPush = valToPush.slice(1, -1);
+                            else if (!isNaN(valToPush)) valToPush = Number(valToPush);
+                            
+                            if (!this.visualRAM[varName]) this.visualRAM[varName] = [];
+                            if (!Array.isArray(this.visualRAM[varName])) this.visualRAM[varName] = [this.visualRAM[varName]];
+                            
+                            this.visualRAM[varName].push(valToPush);
+                            continue;
+                        }
+
+                        const incMatch = line.match(this.REGEX.inc);
+                        if (incMatch) {
+                            const varName = incMatch[1];
+                            if (this.visualRAM[varName] === undefined) {
+                                this.logConsole(`[VAROVÁNÍ] Proměnná '${varName}' nebyla deklarována. Systém dosazuje 0.`, "warning");
+                            }
+                            this.visualRAM[varName] = (Number(this.visualRAM[varName]) || 0) + 1;
+                            continue;
+                        }
+
+                        const decMatch = line.match(this.REGEX.dec);
+                        if (decMatch) {
+                            const varName = decMatch[1];
+                            if (this.visualRAM[varName] === undefined) {
+                                this.logConsole(`[VAROVÁNÍ] Proměnná '${varName}' nebyla deklarována. Systém dosazuje 0.`, "warning");
+                            }
+                            this.visualRAM[varName] = (Number(this.visualRAM[varName]) || 0) - 1;
+                            continue;
+                        }
+
+                        const match = line.match(this.REGEX.assign);
+                        if (match) {
+                            const varName = match[1]; const op = match[2]; const rightSide = match[3].trim();
+                            let evaluated = rightSide;
+                            
+                            if (rightSide.startsWith('[') && rightSide.endsWith(']')) {
+                                try {
+                                    const arrContent = rightSide.slice(1, -1).split(',').map(s => {
+                                        let v = s.trim();
+                                        if (v.startsWith('"') || v.startsWith("'")) return v.slice(1, -1);
+                                        if (!isNaN(v)) return Number(v);
+                                        return v;
+                                    }).filter(v => v !== "");
+                                    evaluated = arrContent;
+                                } catch(e) {}
+                            } else {
+                                try {
+                                    let toEval = rightSide;
+                                    for (let key in this.visualRAM) {
+                                        if (!Array.isArray(this.visualRAM[key])) {
+                                            const re = this.getVarRegex(key);
+                                            
+                                            let val = this.visualRAM[key];
+                                            if (typeof val === 'string') val = `"${val}"`; 
+                                            
+                                            toEval = toEval.replace(re, `$1${val}`);
+                                        }
+                                    }
+                                    evaluated = Function(`"use strict"; return (${toEval})`)();
+                                } catch(e) {} 
+                            }
+
+                            if (op === '=') this.visualRAM[varName] = evaluated;
+                            else {
+                                if (this.visualRAM[varName] === undefined) {
+                                    this.logConsole(`[VAROVÁNÍ] Proměnná '${varName}' nebyla deklarována. Systém dosazuje 0.`, "warning");
+                                }
+                                if (op === '+=') {
+                                    if (Array.isArray(this.visualRAM[varName])) {} 
+                                    else this.visualRAM[varName] = (Number(this.visualRAM[varName]) || 0) + Number(evaluated);
+                                }
+                                else if (op === '-=') this.visualRAM[varName] = (Number(this.visualRAM[varName]) || 0) - Number(evaluated);
+                                else if (op === '*=') this.visualRAM[varName] = (Number(this.visualRAM[varName]) || 0) * Number(evaluated);
+                                else if (op === '/=') this.visualRAM[varName] = (Number(this.visualRAM[varName]) || 0) / Number(evaluated);
+                                else if (op === '%=') this.visualRAM[varName] = (Number(this.visualRAM[varName]) || 0) % Number(evaluated);
+                            }
+                        }
+                    }
+                    this.updateRAM(this.visualRAM);
+                } catch(e) {} 
+            },
+
+            runLinter() {
+                let errors = 0;
+                this.blocks.forEach(b => {
+                    const el = document.getElementById(b.id);
+                    if(el) el.classList.remove('sim-warning');
+                    
+                    if (b.type === 'process' || b.type === 'decision' || b.type === 'loop') {
+                        const val = b.label;
+                        let hasError = false;
+                        
+                        if ((val.match(/\(/g) || []).length !== (val.match(/\)/g) || []).length) hasError = true;
+                        if ((val.match(/\[/g) || []).length !== (val.match(/\]/g) || []).length) hasError = true;
+                        if (val.match(/\+\s+=|-\s+=|\*\s+=|\/\s+=/)) hasError = true;
+                        
+                        if ((b.type === 'decision' || b.type === 'loop') && val.match(/(?<![=<>!])=(?![=])/)) {
+                            hasError = true;
+                            this.logConsole(`[LINTER VAROVÁNÍ] V bloku '${val}' použito přiřazení (=) místo porovnání (==).`, "warning");
+                        }
+                        
+                        if (hasError) {
+                            if(el) el.classList.add('sim-warning');
+                            if (!(b.type === 'decision' || b.type === 'loop') || !val.match(/(?<![=<>!])=(?![=])/)) {
+                                this.logConsole(`[LINTER VAROVÁNÍ] Statická analýza: Pravděpodobný překlep v bloku`, "warning");
+                            }
+                            errors++;
+                        }
+                    }
+                });
+                return errors;
+            },
+
+            toggleSimulation(stepMode = false) {
+                if (this.isSimulating) this.stopSimulation(true);
+                else this.startSimulation(stepMode);
+            },
+
+            resolveDecisionFn: null,
+            promptDecision(blockId, signal) {
+                return new Promise(resolve => {
+                    const b = this.blocks.find(x => x.id === blockId);
+                    this.dom.simDecisionTitle.innerText = b.label;
+                    
+                    const isLoop = b.type === 'loop';
+                    this.dom.btnSimYes.innerText = isLoop ? 'TĚLO (Pokračovat)' : 'ANO';
+                    this.dom.btnSimNo.innerText = isLoop ? 'KONEC (Odejít)' : 'NE';
+                    
+                    this.dom.simDecisionModal.classList.add('show');
+                    
+                    this.resolveDecisionFn = (val) => { 
+                        this.dom.simDecisionModal.classList.remove('show'); 
+                        resolve(val); 
+                    };
+                    
+                    signal.addEventListener('abort', () => { 
+                        this.dom.simDecisionModal.classList.remove('show'); 
+                        resolve(null); 
+                    });
+                });
+            },
+            resolveDecisionPrompt(val) {
+                if (this.resolveDecisionFn) this.resolveDecisionFn(val);
+            },
+
+            resolveInputFn: null,
+            promptInput(textLabel, signal) {
+                return new Promise(resolve => {
+                    this.dom.simInputTitle.innerText = textLabel;
+                    this.dom.simInputField.value = '';
+                    this.dom.simInputModal.classList.add('show');
+                    setTimeout(() => this.dom.simInputField.focus(), 50);
+                    this.resolveInputFn = (val) => { this.dom.simInputModal.classList.remove('show'); resolve(val); };
+                    signal.addEventListener('abort', () => { this.dom.simInputModal.classList.remove('show'); resolve(null); });
+                });
+            },
+            resolveInputPrompt() { if (this.resolveInputFn) this.resolveInputFn(this.dom.simInputField.value); },
+
+            displayOutputModal(text, signal, speed) {
+                return new Promise(resolve => {
+                    this.dom.simOutputText.innerText = text;
+                    this.dom.simOutputModal.classList.add('show');
+                    
+                    let timeout;
+                    const close = () => {
+                        this.dom.simOutputModal.classList.remove('show');
+                        resolve();
+                    };
+                    
+                    signal.addEventListener('abort', () => {
+                        clearTimeout(timeout);
+                        close();
+                    });
+
+                    timeout = setTimeout(close, 2000 / speed);
+                });
+            },
+
+            waitForStep(signal) {
+                return new Promise(resolve => {
+                    this.resolveStep = resolve;
+                    signal.addEventListener('abort', () => resolve());
+                });
+            },
+            nextStep() {
+                if (this.resolveStep) { this.resolveStep(); this.resolveStep = null; }
+            },
+
+            async startSimulation(stepMode) {
+                this.isSimulating = true;
+                this.isStepping = stepMode;
+                this.visualRAM = {};
+                this.updateRAM(this.visualRAM);
+
+                const btnSim = document.getElementById('btn-simulate');
+                const btnStep = document.getElementById('btn-step');
+                const btnStop = document.getElementById('btn-stop');
+                
+                if (btnSim) btnSim.style.display = 'none';
+                if (btnStep) btnStep.style.display = 'none';
+                if (btnStop) btnStop.style.display = 'flex';
+                
+                if (stepMode) {
+                    this.dom.btnNextStep.style.display = 'block';
+                    document.getElementById('toolbar').classList.remove('hidden');
+                } else {
+                    this.dom.btnNextStep.style.display = 'none';
+                    document.getElementById('toolbar').classList.add('hidden');
+                }
+                
+                document.querySelectorAll('.glass-wheel').forEach(e => {
+                    e.style.display = stepMode ? 'flex' : 'none';
+                });
+                
+                this.dom.consoleOut.innerHTML = '';
+                this.dom.consolePanel.classList.add('open');
+                this.dom.canvasWrap.style.filter = ""; 
+                this.dom.canvas.style.filter = ""; 
+                
+                setTimeout(() => this.fitToScreen(), 50);
+
+                this.logConsole(`Inicializace BlockFlow Engine v1.1${stepMode ? ' (Krokování)' : ''}...`, "info");
+                
+                const linterErrors = this.runLinter();
+                if (linterErrors > 0) {
+                    this.logConsole(`Linter detekoval ${linterErrors} varování. Simulace pokračuje...`, "warning");
+                }
+
+                const starts = this.blocks.filter(b => b.type === 'start');
+                if (starts.length === 0) {
+                    this.logConsole("CHYBA KOMPILACE: V grafu chybí blok START. Odkud mám začít?", "error");
+                    this.stopSimulation(false); return;
+                }
+
+                this.simAbortController = new AbortController();
+                const signal = this.simAbortController.signal;
+
+                let currentBlock = starts[0];
+                let previousBlock = null;
+                let executionCounts = {};
+                let totalSteps = 0;
+
+                try {
+                    while (currentBlock) {
+                        if (signal.aborted) throw new Error("Aborted");
+
+                        totalSteps++;
+                        if (this.simSpeed >= 100 && totalSteps % 50 === 0) {
+                            await new Promise(r => setTimeout(r, 1));
+                        }
+
+                        if (currentBlock.type === 'note') break;
+
+                        const el = document.getElementById(currentBlock.id);
+                        if (el) el.classList.add('sim-active');
+
+                        let val = currentBlock.label;
+                        executionCounts[currentBlock.id] = (executionCounts[currentBlock.id] || 0) + 1;
+                        
+                        if (executionCounts[currentBlock.id] > 5000) {
+                            this.logConsole(`[CHYBA BĚHU] Detekován nekonečný cyklus v bloku '${val}'. Stack Overflow!`, "error");
+                            if (el) el.classList.add('sim-error'); break;
+                        }
+
+                        if (!this.isStepping && currentBlock.isBreakpoint) {
+                            this.logConsole(`[BREAKPOINT] Zastaveno na bloku '${val}'. Přepínám do režimu krokování.`, "warning");
+                            this.isStepping = true;
+                            
+                            this.dom.btnNextStep.style.display = 'block';
+                            document.getElementById('toolbar').classList.remove('hidden');
+                            document.querySelectorAll('.glass-wheel').forEach(e => e.style.display = 'flex');
+                        }
+
+                        if (currentBlock.type === 'start') this.logConsole(`[START] Běh programu zahájen.`, "success");
+                        else if (currentBlock.type === 'end') {
+                            this.logConsole(`[END] Program úspěšně dorazil na konec.`, "success");
+                            previousBlock = currentBlock;
+                            
+                            if (this.isStepping) {
+                                this.logConsole(">> Čekám na stisk [Další krok]...", "info");
+                                await this.waitForStep(signal);
+                            }
+                            break; 
+                        }
+                        else if (currentBlock.type === 'process') {
+                            this.logConsole(`[AKCE] Zpracovávám: ${val}`);
+                            this.parseVariable(val); 
+                        }
+                        else if (currentBlock.type === 'call') {
+                            this.logConsole(`[PODPROGRAM] Skok do funkce: ${val}`, "info");
+                            if (this.simSpeed < 100) AudioSys.playDataScan(); 
+                            
+                            if(!this.isStepping && this.simSpeed < 100) {
+                                await new Promise(r => setTimeout(r, 400 / this.simSpeed));
+                                this.logConsole(`> Alokuji paměťový rámec pro rutinu...`, "sys");
+                                await new Promise(r => setTimeout(r, 400 / this.simSpeed));
+                                this.logConsole(`> Zpracování vlákna... ÚSPĚCH`, "sys");
+                                await new Promise(r => setTimeout(r, 400 / this.simSpeed));
+                            }
+                            this.logConsole(`[PODPROGRAM] Návrat do hlavního toku.`, "success");
+                        }
+                        else if (currentBlock.type === 'io') {
+                            if (currentBlock.ioType === 'input') {
+                                let varName = 'vstup';
+                                let promptText = val;
+
+                                const assignMatch = val.match(/^([\p{L}_][\p{L}0-9_]*)\s*=\s*(?:input|zadej|čti)/iu);
+                                const ioMatch = val.match(/(?:input|zadej|čti)\s*\(?['"]?([\p{L}_][\p{L}0-9_]*)['"]?\)?/iu);
+                                const pureVarMatch = val.match(/^[\p{L}_][\p{L}0-9_]*$/u);
+
+                                if (assignMatch) {
+                                    varName = assignMatch[1];
+                                } else if (ioMatch) {
+                                    varName = ioMatch[1];
+                                } else if (pureVarMatch) {
+                                    varName = val.trim();
+                                    promptText = `Zadejte hodnotu pro proměnnou [ ${varName} ]:`;
+                                }
+
+                                this.logConsole(`[VSTUP] Čekám na vstup dat pro: '${varName}'...`, "warning");
+                                const inputVal = await this.promptInput(promptText, signal);
+                                if (inputVal === null || signal.aborted) break;
+                                this.logConsole(`[VSTUP] Uloženo: '${inputVal}' -> [${varName}]`, "success");
+                                
+                                const numVal = Number(inputVal);
+                                this.visualRAM[varName] = (inputVal.trim() !== '' && !isNaN(numVal)) ? numVal : `"${inputVal}"`;
+                                this.updateRAM(this.visualRAM);
+
+                            } else {
+                                let outVal = currentBlock.label;
+                                for(let k in this.visualRAM) {
+                                    if (!Array.isArray(this.visualRAM[k])) {
+                                        const re = this.getVarRegex(k);
+                                        
+                                        let printVal = this.visualRAM[k];
+                                        if (typeof printVal === 'string' && printVal.startsWith('"') && printVal.endsWith('"')) {
+                                            printVal = printVal.slice(1, -1);
+                                        }
+                                        outVal = outVal.replace(re, `$1${printVal}`);
+                                    }
+                                }
+                                this.logConsole(`[VÝSTUP] Konzole hlásí: '${outVal}'`, "io");
+                                
+                                if (this.simSpeed < 100) {
+                                    await this.displayOutputModal(outVal, signal, this.simSpeed);
+                                }
+                            }
+                        }
+
+                        if (this.isStepping && currentBlock.type !== 'decision' && currentBlock.type !== 'loop' && !(currentBlock.type === 'io' && currentBlock.ioType === 'input')) {
+                            this.logConsole(">> Čekám na stisk [Další krok]...", "info");
+                            await this.waitForStep(signal);
+                        } else if (!this.isStepping && currentBlock.type !== 'decision' && currentBlock.type !== 'loop' && !(currentBlock.type === 'io' && currentBlock.ioType === 'input')) {
+                            if (this.simSpeed < 100) await new Promise(r => setTimeout(r, 800 / this.simSpeed));
+                        }
+                        
+                        if (el) el.classList.remove('sim-active');
+                        if (signal.aborted) break;
+
+                        const outgoingArrows = this.arrows.filter(a => a.from === currentBlock.id);
+                        let nextArrow = null;
+
+                        if (currentBlock.type === 'decision' || currentBlock.type === 'loop') {
+                            const isLoop = currentBlock.type === 'loop';
+                            this.logConsole(`[${isLoop ? 'SMYČKA' : 'ROZHODOVÁNÍ'}] Vyhodnocuji: '${val}'... Čekám na volbu architekta.`, "warning");
+                            
+                            if (el) el.classList.add('sim-active'); 
+                            const answer = await this.promptDecision(currentBlock.id, signal);
+                            if (el) el.classList.remove('sim-active');
+                            
+                            if (answer === null || signal.aborted) break;
+                            
+                            const textA = isLoop ? 'TĚLO' : 'ANO'; const textN = isLoop ? 'KONEC' : 'NE';
+                            this.logConsole(`-> Architekt zvolil větev: ${answer ? textA : textN}`, "info");
+                            
+                            const portToUse = answer ? currentBlock.yesPort : currentBlock.noPort;
+                            nextArrow = outgoingArrows.find(a => a.fromPort === portToUse);
+                            
+                            if (!nextArrow) {
+                                this.logConsole(`[CHYBA BĚHU] Zvolená větev (${answer ? textA : textN}) nikam nevede! Slepá ulička.`, "error");
+                                if (el) el.classList.add('sim-error'); previousBlock = currentBlock; currentBlock = null; break;
+                            }
+
+                            if (this.isStepping) {
+                                this.logConsole(">> Čekám na stisk [Další krok]...", "info");
+                                await this.waitForStep(signal);
+                            }
+                        } else {
+                            if (outgoingArrows.length === 0 && currentBlock.type !== 'end') {
+                                this.logConsole(`[CHYBA BĚHU] Slepá ulička. Signál nemá kam pokračovat a nedosáhl bloku KONEC.`, "error");
+                                if (el) el.classList.add('sim-error'); previousBlock = currentBlock; break;
+                            }
+                            nextArrow = outgoingArrows[0];
+                        }
+
+                        previousBlock = currentBlock;
+                        if (nextArrow) {
+                            if (!this.isStepping) {
+                                if (this.simSpeed < 100) {
+                                    await this.animateToken(nextArrow, signal, this.simSpeed);
+                                } else {
+                                    const pathEl = document.getElementById(`path_${nextArrow.id}`);
+                                    if (pathEl) {
+                                        pathEl.classList.add('sim-active');
+                                        setTimeout(() => pathEl.classList.remove('sim-active'), 50);
+                                    }
+                                }
+                            } else {
+                                const pathEl = document.getElementById(`path_${nextArrow.id}`);
+                                if (pathEl) {
+                                    pathEl.classList.add('sim-active');
+                                    setTimeout(() => pathEl.classList.remove('sim-active'), 400);
+                                }
+                            }
+                            if (signal.aborted) break;
+                            currentBlock = this.blocks.find(b => b.id === nextArrow.to);
+                        } else {
+                            currentBlock = null;
+                        }
+                    }
+                } catch (e) { if (e.message !== "Aborted") console.error(e); }
+
+                if(this.isSimulating) {
+                    if (previousBlock && previousBlock.type !== 'end' && !document.querySelector('.sim-error')) {
+                        this.logConsole(`[CHYBA BĚHU] Program neskončil v bloku Konec! Architekt nenavedl tok dat do cíle.`, "error");
+                        this.lastSimStatus = 'error';
+                    } else if (document.querySelector('.sim-error')) {
+                        this.lastSimStatus = 'error';
+                    } else {
+                        this.lastSimStatus = 'success';
+                    }
+                    
+                    if (this.lastSimStatus === 'error') {
+                        document.body.classList.add('glitch-shake');
+                        setTimeout(() => document.body.classList.remove('glitch-shake'), 300);
+                        AudioSys.playError();
+                    } else if (this.lastSimStatus === 'success') {
+                        AudioSys.playSuccess();
+                    }
+                    this.logConsole("--- Běh ukončen ---", "info");
+                    
+                    const btnSim = document.getElementById('btn-simulate');
+                    const btnStep = document.getElementById('btn-step');
+                    const btnStop = document.getElementById('btn-stop');
+                    if(btnSim) btnSim.style.display = 'flex';
+                    if(btnStep) btnStep.style.display = 'flex';
+                    if(btnStop) btnStop.style.display = 'none';
+                    
+                    this.dom.btnNextStep.style.display = 'none';
+                    document.getElementById('toolbar').classList.remove('hidden');
+                    this.dom.simToken.style.display = 'none';
+                    document.querySelectorAll('.glass-wheel').forEach(e => e.style.display = 'flex');
+                    this.isSimulating = false;
+                }
+            },
+
+            stopSimulation(closePanel = true) {
+                this.isSimulating = false;
+                if (this.simAbortController) {
+                    this.simAbortController.abort();
+                    this.lastSimStatus = 'untested';
+                }
+                if (this.resolveStep) this.resolveStep();
+                
+                const btnSim = document.getElementById('btn-simulate');
+                const btnStep = document.getElementById('btn-step');
+                const btnStop = document.getElementById('btn-stop');
+                if(btnSim) btnSim.style.display = 'flex';
+                if(btnStep) btnStep.style.display = 'flex';
+                if(btnStop) btnStop.style.display = 'none';
+                
+                this.dom.btnNextStep.style.display = 'none';
+
+                if (closePanel) {
+                    this.dom.consolePanel.classList.remove('open');
+                }
+                
+                document.getElementById('toolbar').classList.remove('hidden');
+                document.querySelectorAll('.sim-active, .sim-error, .sim-warning').forEach(el => { 
+                    el.classList.remove('sim-active'); 
+                    el.classList.remove('sim-error'); 
+                    el.classList.remove('sim-warning'); 
+                });
+                this.dom.simToken.style.display = 'none';
+                
+                this.dom.simOutputModal.classList.remove('show');
+                
+                document.querySelectorAll('.glass-wheel').forEach(e => e.style.display = 'flex');
+            },
+
+            animateToken(arrow, signal, speed = 1) {
+                return new Promise(resolve => {
+                    const pathEl = document.getElementById(`path_${arrow.id}`);
+                    if (!pathEl) { resolve(); return; }
+
+                    pathEl.classList.add('sim-active');
+                    const token = this.dom.simToken; token.style.display = 'block';
+
+                    const length = pathEl.getTotalLength(); 
+                    const duration = 600 / speed; 
+                    const startTime = performance.now();
+
+                    const step = (time) => {
+                        if (signal.aborted) { pathEl.classList.remove('sim-active'); token.style.display = 'none'; resolve(); return; }
+
+                        let progress = (time - startTime) / duration; if (progress > 1) progress = 1;
+                        const point = pathEl.getPointAtLength(progress * length);
+                        const rect = this.dom.canvasWrap.getBoundingClientRect();
+                        const screenX = point.x * this.vscale + this.vx + rect.left; const screenY = point.y * this.vscale + this.vy + rect.top;
+
+                        token.style.left = `${screenX - 7}px`; token.style.top = `${screenY - 7}px`;
+
+                        if (progress < 1) requestAnimationFrame(step);
+                        else { pathEl.classList.remove('sim-active'); token.style.display = 'none'; resolve(); }
+                    };
+                    requestAnimationFrame(step);
+                });
+            },
+
+            promptSvgExport() {
+                if (this.blocks.length === 0) { this.toast("Plátno je prázdné."); return; }
+                
+                document.getElementById('svg-export-modal').classList.add('show');
+                
+                const titleEl = document.querySelector('#svg-export-modal h3');
+                if (titleEl) {
+                    titleEl.innerText = 'Exportovat Schéma (SVG)';
+                }
+                
+                setTimeout(() => {
+                    const input = document.getElementById('svg-filename-input');
+                    if (input) { input.focus(); input.select(); }
+                }, 50);
+            },
+
+            executeSvgExport(includeConsole) {
+                this.clearHighlight(); // Bezpečnostní vymazání před exportem
+                let filenameInput = document.getElementById('svg-filename-input');
+                let filename = filenameInput ? filenameInput.value.trim() : 'BlockFlow_Schema';
+                if (!filename) filename = 'BlockFlow_Schema';
+                if (!filename.toLowerCase().endsWith('.svg')) filename += '.svg';
+
+                document.getElementById('svg-export-modal').classList.remove('show');
+                
+                let subsetBlocks = null;
+                let subsetArrows = null;
+                let transparentBg = false;
+                
+                if (this.selectedBlocks.size > 0) {
+                    subsetBlocks = this.blocks.filter(b => this.selectedBlocks.has(b.id));
+                    subsetArrows = this.arrows.filter(a => this.selectedBlocks.has(a.from) && this.selectedBlocks.has(a.to));
+                    transparentBg = true; 
+                }
+
+                const svg = this.getSvgContent(includeConsole, subsetBlocks, subsetArrows, transparentBg);
+                if (!svg) return;
+                const a = document.createElement("a"); 
+                a.href = URL.createObjectURL(new Blob([svg], {type: "image/svg+xml;charset=utf-8"})); 
+                a.download = filename; 
+                a.click();
+                this.toast(`Exportováno jako ${filename} ✓`);
+            },
+
+            getSvgContent(includeConsole = false, subsetBlocks = null, subsetArrows = null, transparentBg = false) {
+                const targetBlocks = subsetBlocks || this.blocks;
+                const targetArrows = subsetArrows || this.arrows;
+
+                if (targetBlocks.length === 0) return null;
+                let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+                targetBlocks.forEach(b => {
+                    const el = document.getElementById(b.id);
+                    const finalW = (el && el.offsetWidth > 0) ? el.offsetWidth : 200;
+                    const finalH = (el && el.offsetHeight > 0) ? el.offsetHeight : 100;
+                    minX = Math.min(minX, b.x); minY = Math.min(minY, b.y); maxX = Math.max(maxX, b.x + finalW); maxY = Math.max(maxY, b.y + finalH);
+                });
+                
+                const pad = 200; const W = maxX - minX + pad*2; let H = maxY - minY + pad*2; const ox = minX - pad; const oy = minY - pad;
+
+                let logHeight = 0;
+                let logs = [];
+                if (includeConsole && !subsetBlocks) {
+                    logs = Array.from(this.dom.consoleOut.querySelectorAll('.log-entry'));
+                    if (logs.length > 0) {
+                        logHeight = logs.length * 20 + 60;
+                    }
+                }
+                const footerPadding = !subsetBlocks ? 40 : 0; 
+                const totalH = H + logHeight + footerPadding;
+                const bgFill = transparentBg ? 'transparent' : '#0d0f14';
+
+                let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${totalH}" width="${W}" height="${totalH}"><defs><style>@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@600&amp;family=Syne:wght@700&amp;display=swap'); .text-label { font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 700; fill: rgba(255,255,255,0.6); letter-spacing: 1px;} .text-code { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; fill: white; }</style><marker id="ah" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#64748b"/></marker></defs><rect width="100%" height="100%" fill="${bgFill}" />`;
+
+                targetArrows.forEach(a => {
+                    const from = this.getPortPos(a.from, a.fromPort); const to = this.getPortPos(a.to, a.toPort); if(!from || !to) return;
+                    const shiftedPath = this.getArrowPathStr(from, to, a.fromPort, a.toPort, ox, oy);
+                    svg += `<path id="path_${a.id}" d="${shiftedPath}" stroke="#64748b" stroke-width="3" fill="none" marker-end="url(#ah)" style="transition: all 0.2s;" />`;
+                });
+
+                const colors = { start: { bg: '#064e3b', stroke: '#10b981' }, end: { bg: '#064e3b', stroke: '#10b981' }, process: { bg: '#1e3a5f', stroke: '#3b82f6' }, decision: { bg: '#451a03', stroke: '#f59e0b' }, io: { bg: '#2d1b69', stroke: '#8b5cf6' }, loop: { bg: '#500724', stroke: '#ec4899' }, call: { bg: '#0c4a6e', stroke: '#06b6d4' }, note: { bg: 'rgba(253, 224, 71, 0.05)', stroke: '#fde047' } };
+
+                targetBlocks.forEach(b => {
+                    const el = document.getElementById(b.id);
+                    const finalW = (el && el.offsetWidth > 0) ? el.offsetWidth : 200;
+                    const finalH = (el && el.offsetHeight > 0) ? el.offsetHeight : 80;
+                    
+                    const bx = b.x - ox, by = b.y - oy;
+                    let c = colors[b.type] || colors.process; 
+                    if (b.type === 'io' && b.ioType === 'output') {
+                        c = { bg: '#7c2d12', stroke: '#f97316' };
+                    }
+                    
+                    let tLabel = b.type.toUpperCase();
+                    if (b.type === 'end') tLabel = 'KONEC';
+                    if (b.type === 'decision') tLabel = 'PODMÍNKA';
+                    if (b.type === 'loop') tLabel = 'SMYČKA';
+                    if (b.type === 'process') tLabel = 'AKCE';
+                    if (b.type === 'call') tLabel = 'VOLÁNÍ';
+                    if (b.type === 'io') tLabel = b.ioType === 'input' ? 'VSTUP' : 'VÝSTUP';
+                    if (b.type === 'note') tLabel = 'POZNÁMKA';
+                    
+                    if (b.type === 'start' || b.type === 'end') svg += `<rect x="${bx}" y="${by}" width="${finalW}" height="${finalH}" rx="${finalH/2}" fill="${c.bg}" stroke="${c.stroke}" stroke-width="2"/>`;
+                    else if (b.type === 'decision') svg += `<polygon points="${bx+finalW/2},${by} ${bx+finalW},${by+finalH/2} ${bx+finalW/2},${by+finalH} ${bx},${by+finalH/2}" fill="${c.bg}" stroke="${c.stroke}" stroke-width="2"/>`;
+                    else if (b.type === 'io') svg += `<polygon points="${bx+15},${by} ${bx+finalW},${by} ${bx+finalW-15},${by+finalH} ${bx},${by+finalH}" fill="${c.bg}" stroke="${c.stroke}" stroke-width="2"/>`;
+                    else if (b.type === 'loop') svg += `<path d="M ${bx+20} ${by} L ${bx+finalW} ${by} L ${bx+finalW} ${by+finalH} L ${bx+20} ${by+finalH} Q ${bx} ${by+finalH} ${bx} ${by+finalH/2} Q ${bx} ${by} ${bx+20} ${by} Z" fill="${c.bg}" stroke="${c.stroke}" stroke-width="2"/>`;
+                    else if (b.type === 'call') { svg += `<rect x="${bx}" y="${by}" width="${finalW}" height="${finalH}" rx="4" fill="${c.bg}" stroke="${c.stroke}" stroke-width="2"/>`; svg += `<line x1="${bx+8}" y1="${by}" x2="${bx+8}" y2="${by+finalH}" stroke="${c.stroke}" stroke-width="2"/>`; svg += `<line x1="${bx+finalW-8}" y1="${by}" x2="${bx+finalW-8}" y2="${by+finalH}" stroke="${c.stroke}" stroke-width="2"/>`; }
+                    else if (b.type === 'note') { svg += `<rect x="${bx}" y="${by}" width="${finalW}" height="${finalH}" fill="${c.bg}" stroke="rgba(253, 224, 71, 0.2)" stroke-width="1"/>`; svg += `<line x1="${bx}" y1="${by}" x2="${bx}" y2="${by+finalH}" stroke="${c.stroke}" stroke-width="4"/>`; }
+                    else svg += `<rect x="${bx}" y="${by}" width="${finalW}" height="${finalH}" rx="8" fill="${c.bg}" stroke="${c.stroke}" stroke-width="2"/>`;
+
+                    let alignStart = (b.type === 'note');
+                    let textX = alignStart ? bx + 20 : bx + finalW/2;
+                    let textAnchor = alignStart ? 'start' : 'middle';
+                    
+                    let labelY = by + 20;
+                    if (b.type === 'decision') labelY = by + 35;
+
+                    svg += `<text class="text-label" x="${textX}" y="${labelY}" text-anchor="${textAnchor}">${tLabel}</text>`; 
+                    
+                    const lines = b.label.split('\n');
+                    const lineHeight = 16;
+                    let startY = by + finalH/2 - ((lines.length - 1) * lineHeight) / 2 + 6;
+                    if (b.type === 'decision') startY += 8; 
+                    
+                    svg += `<text class="text-code" x="${textX}" y="${startY}" text-anchor="${textAnchor}">`;
+                    lines.forEach((line, idx) => {
+                        const safeLine = line.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                        svg += `<tspan x="${textX}" dy="${idx === 0 ? 0 : lineHeight}">${safeLine}</tspan>`;
+                    });
+                    svg += `</text>`;
+                });
+
+                if (includeConsole && logs.length > 0 && !subsetBlocks) {
+                    const logStartY = H - 20;
+                    svg += `<rect x="20" y="${logStartY}" width="${W - 40}" height="${logHeight}" rx="8" fill="#161920" stroke="#2a2f3d" stroke-width="2"/>`;
+                    svg += `<text x="40" y="${logStartY + 25}" font-family="monospace" font-size="14" font-weight="bold" fill="#64748b">TERMINAL // BlockFlow</text>`;
+                    logs.forEach((log, idx) => {
+                        const time = log.querySelector('.log-time').innerText;
+                        const msg = log.querySelector('.log-msg').innerText;
+                        let color = "#e2e8f0";
+                        if (log.classList.contains('log-error')) color = "#ef4444";
+                        else if (log.classList.contains('log-success')) color = "#10b981";
+                        else if (log.classList.contains('log-warning')) color = "#f59e0b";
+                        else if (log.classList.contains('log-io')) color = "#c4b5fd";
+                        
+                        const safeMsg = msg.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                        svg += `<text x="40" y="${logStartY + 50 + idx * 20}" font-family="monospace" font-size="13" fill="${color}">${time} ${safeMsg}</text>`;
+                    });
+                }
+                
+                if (!subsetBlocks) {
+                    let statusText = "STAV: NETESTOVÁNO ⚠";
+                    let statusColor = "#f59e0b";
+                    if (this.lastSimStatus === 'success') {
+                        statusText = "STAV: KÓD FUNKČNÍ ✓";
+                        statusColor = "#10b981"; 
+                    } else if (this.lastSimStatus === 'error') {
+                        statusText = "STAV: CHYBA BĚHU ✗";
+                        statusColor = "#ef4444"; 
+                    }
+                    svg += `<text x="20" y="${totalH - 15}" font-family="monospace" font-size="14" font-weight="bold" fill="${statusColor}">${statusText}</text>`;
+                    svg += `<text x="${W - 20}" y="${totalH - 15}" font-family="monospace" font-size="12" fill="rgba(255,255,255,0.3)" text-anchor="end">GPLv3 © 2026 Luděk Sušický | BlockFlow EDU</text>`;
+                }
+
+                svg += `</svg>`;
+                return svg;
+            },
+
+            promptJsonExport() {
+                if (this.blocks.length === 0) { this.toast("Plátno je prázdné."); return; }
+                document.getElementById('json-export-modal').classList.add('show');
+                setTimeout(() => {
+                    const input = document.getElementById('json-filename-input');
+                    if (input) { input.focus(); input.select(); }
+                }, 50);
+            },
+
+            executeJsonExport() {
+                let filenameInput = document.getElementById('json-filename-input');
+                let filename = filenameInput ? filenameInput.value.trim() : 'BlockFlow_Projekt';
+                if (!filename) filename = 'BlockFlow_Projekt';
+                if (!filename.toLowerCase().endsWith('.json')) filename += '.json';
+
+                document.getElementById('json-export-modal').classList.remove('show');
+                
+                const state = JSON.stringify({ 
+                    blocks: this.blocks, 
+                    arrows: this.arrows, 
+                    nextId: this.nextId,
+                    vx: this.vx,
+                    vy: this.vy,
+                    vscale: this.vscale
+                }, null, 2);
+
+                const a = document.createElement("a"); 
+                a.href = URL.createObjectURL(new Blob([state], {type: "application/json;charset=utf-8"})); 
+                a.download = filename; 
+                a.click();
+                this.toast(`Projekt uložen jako ${filename} ✓`);
+            },
+
+            handleJsonImport(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const parsed = JSON.parse(e.target.result);
+                        if (parsed.blocks && parsed.arrows) {
+                            this.blocks = parsed.blocks;
+                            this.arrows = parsed.arrows;
+                            this.nextId = parsed.nextId || 1;
+                            if (typeof parsed.vx === 'number') this.vx = parsed.vx;
+                            if (typeof parsed.vy === 'number') this.vy = parsed.vy;
+                            if (typeof parsed.vscale === 'number') this.vscale = parsed.vscale;
+
+                            this.selectedBlocks.clear();
+                            this.selectedArrow = null;
+                            this.renderAll();
+                            this.saveState(true);
+                            this.pushHistory();
+                            
+                            setTimeout(() => {
+                                this.renderArrows();
+                                this.applyTransform();
+                            }, 50);
+                            this.toast('Projekt úspěšně nahrán ✓');
+                        } else {
+                            this.toast('Chyba: Neplatný formát souboru.');
+                        }
+                    } catch (err) {
+                        this.toast('Chyba při čtení souboru.');
+                        console.error(err);
+                    }
+                    event.target.value = ''; 
+                };
+                reader.readAsText(file);
+            }
+        };
+
+        window.onload = () => App.init();
+    </script>
+</body>
+</html>

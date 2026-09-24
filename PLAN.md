@@ -198,10 +198,17 @@ Všechny stupně jsou **otevřené** (žák si může hrát napřeskáčku). Ka�
 ### 7.8 Výstupní modál
 - Manuální „Zavřít (Enter)" + minimální držení.
 
-### 7.9 Pracovní plochy
-- **WS1 „KAMPAŇ"** — learning mode: 6 stupňů, jméno povinné, XP/certifikáty, 3h hodiny.
-- **WS2 „VOLNÝ"** — volný režim: **jablka demo** + čistý editor, bez jména (jako dnes), bez hodin.
-- **WS3 „PROFI"** — administrace: všechny nástroje, tisk/RVP mapa, bez mise.
+### 7.9 Režimy a pracovní plochy
+- **Režimy** (přepínač v hamburger menu): **KAMPAŇ** / **VOLNÝ** / **PROFI**.
+  Mise jsou integrované v menu (sekce REŽIM · MISE · NÁSTROJE), ne v plovoucím panelu
+  (ten překrýval menu — opraveno ve F1).
+- **KAMPAŇ** — learning mode: 6 stupňů, jméno povinné, XP/certifikáty, 3h hodiny.
+  Každý level má **vlastní plochu** (`lvl1…lvl6`) → návrat k misi zachová rozdělanou práci.
+- **VOLNÝ** — **jablka demo** + čistý editor, bez jména, bez hodin (slot `free`).
+- **PROFI** — administrace: všechny nástroje, tisk/RVP mapa, bez mise (slot `profi`).
+- **Vstup do mise:** klik na level → načte se **scaffolding** (předpřipravené moduly
+  na plátně + omezená paleta) → **level modal** s podrobným zadáním (Typ, Cíl,
+  „Co máš udělat", povolené bloky, ověření) + Kompas.
 
 ---
 
@@ -308,7 +315,7 @@ Konverze starých hlášek (jádro zachovat, zkrátit):
 | Fáze | Rozsah | Verifikace |
 |---|---|---|
 | **F0** | **Revize funkčnosti** (§12): bugfixy `{var}`, tichá chyba výrazu, XSS, typewriter, death-loop, `fitToScreen`, porty | testy §12.2; session PASS |
-| **F1** | `Game` + jméno (learning mode) + `Data` (6 stupňů) + WS1/2/3 + XP/hodnost (pozitivní) | 3 umělé mise dají XP i certifikát |
+| **F1** | `Game` + jméno (learning mode) + `Data` (6 stupňů) + režimy a plochy per level + level modal + scaffolding loader + XP/hodnost (pozitivní) | 3 umělé mise dají XP i certifikát; vstup do mise vykreslí scaffolding |
 | **F2** | `Checker` (evaluace + tester) — režim OVĚŘIT | vektory A/B/C jablek projdou |
 | **F3** | Kompas (zdarma) + Ladička + vzorové řešení gating | scénář „žák úplně ztracen → sám projde" |
 | **F4** | `Session` (3 h odpočet, varování, auto-reset) + červené RESET + migrace v1→v2 | simulace času: reset při 03:00, RESET ručně |

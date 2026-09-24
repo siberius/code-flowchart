@@ -40,7 +40,7 @@ Pro vzdělávací obsah navíc: `md-skills/vzdelavaci-metodiky.md` (RVP/ŠVP, CZ
 ### Rozhodnutí zadavatele (závazná — `PLAN.md` §0 a §15)
 - **Jeden HTML soubor**; learning mode vyžaduje jméno žáka (uložené 1× na
   zařízení, 1–30 znaků); volný režim (ukázka jablek) jméno nevyžaduje.
-- **6 otevřených stupňů** (nutné minimum RVP G + SOŠ ICT), level ≤ 45 min
+- **6 otevřených stupňů** (nutné minimum RVP G + SOŠ neprogramátorské obory), level ≤ 45 min
   po zaučení; 5–10 bloků, 2–3 testovací vektory, cíl ≤ 15 slov.
 - **Po 3 h aktivní hry auto-reset** (smaže vše včetně jména, s varováním
   v 02:30); **červené RESET** (potvrzené) dostupné všude i na PC.
@@ -70,7 +70,8 @@ Pro vzdělávací obsah navíc: `md-skills/vzdelavaci-metodiky.md` (RVP/ŠVP, CZ
   - `node flow_game_tests.js` (F1) — herní vrstva: `LEVELS` data, jméno, XP bonusy,
     hvězdy, hodnosti, `completeLevel` + certifikát, persistence, reset, `SAMPLES`.
   - `node flow_smoke_tests.js` (F1) — UI smoke: `App.init()` + HUD/kampaň/jméno/reset
-    nad bohatým DOM mockem, menu ukázek + `loadSample`.
+    nad bohatým DOM mockem, menu ukázek + `loadSample`, `story` v modalu mise,
+    `onLevelSuccess` (hvězdy do menu), herní confirm modal.
   - Sdílený `flow_test_utils.js` (načtení `App` + `Game` + `LEVELS` + `SAMPLES` z inline `<script>` v Node).
   - **Dev cheat:** `Ctrl+Alt+C` s aktivním CapsLockem v MISE vyřeší aktuální
     level krok za krokem ze vzorového řešení (`SOLUTIONS`); jen pro testování.

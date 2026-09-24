@@ -741,11 +741,33 @@
         }
         #name-input:focus { border-color: var(--accent); }
         #name-error { color: #ef4444; font-size: 12px; min-height: 16px; }
-        #level-body .lb-goal { color: var(--text); font-size: 15px; margin-bottom: 10px; }
+        #level-body .lb-goal { color: var(--text); font-size: 22px; margin-bottom: 10px; }
         #level-body .lb-step { color: var(--text); }
-        #level-body .lb-label { color: var(--accent); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; }
+        #level-body .lb-label { color: var(--accent); font-size: 16px; letter-spacing: 1px; text-transform: uppercase; }
         #level-body .lb-blocks { color: var(--accent3); }
-        #level-kompas .lk-label { color: var(--accent3); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; }
+        #level-kompas .lk-label { color: var(--accent3); font-size: 16px; letter-spacing: 1px; text-transform: uppercase; }
+        #level-modal .modal-box { max-height: 90vh; }
+        #level-body, #level-kompas { overflow-y: auto; min-height: 0; padding-right: 6px; }
+
+        /* Zvětšení textu v modalech o 50 % (na přání zadavatele) */
+        .modal-box { font-size: 21px; }
+        .modal-box h3 { font-size: 27px; }
+        .modal-box p,
+        .modal-box label,
+        .modal-box #level-body,
+        .modal-box #level-kompas,
+        .modal-box .help-item,
+        .modal-box .lb-goal,
+        .modal-box .lb-step,
+        .modal-box .lb-blocks,
+        .modal-box .help-code,
+        .modal-box #name-error,
+        .modal-box #sim-output-text { font-size: 21px !important; }
+        .modal-box .lb-label,
+        .modal-box .lk-label { font-size: 16px !important; }
+        .modal-box .input-dark,
+        .modal-box #name-input { font-size: 21px !important; }
+        .modal-box button { font-size: 19px !important; }
     </style>
 </head>
 <body>
@@ -1124,7 +1146,7 @@
                     </div>
 
                     <div class="help-section">
-                        <h4>Co si osvojíš (RVP G + SOŠ ICT)</h4>
+                        <h4>Co si osvojíš (RVP G + SOŠ)</h4>
                         <div class="help-item">Zápis algoritmu vývojovým diagramem, proměnné a datové typy, vstup/výstup, větvení, cykly (fixní i podmíněné), podprogramy a dekompozice, ověření a oprava řešení, vlastní tvorba.</div>
                     </div>
                 </div>
@@ -1139,7 +1161,7 @@
         <div class="modal-box">
             <h3>ℹ️ O programu</h3>
             <p style="color: var(--text-dim); line-height: 1.6; font-size: 14px; margin-bottom: 10px;">CodeFlowChart EDU je moderní, plně interaktivní výukový nástroj pro vizuální pochopení algoritmů, logických struktur a stavových proměnných. Spojuje návrh vývojových diagramů s krokovacím enginem a Visual RAM pamětí v reálném čase.</p>
-            <p style="color: var(--text-dim); line-height: 1.6; font-size: 14px; margin-bottom: 10px;">Obsahuje <strong style="color: var(--text);">6 herních stupňů</strong> (MISE) od sekvence přes větvení a cykly až po podprogramy, <strong style="color: var(--text);">hodnosti, hvězdy a certifikát</strong>, volné plochy SPACE 1–5, ukázkové diagramy a dvě přepínatelná narativní témata (Streamer / Operátor). Pokrývá učivo <strong style="color: var(--text);">RVP G a SOŠ (ICT základ)</strong>: zápis algoritmu, proměnné, vstup/výstup, větvení, cykly, podprogramy, ověření a tvorba.</p>
+            <p style="color: var(--text-dim); line-height: 1.6; font-size: 14px; margin-bottom: 10px;">Obsahuje <strong style="color: var(--text);">6 herních stupňů</strong> (MISE) od sekvence přes větvení a cykly až po podprogramy, <strong style="color: var(--text);">hodnosti, hvězdy a certifikát</strong>, volné plochy SPACE 1–5, ukázkové diagramy a dvě přepínatelná narativní témata (Streamer / Operátor). Pokrývá učivo <strong style="color: var(--text);">RVP G a SOŠ neprogramátorských oborů</strong>: zápis algoritmu, proměnné, vstup/výstup, větvení, cykly, podprogramy, ověření a tvorba.</p>
             <p style="color: var(--text-dim); line-height: 1.6; font-size: 14px;">Aplikace je ukázkou pokročilé <strong style="color: var(--text);">SPA (Single Page Application)</strong> architektury — kompletně v jediném HTML souboru, offline, bez serveru a bez telemetrie.</p>
             <p style="color: var(--accent2); font-family: 'JetBrains Mono', monospace; font-size: 12px; margin-top: 15px;">Verze jádra: 1.5<br>Codename: CyberCanvas</p>
             <div class="btn-row" style="margin-top: 20px;">
@@ -1581,6 +1603,7 @@
                     4: {
                         name: 'Moderace chatu',
                         goal: 'Projdi zprávy, dokud nemáš 2 virální. Spočítej, kolik jsi jich prošel.',
+                        story: 'Moderuješ chat: procházíš zprávy, dokud nenajdeš 2 virální, a počítáš, kolik jsi jich prošel.',
                         kompas: {
                             cil: 'Potřebuješ 2 virální — smyčka se točí, dokud je nemáš.',
                             hacek: 'Kolikrát se smyčka opakuje? Záleží to na vstupech?',
@@ -1598,6 +1621,7 @@
                     5: {
                         name: 'Zavolej moda',
                         goal: 'Mod je zavolán třikrát. Zavolej ho správně.',
+                        story: 'Řídíš zásah moda: místo ruční práce použiješ podprogram (VOLÁNÍ) pro každého hráče.',
                         kompas: {
                             cil: 'Mod dělá totéž třikrát — stačí jedno VOLÁNÍ s jiným hráčem.',
                             hacek: 'Co se stane, když zavoláš s hráč=Bob?',
@@ -1614,6 +1638,7 @@
                     6: {
                         name: 'Záchrana streamu',
                         goal: 'Stream padá. Oprav smyčku, vyber čistší tok.',
+                        story: 'Zachraňuješ padající stream: najdeš chybu ve smyčce, opravíš ji a zvolíš čistší tok.',
                         kompas: {
                             cil: 'Najdi, co se opakuje, a nech smyčku doběhnout do konce.',
                             hacek: 'Skončí smyčka dřív, než zpracuje poslední prvek?',
@@ -1637,6 +1662,7 @@
                     1: {
                         name: 'Průvodce skladem',
                         goal: 'Veronika nezná sklad. Slož jí cestičku: 3 kroky v pořadí.',
+                        story: 'Řídíš proces ve skladu: seřaď kroky (brána → bedna → brána), než projede vozík.',
                         kompas: {
                             cil: 'Technik potřebuje vidět cestičku od STARTU do KONCE.',
                             hacek: 'Můžeš odejít ze skladu, aniž bys zavřel bránu?',
@@ -1650,6 +1676,7 @@
                     2: {
                         name: 'Pokladna',
                         goal: 'Načti cenu a kusy. Vypiš mezisoučet.',
+                        story: 'Obsluhuješ pokladnu: z ceny a počtu kusů spočítáš mezisoučet a vypíšeš ho.',
                         kompas: {
                             cil: 'Mezisoučet vzniká z dvojice čísel.',
                             hacek: 'Vyhodí pokladna výsledek sám od sebe?',
@@ -1667,6 +1694,7 @@
                     3: {
                         name: 'Vstupenka 15+',
                         goal: 'Načti věk. ANO=pusť, NE=vykašli se.',
+                        story: 'Řídíš vstupenkový systém 15+: podmínkou pustíš nebo odmítneš návštěvníka.',
                         kompas: {
                             cil: 'Přesně 15 let je „dost" — kde to rozseknem?',
                             hacek: 'Co se stane, když je 15 přesně?',
@@ -1684,6 +1712,7 @@
                     4: {
                         name: 'Kontrola kvality',
                         goal: 'Skenuj díly, dokud nemáš 2 dobré. Spočítej, kolik jsi jich prošel.',
+                        story: 'Řídíš kontrolu kvality: skenuješ díly, dokud nemáš 2 dobré, a počítáš, kolik jsi jich prošel.',
                         kompas: {
                             cil: 'Potřebuješ 2 dobré díly — smyčka se točí, dokud je nemáš.',
                             hacek: 'Kolikrát se smyčka opakuje? Záleží to na vstupech?',
@@ -1701,6 +1730,7 @@
                     5: {
                         name: 'Volání opraváře',
                         goal: 'Opravář je zavolán 3×. Zavolej ho správně.',
+                        story: 'Voláš opraváře: místo ruční opravy použiješ podprogram (VOLÁNÍ) pro každý díl.',
                         kompas: {
                             cil: 'Opravář dělá totéž 3× — stačí jedno VOLÁNÍ s odlišným dílem.',
                             hacek: 'Co se stane, když zavoláš s díl=B?',
@@ -1717,6 +1747,7 @@
                     6: {
                         name: 'Záchrana serveru',
                         goal: 'Server padá. Oprav smyčku, vyber čistší tok.',
+                        story: 'Zachraňuješ server: najdeš chybu ve smyčce, opravíš ji a zvolíš čistší tok.',
                         kompas: {
                             cil: 'Najdi, co se opakuje, a nech smyčku doběhnout do konce.',
                             hacek: 'Skončí smyčka dřív, než zpracuje poslední prvek?',
@@ -2564,10 +2595,12 @@
                 if (this.dom.levelBody) {
                     this.dom.levelBody.innerHTML =
                         '<div class="lb-label">Typ</div><div class="lb-step">' + typeLabel + '</div>' +
+                        '<div class="lb-label" style="margin-top:8px;">Co budeš dělat</div><div class="lb-goal">' + (lvl.story || '') + '</div>' +
                         '<div class="lb-label" style="margin-top:8px;">Cíl</div><div class="lb-goal">' + lvl.goal + '</div>' +
-                        '<div class="lb-label">Co máš udělat</div><div class="lb-step">' + steps + '</div>' +
+                        '<div class="lb-label" style="margin-top:8px;">Co máš udělat</div><div class="lb-step">' + steps + '</div>' +
+                        '<div class="lb-label" style="margin-top:8px;">Přesuň a propoj</div><div class="lb-step">Bloky na plátně jsou rozházené. Přesuň je na vhodná místa a propoj šipkami podle zadání.</div>' +
                         '<div class="lb-label" style="margin-top:8px;">Povolené bloky</div><div class="lb-blocks">' + blocks + '</div>' +
-                        '<div class="lb-label" style="margin-top:8px;">Ověření</div><div class="lb-step">AUTO-kontrola na ' + lvl.tests.length + ' skrytých vektorech.</div>';
+                        '<div class="lb-label" style="margin-top:8px;">Ověření</div><div class="lb-step">AUTO-kontrola na ' + (lvl.tests || []).length + ' skrytých vektorech.</div>';
                 }
                 if (this.dom.levelKompas) {
                     this.dom.levelKompas.style.display = 'none';

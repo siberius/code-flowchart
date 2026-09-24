@@ -146,6 +146,31 @@ check('zpět streamer', App.narrative === 'streamer');
 check('HUD role zpět', App.dom.hudRole.textContent === 'STREAMER');
 check('data: level 4 = Moderace chatu', LEVELS.find(l => l.id === 4).name === 'Moderace chatu');
 
+console.log('\n[modal mise — příběh a přesun bloků]');
+App.enterCampaignLevel(1);
+check('modal mise otevřen', App.dom.levelModal.classList.contains('show'));
+check('modal obsahuje příběh', App.dom.levelBody.innerHTML.includes('streamovací studio'), App.dom.levelBody.innerHTML.slice(0, 120));
+check('modal vyzývá k přesunu bloků', App.dom.levelBody.innerHTML.includes('Přesuň') && App.dom.levelBody.innerHTML.includes('propoj'));
+App.closeLevelModal();
+
+console.log('\n[dokončení mise → hvězdy do menu]');
+Game.playerName = 'Evička';
+Game.levels = {};
+Game.xp = 0;
+App.activeWorkspace = 'lvl1';
+App.activeLevel = 1;
+App.levelHintUsed = false;
+App.levelFailed = false;
+App.blocks = [];
+App.onLevelSuccess();
+check('mise 1 dokončena', Game.isLevelDone(1));
+check('hvězdy = 3', Game.levels[1].stars === 3, 'got ' + (Game.levels[1] && Game.levels[1].stars));
+check('menu ukazuje ★★★ u mise 1', App.dom.menuMissions.children[0].innerHTML.includes('★★★'));
+check('HUD hvězdy = ★3', App.dom.hudStars.textContent === '★3', App.dom.hudStars.textContent);
+check('výsledkový modal otevřen', App.dom.levelResultModal.classList.contains('show'));
+App.closeLevelResult();
+check('výsledkový modal zavřen', !App.dom.levelResultModal.classList.contains('show'));
+
 console.log('\n[plochy SPACE 1–5]');
 App.selectWorkspace('space1');
 check('plocha space1', App.activeWorkspace === 'space1');
@@ -247,6 +272,17 @@ check('ukázka načtena do plochy', App.blocks.length === 4, 'bloky=' + App.bloc
 check('ukázka má šipky', App.arrows.length === 3, 'šipky=' + App.arrows.length);
 check('ukázka začíná Startem', App.blocks[0].type === 'start');
 check('ukázka má výstupní blok', App.blocks.some(b => b.type === 'io' && b.ioType === 'output'));
+
+console.log('\n[potvrzení v herním designu]');
+let confirmed = false;
+App.openConfirm({ title: 'Test', text: 'Opravdu?', onConfirm: () => { confirmed = true; } });
+check('confirm modal otevřen', App.dom.confirmModal.classList.contains('show'));
+App.confirmYes();
+check('confirm callback proběhl', confirmed === true);
+check('confirm modal zavřen', !App.dom.confirmModal.classList.contains('show'));
+App.openConfirm({ title: 'Test', text: 'Opravdu?', onConfirm: () => { confirmed = false; } });
+App.closeConfirm();
+check('zrušení confirm neprovede callback', confirmed === true);
 
 console.log(`\nVýsledek: ${pass} OK, ${fail} FAIL`);
 process.exit(fail === 0 ? 0 : 1);

@@ -2,6 +2,26 @@
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
+## 2026-09-24 — F1: dokončení mise, modaly, příběh stupně, RVP SOŠ (nezakomitováno)
+
+- **Dokončení mise → hvězdy:** úspěšný běh v MISE nyní volá `App.onLevelSuccess()` →
+  `Game.completeLevel` (bonusy `noHint`/`firstTry`/`efficient` dle nápovědy a pokusů),
+  aktualizuje HUD i menu (hvězdy se konečně načtou) a otevře výsledkový modal.
+  Neúspěšný běh (`lastSimStatus === 'error'`) nastaví `levelFailed` (ruší `firstTry`).
+  Sledováno `levelHintUsed` (Kompas) a `levelFailed`, reset při `enterCampaignLevel`.
+- **Potvrzení v herním designu:** `window.confirm` nahrazen vlastním `#confirm-modal`
+  (`App.openConfirm/closeConfirm/confirmYes`) — použito při přepisu plochy ukázkou.
+- **Výsledkový modal mise:** `#level-result-modal` (hvězdy, XP, hodnost, celkem ★/XP).
+- **Příběh stupně (`story`):** všechny stupně v obou tématech mají `story` („co budeš
+  dělat") — zobrazí se v modalu mise jako „Co budeš dělat"; přidán i pokyn
+  „Přesuň a propoj" (bloky jsou rozházené).
+- **Text v modalech zvětšen o 50 %** (`.modal-box`, h3, p, labely, help-itemy, tlačítka).
+- **RVP cíl upraven:** SOŠ = **neprogramátorské obory** (ne specializace ICT 18-20-M/01);
+  §11/§11.1 přepsány, pole/funkce s návratem označeny jako mimo cíl.
+- **Testy:** syntax OK · flow_tests 21 · flow_game 73 · flow_storage 10 · flow_ui 6 ·
+  flow_smoke **82** (celkem **192**). Nové: `onLevelSuccess` + hvězdy v menu, `story`
+  v modalu, herní confirm.
+
 ## 2026-09-24 — F1 UI + narativ (nezakomitováno)
 
 - **Narativní témata (přepínatelná):** `NARRATIVES` = `streamer` (výchozí, Gen Alfa)

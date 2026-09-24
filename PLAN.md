@@ -398,6 +398,11 @@ Každá fáze končí **definovaným autotestem**, ne „to běží".
 > Názvy stupňů ve `streamer`: 1 První stream · 2 Donáty a subs · 3 Turnaj 15+ ·
 > 4 Moderace chatu · 5 Zavolej moda · 6 Záchrana streamu; hodnosti: Nováček · Ranked hráč ·
 > Speedrunner · Legenda serveru. Kompletní texty jsou v `NARRATIVES` v `code-flowchart.html`.
+>
+> **Pole `story` (F1):** každý stupeň má v obou tématech `story` — větu „co budeš dělat"
+> (např. „Zapojuješ streamovací studio…", „Řídíš vstupenkový systém 15+…"). Zobrazuje se
+> v modalu mise pod „Co budeš dělat"; modal dále uvádí „Přesuň a propoj" (bloky na plátně
+> jsou rozházené). Texty modalu zvětšeny o 50 % (`.modal-box`).
 
 > Plná specifikace každého stupně stejným vzorem jako §4 — zadání, scaffolding, testovací vektory, Kompas, vzorové řešení (pseudodiagram) a XP. Syntaxe výrazů se finalizuje ve F2 podle evaluátoru (§5); zde je popisná/předpisová.
 

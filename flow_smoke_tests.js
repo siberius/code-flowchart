@@ -151,6 +151,7 @@ App.enterCampaignLevel(1);
 check('modal mise otevřen', App.dom.levelModal.classList.contains('show'));
 check('modal obsahuje příběh', App.dom.levelBody.innerHTML.includes('streamovací studio'), App.dom.levelBody.innerHTML.slice(0, 120));
 check('modal vyzývá k přesunu bloků', App.dom.levelBody.innerHTML.includes('Přesuň') && App.dom.levelBody.innerHTML.includes('propoj'));
+check('modal neslibuje neexistující AUTO-kontrolu', !App.dom.levelBody.innerHTML.includes('AUTO-kontrola') && App.dom.levelBody.innerHTML.includes('Spusť program'));
 App.closeLevelModal();
 
 console.log('\n[dokončení mise → hvězdy do menu]');
@@ -283,6 +284,18 @@ check('confirm modal zavřen', !App.dom.confirmModal.classList.contains('show'))
 App.openConfirm({ title: 'Test', text: 'Opravdu?', onConfirm: () => { confirmed = false; } });
 App.closeConfirm();
 check('zrušení confirm neprovede callback', confirmed === true);
+
+console.log('\n[dokončení = správná mise, ne stale activeLevel]');
+Game.levels = {};
+Game.xp = 0;
+App.switchWorkspace('lvl3');
+App.activeLevel = 1;
+App.levelHintUsed = false;
+App.levelFailed = false;
+App.onLevelSuccess();
+check('dokončena mise 3 (podle plochy)', Game.isLevelDone(3), 'levels=' + JSON.stringify(Object.keys(Game.levels)));
+check('mise 1 dokončena nebyla', !Game.isLevelDone(1));
+App.closeLevelResult();
 
 console.log(`\nVýsledek: ${pass} OK, ${fail} FAIL`);
 process.exit(fail === 0 ? 0 : 1);

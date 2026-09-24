@@ -768,6 +768,8 @@
         .modal-box .input-dark,
         .modal-box #name-input { font-size: 21px !important; }
         .modal-box button { font-size: 19px !important; }
+        .modal-box .btn-row { flex-wrap: wrap; }
+        .modal-box .btn-row button { min-width: 0; }
     </style>
 </head>
 <body>
@@ -2600,7 +2602,7 @@
                         '<div class="lb-label" style="margin-top:8px;">Co máš udělat</div><div class="lb-step">' + steps + '</div>' +
                         '<div class="lb-label" style="margin-top:8px;">Přesuň a propoj</div><div class="lb-step">Bloky na plátně jsou rozházené. Přesuň je na vhodná místa a propoj šipkami podle zadání.</div>' +
                         '<div class="lb-label" style="margin-top:8px;">Povolené bloky</div><div class="lb-blocks">' + blocks + '</div>' +
-                        '<div class="lb-label" style="margin-top:8px;">Ověření</div><div class="lb-step">AUTO-kontrola na ' + (lvl.tests || []).length + ' skrytých vektorech.</div>';
+                        '<div class="lb-label" style="margin-top:8px;">Ověření</div><div class="lb-step">Spusť program tlačítkem ▶ — musí dojít do KONCE bez chyby.</div>';
                 }
                 if (this.dom.levelKompas) {
                     this.dom.levelKompas.style.display = 'none';
@@ -2681,15 +2683,15 @@
                 if (this.dom.levelResultModal) this.dom.levelResultModal.classList.remove('show');
             },
             onLevelSuccess() {
-                if (!this.activeLevel) return;
                 const lvl = this.currentLevel();
                 if (!lvl) return;
+                this.activeLevel = lvl.id;
                 const opts = {
                     noHint: !this.levelHintUsed,
                     firstTry: !this.levelFailed,
                     efficient: lvl.solution ? (this.blocks.length <= lvl.solution.blocks.length) : false
                 };
-                const res = Game.completeLevel(this.activeLevel, opts);
+                const res = Game.completeLevel(lvl.id, opts);
                 this.updateGameUI();
                 if (res) this.showLevelResult(res);
             },

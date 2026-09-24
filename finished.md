@@ -19,8 +19,28 @@ Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS
 - **RVP cíl upraven:** SOŠ = **neprogramátorské obory** (ne specializace ICT 18-20-M/01);
   §11/§11.1 přepsány, pole/funkce s návratem označeny jako mimo cíl.
 - **Testy:** syntax OK · flow_tests 21 · flow_game 73 · flow_storage 10 · flow_ui 6 ·
-  flow_smoke **82** (celkem **192**). Nové: `onLevelSuccess` + hvězdy v menu, `story`
-  v modalu, herní confirm.
+  flow_smoke **85** (celkem **195**). Nové: `onLevelSuccess` + hvězdy v menu, `story`
+  v modalu, herní confirm, dokončení správné mise (ne stale `activeLevel`).
+
+### Audit integrity po úpravách (2026-09-24)
+
+- `node syntax_check.js` OK; **všech 51 `getElementById` refů v `dom` existuje** v HTML,
+  žádné duplicitní `id`; `<div>` tagy vyvážené (185/185), CSS závorky vyvážené (0),
+  1 `<script>` blok, žádné `window.confirm` volání (jen v popiscích).
+- **Nalezená a opravená poškození / vady:**
+  1. `onLevelSuccess` používal `this.activeLevel` → při přímém přepnutí na jiný
+     stupeň by se dokončila **špatná mise**. Opraveno na `currentLevel().id` + test.
+  2. Modál mise slíboval „AUTO-kontrola na N skrytých vektorech", ale `Checker` je
+     **F2 a neexistuje** — lhotivý text nahrazen skutečným („Spusť program tlačítkem
+     ▶ — musí dojít do KONCE bez chyby") + regresní test.
+  3. `#level-body`/`#level-kompas` neměly scroll → po zvětšení textu o 50 % se obsah
+     mohl useknout. Doplněn `overflow-y: auto` a `max-height: 90vh` na modal.
+  4. Zvětšené texty v tlačítkách (19 px) → riziko přetékaní úzkých modalů; doplněno
+     `.btn-row { flex-wrap: wrap }` + `min-width: 0`.
+  5. Testy rozbily pořadí smyčky (`activeWorkspace` ručně) → přesun na konec souboru,
+     stav se obnovuje přes `switchWorkspace`.
+- **Známé omezení F1:** úspěch = běh došel do KONCE bez chyby; **správnost výsledku
+  proti testovacím vektorům zatím nekontroluje** (to je F2 `Checker`).
 
 ## 2026-09-24 — F1 UI + narativ (nezakomitováno)
 

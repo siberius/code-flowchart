@@ -102,10 +102,11 @@ try {
     check('init proběhl bez výjimky', false, e.stack);
 }
 
-check('výchozí plocha = KAMPAŇ (0)', App.activeWorkspace === 0);
+check('výchozí plocha = lvl1 (KAMPAŇ)', App.activeWorkspace === 'lvl1', App.activeWorkspace);
+check('režim = campaign', App.modeOf(App.activeWorkspace) === 'campaign');
 check('HUD viditelný', App.dom.hud.classList.contains('show'));
-check('kampaňový panel viditelný', App.dom.campaignPanel.classList.contains('show'));
-check('6 mis v panelu', App.dom.campaignList.children.length === 6, 'got ' + App.dom.campaignList.children.length);
+check('6 mis v menu', App.dom.menuMissions.children.length === 6, 'got ' + App.dom.menuMissions.children.length);
+check('scaffold levelu 1 se postavil', App.blocks.length > 0, 'bloky=' + App.blocks.length);
 
 console.log('\n[jméno přes UI]');
 App.dom.nameInput.value = '  Evička  ';
@@ -129,16 +130,29 @@ check('HUD XP = 174', App.dom.hudXp.textContent === '174 XP', App.dom.hudXp.text
 check('HUD hvězdy = ★3', App.dom.hudStars.textContent === '★3', App.dom.hudStars.textContent);
 check('HUD hodnost', App.dom.hudRank.textContent === 'Nováček u pásu');
 
-console.log('\n[přepnutí ploch]');
-App.toggleWorkspace();
-check('plocha 1 = VOLNÝ', App.activeWorkspace === 1);
+console.log('\n[režimy a plochy]');
+App.setMode('free');
+check('režim free', App.activeWorkspace === 'free');
 check('HUD skryt ve VOLNÉM', !App.dom.hud.classList.contains('show'));
 check('jablka se postavila (bloky > 0)', App.blocks.length > 0, 'bloky=' + App.blocks.length);
-App.toggleWorkspace();
-check('plocha 2 = PROFI', App.activeWorkspace === 2);
-App.toggleWorkspace();
-check('zpět na KAMPAŇ', App.activeWorkspace === 0);
+App.setMode('profi');
+check('režim profi', App.activeWorkspace === 'profi');
+App.setMode('campaign');
+check('zpět do KAMPAŇě na poslední level', App.activeWorkspace === 'lvl1', App.activeWorkspace);
 check('HUD zpět viditelný', App.dom.hud.classList.contains('show'));
+
+console.log('\n[vstup do mise → level modal]');
+App.enterCampaignLevel(3);
+check('aktivní plocha = lvl3', App.activeWorkspace === 'lvl3');
+check('level modal otevřen', App.dom.levelModal.classList.contains('show'));
+check('titulek = 3. Vstupenka 15+', App.dom.levelTitle.textContent === '3. Vstupenka 15+', App.dom.levelTitle.textContent);
+check('tělo obsahuje cíl', String(App.dom.levelBody.innerHTML).indexOf('Načti věk') !== -1);
+check('kompas skrytý', App.dom.levelKompas.style.display === 'none');
+App.toggleLevelKompas();
+check('kompas zobrazen', App.dom.levelKompas.style.display === 'block');
+App.closeLevelModal();
+check('level modal zavřen', !App.dom.levelModal.classList.contains('show'));
+check('scaffold levelu 3 (bloky > 0)', App.blocks.length > 0, 'bloky=' + App.blocks.length);
 
 console.log('\n[RESET]');
 App.doReset();

@@ -32,6 +32,10 @@ check('cíl ≤ 15 slov', LEVELS.every(l => l.goal.trim().split(/\s+/).length <=
 check('Kompas má 4 stupně', LEVELS.every(l => l.kompas && l.kompas.cil && l.kompas.hacek && l.kompas.vzor && l.kompas.postup));
 check('1–3 testovací vektory', LEVELS.every(l => l.tests.length >= 1 && l.tests.length <= 3),
     LEVELS.map(l => l.tests.length).join(','));
+check('každý stupeň má scaffolding', LEVELS.every(l => l.scaffold && Array.isArray(l.scaffold.blocks) && l.scaffold.blocks.length > 0));
+check('scaffold bloky mají typ/label/x/y', LEVELS.every(l => l.scaffold.blocks.every(b => b.type && b.label && typeof b.x === 'number' && typeof b.y === 'number')));
+check('scaffold šipky odkazují platné indexy', LEVELS.every(l => (l.scaffold.arrows || []).every(a =>
+    Array.isArray(a) && a.length === 4 && a[0] >= 0 && a[0] < l.scaffold.blocks.length && a[2] >= 0 && a[2] < l.scaffold.blocks.length)));
 
 console.log('\n[jméno — validace 1–30 znaků]');
 const g1 = makeGame();

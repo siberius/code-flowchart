@@ -1,4 +1,4 @@
-// F0 — testy persistence: saveWorkspace / loadWorkspace (round-trip, chybějící a vadná data).
+// F0/F1 — testy persistence: saveWorkspace / loadWorkspace (round-trip, chybějící a vadná data).
 const { loadApp, makeApp } = require('./flow_test_utils.js');
 
 const { App, sandbox } = loadApp();
@@ -10,19 +10,19 @@ function check(name, cond, extra = '') {
     else { fail++; console.error(`  FAIL ${name}${extra ? ' -> ' + extra : ''}`); }
 }
 
-console.log('\n[saveWorkspace / loadWorkspace]');
+console.log('\n[saveWorkspace / loadWorkspace — sloty]');
 const app = makeApp(App);
-app.activeWorkspace = 0;
+app.activeWorkspace = 'free';
 app.blocks = [{ id: 'b1', type: 'start', label: 'Start', x: 0, y: 0 }];
 app.arrows = [{ id: 'a1', from: 'b1', fromPort: 'bottom', to: 'b2' }];
 app.nextId = 5;
 app.vx = 10;
 app.vy = 20;
 app.vscale = 1.5;
-app.saveWorkspace(0);
+app.saveWorkspace('free');
 
-check('uloží klíč pracovní plochy', sandbox.localStorage.getItem('blockflow_v1_1_ws_0') !== null);
-check('uloží aktivní plochu', sandbox.localStorage.getItem('blockflow_v1_1_active_ws') === '0');
+check('uloží klíč plochy', sandbox.localStorage.getItem('blockflow_v2_ws_free') !== null);
+check('uloží aktivní plochu', sandbox.localStorage.getItem('blockflow_v2_active_ws') === 'free');
 
 const app2 = makeApp(App);
 app2.blocks = [];
@@ -31,7 +31,7 @@ app2.nextId = 1;
 app2.vx = 0;
 app2.vy = 0;
 app2.vscale = 1;
-const ok = app2.loadWorkspace(0);
+const ok = app2.loadWorkspace('free');
 check('load vrátí true', ok === true);
 check('obnoví bloky', app2.blocks.length === 1 && app2.blocks[0].id === 'b1');
 check('obnoví šipky', app2.arrows.length === 1 && app2.arrows[0].id === 'a1');
@@ -39,15 +39,15 @@ check('obnoví nextId', app2.nextId === 5);
 check('obnoví view (vx/vscale)', app2.vx === 10 && app2.vscale === 1.5);
 
 console.log('\n[okrajové stavy]');
-check('chybějící plocha = false', makeApp(App).loadWorkspace(2) === false);
+check('chybějící plocha = false', makeApp(App).loadWorkspace('neexistuje') === false);
 
-sandbox.localStorage.setItem('blockflow_v1_1_ws_3', '{toto není json');
+sandbox.localStorage.setItem('blockflow_v2_ws_bad', '{toto není json');
 const app3 = makeApp(App);
 let threw = false;
 let res;
 const origError = console.error;
 console.error = () => {};
-try { res = app3.loadWorkspace(3); } catch (e) { threw = true; }
+try { res = app3.loadWorkspace('bad'); } catch (e) { threw = true; }
 console.error = origError;
 check('vadný JSON nevyhodí výjimku', threw === false);
 check('vadný JSON = false', res === false);

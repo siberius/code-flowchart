@@ -1262,6 +1262,85 @@
             }
         ];
 
+        // ==== F1: scaffolding — předpřipravené moduly na plátně (PLAN.md §16) ====
+        // arrows = [fromIndex, fromPort, toIndex, toPort]; indexy odkazují do blocks.
+        // Obsah stupňů doladí F5/F6; zde první verze, aby šel loader otestovat.
+        const SCAFFOLDS = {
+            1: {
+                blocks: [
+                    { type: 'start', label: 'Začátek', x: 0, y: -220 },
+                    { type: 'process', label: 'Vezmi bednu', x: 0, y: -60 },
+                    { type: 'process', label: 'Otevři bránu', x: 0, y: 100 },
+                    { type: 'process', label: 'Zavři bránu', x: 0, y: 260 },
+                    { type: 'note', label: 'Pořadí je důležité!', x: 360, y: 40 },
+                    { type: 'end', label: 'Konec', x: 0, y: 420 }
+                ],
+                arrows: []
+            },
+            2: {
+                blocks: [
+                    { type: 'start', label: 'Začátek', x: 0, y: -220 },
+                    { type: 'io', label: 'cena', ioType: 'input', x: 0, y: -60 },
+                    { type: 'io', label: 'kusy', ioType: 'input', x: 0, y: 100 },
+                    { type: 'note', label: 'mezisoucet = cena * kusy', x: 360, y: 100 },
+                    { type: 'io', label: 'Mezisoučet: {mezisoucet}', ioType: 'output', x: 0, y: 380 },
+                    { type: 'end', label: 'Konec', x: 0, y: 540 }
+                ],
+                arrows: [[0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'], [4, 'bottom', 5, 'top']]
+            },
+            3: {
+                blocks: [
+                    { type: 'start', label: 'Začátek', x: 0, y: -240 },
+                    { type: 'io', label: 'vek', ioType: 'input', x: 0, y: -80 },
+                    { type: 'decision', label: '?', x: 0, y: 90, yesPort: 'right', noPort: 'left' },
+                    { type: 'io', label: 'Vstupenka NE', ioType: 'output', x: 320, y: 260 },
+                    { type: 'io', label: 'Vstupenka ANO', ioType: 'output', x: -320, y: 260 },
+                    { type: 'note', label: 'Podmínka: vek >= 15', x: 380, y: 60 },
+                    { type: 'end', label: 'Konec', x: 0, y: 450 }
+                ],
+                arrows: [[0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'], [2, 'right', 3, 'top'], [2, 'left', 4, 'top'], [3, 'bottom', 6, 'top'], [4, 'bottom', 6, 'top']]
+            },
+            4: {
+                blocks: [
+                    { type: 'start', label: 'Začátek', x: 0, y: -280 },
+                    { type: 'io', label: 'jméno', ioType: 'input', x: 0, y: -120 },
+                    { type: 'io', label: 'barva1', ioType: 'input', x: 0, y: 40 },
+                    { type: 'io', label: 'barva2', ioType: 'input', x: 0, y: 200 },
+                    { type: 'process', label: 'pocet1 = 0\npocet2 = 0\nkrok = 0', x: 0, y: 360 },
+                    { type: 'loop', label: 'krok < 3', x: 0, y: 540, yesPort: 'bottom', noPort: 'right' },
+                    { type: 'note', label: 'utrhni a zjisti barvu', x: 400, y: 540 },
+                    { type: 'io', label: 'Díky {jméno}! oblíbená: {barva1}×{pocet1}, {barva2}×{pocet2}', ioType: 'output', x: 400, y: 760 },
+                    { type: 'end', label: 'Konec', x: 400, y: 920 }
+                ],
+                arrows: [[0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'], [2, 'bottom', 3, 'top'], [3, 'bottom', 4, 'top'], [4, 'bottom', 5, 'top'], [5, 'right', 7, 'top'], [7, 'bottom', 8, 'top']]
+            },
+            5: {
+                blocks: [
+                    { type: 'start', label: 'Začátek', x: 0, y: -220 },
+                    { type: 'note', label: 'PODPROGRAM: oprav(dil) → vrátí opraveno=1', x: 380, y: -40 },
+                    { type: 'call', label: 'oprav(dil=A)', x: 0, y: -60 },
+                    { type: 'call', label: 'oprav(dil=B)', x: 0, y: 100 },
+                    { type: 'call', label: 'oprav(dil=D)', x: 0, y: 260 },
+                    { type: 'end', label: 'Konec', x: 0, y: 420 }
+                ],
+                arrows: [[0, 'bottom', 2, 'top'], [2, 'bottom', 3, 'top'], [3, 'bottom', 4, 'top'], [4, 'bottom', 5, 'top']]
+            },
+            6: {
+                blocks: [
+                    { type: 'start', label: 'Začátek', x: 0, y: -280 },
+                    { type: 'io', label: 'n', ioType: 'input', x: 0, y: -120 },
+                    { type: 'process', label: 'krok = 0', x: 0, y: 40 },
+                    { type: 'loop', label: 'krok < 3', x: 0, y: 210, yesPort: 'bottom', noPort: 'right' },
+                    { type: 'process', label: 'krok = krok + 1', x: 0, y: 400 },
+                    { type: 'decision', label: 'krok >= n', x: 380, y: 400, yesPort: 'right', noPort: 'bottom' },
+                    { type: 'io', label: 'OK: zpracováno {n}', ioType: 'output', x: 380, y: 600 },
+                    { type: 'end', label: 'Konec', x: 380, y: 760 }
+                ],
+                arrows: [[0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'], [2, 'bottom', 3, 'top'], [3, 'bottom', 4, 'top'], [4, 'bottom', 3, 'left'], [3, 'right', 5, 'top'], [5, 'bottom', 6, 'top'], [6, 'bottom', 7, 'top']]
+            }
+        };
+        LEVELS.forEach(l => { if (SCAFFOLDS[l.id]) l.scaffold = SCAFFOLDS[l.id]; });
+
         // ==== F1: Game (learning mode) — jméno, XP, hodnost, stupně, certifikáty ====
         // Pouze pozitivní motivace: XP se nikdy neodečítá, nápověda nic nestojí.
         const Game = {
@@ -1640,23 +1719,22 @@
                     });
                 }
                 
-                this.activeWorkspace = parseInt(localStorage.getItem('blockflow_v1_1_active_ws') || '0');
+                Game.load();
+                this.activeWorkspace = localStorage.getItem('blockflow_v2_active_ws') || 'lvl1';
+                if (this.modeOf(this.activeWorkspace) === 'campaign') {
+                    this.lastCampaignSlot = this.activeWorkspace;
+                }
                 this.updateWorkspaceUI();
 
                 const loaded = this.loadWorkspace(this.activeWorkspace);
-                
                 if (!loaded) {
-                    if (this.activeWorkspace === 1) { 
-                        this.buildDefaultGameLoop();
-                    } else {
-                        this.clearCanvasSilent();
-                    }
+                    this.buildWorkspaceDefault(this.activeWorkspace);
                     this.saveState(true);
                 }
+                this.applyPalette(this.currentPalette());
 
-                Game.load();
                 this.updateGameUI();
-                if (this.activeWorkspace === 0 && !Game.playerName) {
+                if (this.modeOf(this.activeWorkspace) === 'campaign' && !Game.playerName) {
                     setTimeout(() => this.openNameModal(), 300);
                 }
                 
@@ -1688,51 +1766,109 @@
                 });
             },
 
-            toggleWorkspace() {
-                if (this.isSimulating) {
-                    this.toast("Nelze přepínat plochu během běžící simulace.");
-                    return;
+            // ==== F1: režimy a plochy (slot na level) ====
+            modeOf(slot) {
+                if (slot === 'free') return 'free';
+                if (slot === 'profi') return 'profi';
+                return 'campaign';
+            },
+            isCampaign() { return this.modeOf(this.activeWorkspace) === 'campaign'; },
+            currentLevel() {
+                if (!this.isCampaign()) return null;
+                return LEVELS.find(l => 'lvl' + l.id === this.activeWorkspace) || null;
+            },
+            setMode(mode) {
+                this.closeMenu();
+                if (mode === 'campaign') {
+                    if (!Game.playerName) { this.pendingMode = 'campaign'; this.openNameModal(); return; }
+                    this.switchWorkspace(this.lastCampaignSlot || 'lvl1');
+                } else if (mode === 'free') {
+                    this.switchWorkspace('free');
+                } else {
+                    this.switchWorkspace('profi');
                 }
-                
+            },
+            switchWorkspace(slot) {
+                if (this.isSimulating) { this.toast("Nelze přepínat plochu během běžící simulace."); return; }
                 this.saveWorkspace(this.activeWorkspace);
-                this.activeWorkspace = (this.activeWorkspace + 1) % 3;
+                this.activeWorkspace = slot;
+                if (this.modeOf(slot) === 'campaign') this.lastCampaignSlot = slot;
                 this.stateHistory = [];
                 this.historyIndex = -1;
                 this.lastSimStatus = 'untested';
-                
-                const loaded = this.loadWorkspace(this.activeWorkspace);
+
+                const loaded = this.loadWorkspace(slot);
                 if (!loaded) {
-                    if (this.activeWorkspace === 1) { 
-                        this.buildDefaultGameLoop();
-                    } else {
-                        this.clearCanvasSilent();
-                    }
-                    this.saveWorkspace(this.activeWorkspace);
+                    this.buildWorkspaceDefault(slot);
+                    this.saveWorkspace(slot);
                 }
+                this.applyPalette(this.currentPalette());
 
                 this.updateWorkspaceUI();
                 this.applyTransform();
                 this.renderAll();
                 this.pushHistory();
-                
+
                 setTimeout(() => {
                     this.renderArrows();
                     if (!loaded) this.fitToScreen();
                 }, 50);
-
-                this.toast(`Přepnuto na Pracovní plochu ${this.activeWorkspace + 1}`);
+            },
+            buildWorkspaceDefault(slot) {
+                if (slot === 'free') {
+                    this.buildDefaultGameLoop();
+                } else if (this.modeOf(slot) === 'campaign') {
+                    const lvl = LEVELS.find(l => 'lvl' + l.id === slot);
+                    if (lvl) this.buildLevelScaffold(lvl);
+                    else this.clearCanvasSilent();
+                } else {
+                    this.clearCanvasSilent();
+                }
+            },
+            applyPalette(palette) {
+                document.querySelectorAll('#toolbar .tool-btn').forEach(btn => {
+                    const t = btn.getAttribute('data-block');
+                    btn.style.display = (!palette || palette.indexOf(t) !== -1) ? '' : 'none';
+                });
+            },
+            currentPalette() {
+                if (!this.isCampaign()) return null;
+                const lvl = this.currentLevel();
+                return lvl ? lvl.blocks : null;
+            },
+            buildLevelScaffold(level) {
+                this.blocks = []; this.arrows = []; this.nextId = 1;
+                this.vx = 0; this.vy = 0;
+                if (!level.scaffold) { this.clearCanvasSilent(); return; }
+                const created = (level.scaffold.blocks || []).map(def => {
+                    const b = this.addBlockSilent(def.type, def.label, def.x, def.y);
+                    if (def.ioType) b.ioType = def.ioType;
+                    if (def.yesPort) b.yesPort = def.yesPort;
+                    if (def.noPort) b.noPort = def.noPort;
+                    return b;
+                });
+                (level.scaffold.arrows || []).forEach(a => {
+                    const from = created[a[0]], to = created[a[2]];
+                    if (from && to) this.addArrowSilent(from.id, a[1], to.id, a[3]);
+                });
             },
 
             updateWorkspaceUI() {
                 const btn = document.getElementById('btn-workspace');
-                const modes = [
-                    { label: '[ KAMPAŇ ]', color: 'var(--accent)', title: 'WS1 KAMPAŇ — learning mode (jméno, XP, certifikáty)' },
-                    { label: '[ VOLNÝ ]', color: 'var(--accent2)', title: 'WS2 VOLNÝ — jablka demo + čistý editor' },
-                    { label: '[ PROFI ]', color: 'var(--accent3)', title: 'WS3 PROFI — všechny nástroje, bez mise' }
-                ];
-                const m = modes[this.activeWorkspace] || modes[0];
+                const mode = this.modeOf(this.activeWorkspace);
+                const map = {
+                    campaign: { color: 'var(--accent)', title: 'KAMPAŇ — learning mode (jméno, XP, certifikáty)' },
+                    free: { color: 'var(--accent2)', title: 'VOLNÝ — jablka demo + čistý editor' },
+                    profi: { color: 'var(--accent3)', title: 'PROFI — všechny nástroje, bez mise' }
+                };
+                const m = map[mode];
+                let label = '[ ' + mode.toUpperCase() + ' ]';
+                if (mode === 'campaign') {
+                    const lvl = this.currentLevel();
+                    label = '[ KAMPAŇ' + (lvl ? ' ' + lvl.id + '/6' : '') + ' ]';
+                }
                 if (btn) {
-                    btn.innerHTML = m.label;
+                    btn.innerHTML = label;
                     btn.style.color = m.color;
                     btn.style.borderColor = m.color;
                     btn.style.boxShadow = `inset 0 0 10px ${m.color}`;
@@ -1741,32 +1877,34 @@
                 this.updateGameUI();
             },
 
-            // ==== F1: herní vrstva (HUD, kampaň, jméno, reset) ====
+            // ==== F1: herní vrstva (HUD, menu, jméno, level modal, reset) ====
             updateGameUI() {
-                const isCampaign = this.activeWorkspace === 0;
-                if (this.dom.hud) this.dom.hud.classList.toggle('show', isCampaign);
-                if (this.dom.campaignPanel) this.dom.campaignPanel.classList.toggle('show', isCampaign);
+                const campaign = this.isCampaign();
+                if (this.dom.hud) this.dom.hud.classList.toggle('show', campaign);
                 if (this.dom.hudName) this.dom.hudName.textContent = Game.playerName || '—';
                 if (this.dom.hudRank) this.dom.hudRank.textContent = Game.rank();
                 if (this.dom.hudXp) this.dom.hudXp.textContent = Game.xp + ' XP';
                 if (this.dom.hudStars) this.dom.hudStars.textContent = '★' + Game.totalStars();
-                if (isCampaign) this.renderCampaign();
+                this.renderMenu();
             },
-            renderCampaign() {
-                const list = this.dom.campaignList;
+            renderMenu() {
+                const mode = this.modeOf(this.activeWorkspace);
+                document.querySelectorAll('#side-menu .mode-link').forEach(el => {
+                    el.classList.toggle('active', el.getAttribute('data-mode') === mode);
+                });
+                const list = this.dom.menuMissions;
                 if (!list) return;
                 list.innerHTML = '';
                 LEVELS.forEach(lvl => {
                     const done = Game.isLevelDone(lvl.id);
                     const rec = Game.levels[lvl.id];
                     const stars = rec ? '★'.repeat(rec.stars) + '☆'.repeat(3 - rec.stars) : '☆☆☆';
+                    const cur = this.activeWorkspace === 'lvl' + lvl.id;
                     const row = document.createElement('div');
-                    row.className = 'camp-level' + (done ? ' done' : '');
+                    row.className = 'menu-mission' + (done ? ' done' : '') + (cur ? ' current' : '');
                     row.innerHTML =
-                        '<div class="cl-top"><span class="cl-name">' + lvl.id + '. ' + lvl.name + '</span>' +
-                        '<span class="cl-xp">' + stars + '</span></div>' +
-                        '<div class="cl-goal">' + lvl.goal + '</div>' +
-                        '<div class="cl-state">' + (done ? '✓ splněno' : '▶ hrát') + '</div>';
+                        '<div class="mm-top"><span>' + lvl.id + '. ' + lvl.name + '</span>' +
+                        '<span class="mm-stars">' + stars + '</span></div>';
                     row.addEventListener('click', () => this.enterCampaignLevel(lvl.id));
                     list.appendChild(row);
                 });
@@ -1774,10 +1912,44 @@
             enterCampaignLevel(id) {
                 const lvl = LEVELS.find(l => l.id === id);
                 if (!lvl) return;
-                if (!Game.playerName) { this.openNameModal(); return; }
+                if (!Game.playerName) { this.pendingLevel = id; this.openNameModal(); return; }
                 this.activeLevel = id;
-                this.toast(`Mise ${id}: ${lvl.name} — ${lvl.goal}`, 4000);
-                // Načtení scaffoldingu a testů stupně proběhne ve F5/F6.
+                this.switchWorkspace('lvl' + id);
+                this.openLevelModal(lvl);
+                this.closeMenu();
+            },
+            openLevelModal(lvl) {
+                if (!this.dom.levelModal) return;
+                if (this.dom.levelTitle) this.dom.levelTitle.textContent = lvl.id + '. ' + lvl.name;
+                const typeLabel = { 'sestav': 'Sestav', 'sestav+oprav': 'Sestav a oprav', 'cti+sestav': 'Přečti a sestav', 'oprav+vyber+tvorba': 'Oprav, vyber, tvoř' }[lvl.type] || 'Mise';
+                const blockNames = { start: 'START', process: 'AKCE', io: 'VSTUP/VÝSTUP', decision: 'PODMÍNKA', loop: 'SMYČKA', call: 'VOLÁNÍ', note: 'POZNÁMKA', end: 'KONEC' };
+                const blocks = (lvl.blocks || []).map(b => blockNames[b] || b).join(' · ');
+                const steps = lvl.kompas ? lvl.kompas.postup : '';
+                if (this.dom.levelBody) {
+                    this.dom.levelBody.innerHTML =
+                        '<div class="lb-label">Typ</div><div class="lb-step">' + typeLabel + '</div>' +
+                        '<div class="lb-label" style="margin-top:8px;">Cíl</div><div class="lb-goal">' + lvl.goal + '</div>' +
+                        '<div class="lb-label">Co máš udělat</div><div class="lb-step">' + steps + '</div>' +
+                        '<div class="lb-label" style="margin-top:8px;">Povolené bloky</div><div class="lb-blocks">' + blocks + '</div>' +
+                        '<div class="lb-label" style="margin-top:8px;">Ověření</div><div class="lb-step">AUTO-kontrola na ' + lvl.tests.length + ' skrytých vektorech.</div>';
+                }
+                if (this.dom.levelKompas) {
+                    this.dom.levelKompas.style.display = 'none';
+                    const k = lvl.kompas || {};
+                    this.dom.levelKompas.innerHTML =
+                        '<div class="lk-label">Cíl</div><div>' + (k.cil || '') + '</div>' +
+                        '<div class="lk-label" style="margin-top:8px;">Háček</div><div>' + (k.hacek || '') + '</div>' +
+                        '<div class="lk-label" style="margin-top:8px;">Postup</div><div>' + (k.postup || '') + '</div>';
+                }
+                this.dom.levelModal.classList.add('show');
+            },
+            closeLevelModal() {
+                if (this.dom.levelModal) this.dom.levelModal.classList.remove('show');
+            },
+            toggleLevelKompas() {
+                if (!this.dom.levelKompas) return;
+                const shown = this.dom.levelKompas.style.display !== 'none';
+                this.dom.levelKompas.style.display = shown ? 'none' : 'block';
             },
             openNameModal() {
                 if (!this.dom.nameModal) return;
@@ -1799,6 +1971,14 @@
                 this.closeNameModal();
                 this.updateGameUI();
                 this.toast(`Vítej, ${Game.playerName}! Směna začíná.`, 3000);
+                if (this.pendingLevel) {
+                    const id = this.pendingLevel;
+                    this.pendingLevel = null;
+                    this.enterCampaignLevel(id);
+                } else if (this.pendingMode === 'campaign') {
+                    this.pendingMode = null;
+                    this.setMode('campaign');
+                }
             },
             promptReset() {
                 const modal = document.getElementById('reset-confirm-modal');
@@ -1809,7 +1989,7 @@
                 const modal = document.getElementById('reset-confirm-modal');
                 if (modal) modal.classList.remove('show');
                 this.updateGameUI();
-                if (this.activeWorkspace === 0) this.openNameModal();
+                if (this.isCampaign()) this.openNameModal();
                 this.toast('Směna vynulována. Čistý start.', 3000);
             },
 

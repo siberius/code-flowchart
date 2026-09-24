@@ -4,23 +4,31 @@ Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS
 
 ## 2026-09-24 — F1 (nezakomitováno)
 
-- **F1: herní vrstva + data stupňů + pracovní plochy** (`PLAN.md` §13, §16).
+- **F1: herní vrstva + data stupňů + pracovní plochy + vstup do mise** (`PLAN.md` §13, §16).
 - **`Game` modul:** jméno (validace 1–30 znaků), XP, hodnost, hvězdy, certifikát;
   persistence `blockflow_v2_player` / `blockflow_v2_progress`; `completeLevel` +
   bonusy (`noHint +20 %`, `prvniPokus +15 %`, `efektivni +10 %` — jen pozitivně);
   `reset()`. Kumulativní XP roste jen při prvním splnění stupně.
 - **`LEVELS`:** všech 6 stupňů z `PLAN.md` §16 (název, cíl ≤ 15 slov, bloky, `xpBase`,
-  RVP, Kompas 4 stupně, testovací vektory).
-- **Pracovní plochy:** WS1 KAMPAŇ (learning mode), WS2 VOLNÝ (jablka demo, přemístěno
-  z indexu 0 na 1), WS3 PROFI. Přepínač zobrazuje režim.
-- **UI:** HUD operátora (jméno/hodnost/XP/hvězdy), kampaňový panel se 6 misemi,
-  jmenný modál (povinné jméno v KAMPAŇI), červené RESET s potvrzením v menu.
-- **Testy:** `flow_game_tests.js` (53 OK) + `flow_smoke_tests.js` (22 OK, `App.init()`
-  nad DOM mockem); rozšířen `flow_test_utils.js` o `Game`/`LEVELS`.
-- **Ověření:** syntax OK · flow_tests 21 · flow_game 53 · flow_storage 10 · flow_ui 6 ·
-  flow_smoke 22 (celkem 112 kontrol). Verifikace F1 „3 mise → XP i certifikát" splněna.
-- **Pozn.:** načtení scaffoldingu/testů do plátna = F5/F6; auto-reset 3 h = F4;
-  SVG certifikát = F8.
+  RVP, Kompas 4 stupně, testovací vektory) + `scaffold` (předpřipravené moduly).
+- **Režimy:** KAMPAŇ / VOLNÝ (jablka) / PROFI — přepínání v hamburger menu
+  (`setMode`), aktivní režim zvýrazněn, topbar tlačítko otevírá menu.
+- **Plochy per level:** slot `lvl1…lvl6`, `free`, `profi`; klíče `blockflow_v2_ws_<slot>`,
+  aktivní `blockflow_v2_active_ws`. Návrat k misi zachová rozdělanou práci.
+- **Vstup do mise:** klik v menu → `switchWorkspace('lvlN')` → vykreslí se scaffolding
+  (`buildLevelScaffold`) → **level modal** s Typem, Cílem, „Co máš udělat", povolenými
+  bloky, ověřením + tlačítko **Kompas** (Cíl/Háček/Postup).
+- **Omezená paleta:** toolbar se filtruje podle `level.blocks` (`applyPalette`).
+- **UI:** HUD operátora (jméno/hodnost/XP/hvězdy), sekce menu REŽIM/MISE/NÁSTROJE,
+  jmenný modál (povinné jméno v KAMPAŇI), červené RESET s potvrzením.
+- **Oprava:** zrušen plovoucí kampaňový panel, který překrýval hamburger menu.
+- **Testy:** `flow_game_tests.js` (56 OK) + `flow_smoke_tests.js` (31 OK, `App.init()`
+  nad DOM mockem); `flow_test_utils.js` rozšířen o `Game`/`LEVELS`; persistence testy
+  přepsány na slot-klíče v2.
+- **Ověření:** syntax OK · flow_tests 21 · flow_game 56 · flow_storage 10 · flow_ui 6 ·
+  flow_smoke 31 (celkem 124 kontrol). Verifikace F1 „3 mise → XP i certifikát" splněna.
+- **Pozn.:** vlastní vyhodnocení misí (Checker/OVĚŘIT) = F2; doladění obsahu
+  scaffoldingů = F5/F6; auto-reset 3 h = F4; SVG certifikát = F8.
 
 ## 2026-09-24 — F0 (commit `ec8c50d`)
 

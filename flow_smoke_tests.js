@@ -146,7 +146,7 @@ App.selectWorkspace('space4');
 check('plocha space4', App.activeWorkspace === 'space4');
 App.selectWorkspace('space5');
 check('plocha space5', App.activeWorkspace === 'space5');
-check('aktivní plocha persistována', sandbox.localStorage.getItem('blockflow_v2_active_ws') === 'space5');
+check('aktivní plocha persistována', sandbox.localStorage.getItem('blockflow_v3_active_ws') === 'space5');
 App.selectWorkspace('campaign');
 check('zpět do KAMPAŇě na poslední level', App.activeWorkspace === 'lvl1', App.activeWorkspace);
 check('HUD zpět viditelný', App.dom.hud.classList.contains('show'));

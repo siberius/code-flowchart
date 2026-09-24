@@ -1280,8 +1280,9 @@
         ];
 
         // ==== F1: scaffolding — rozházené, NEpropojené moduly na plátně (PLAN.md §16) ====
-        // Žák si spojení vytváří sám; loader přidá malý náhodný posun (rozházení).
-        // Obsah stupňů doladí F5/F6; zde první verze, aby šel loader otestovat.
+        // Žák si spojení vytváří sám; loader moduly zamíchá do řídké 2D mřížky (+ jitter),
+        // aby nebyly pod sebou (pořadí/pozice by napovídaly řešení). x/y v datech se proto
+        // nepoužívají — slouží jen jako logický seznam modulů pro F5/F6.
         const SCAFFOLDS = {
             1: {
                 blocks: [
@@ -1826,7 +1827,7 @@
                 }
                 
                 Game.load();
-                this.activeWorkspace = localStorage.getItem('blockflow_v2_active_ws') || 'lvl1';
+                this.activeWorkspace = localStorage.getItem('blockflow_v3_active_ws') || 'lvl1';
                 this.cheatStep = 0;
                 if (this.modeOf(this.activeWorkspace) === 'campaign') {
                     this.lastCampaignSlot = this.activeWorkspace;
@@ -1945,10 +1946,30 @@
                 this.blocks = []; this.arrows = []; this.nextId = 1;
                 this.vx = 0; this.vy = 0;
                 if (!level.scaffold) { this.clearCanvasSilent(); return; }
-                (level.scaffold.blocks || []).forEach(def => {
-                    const jx = Math.round((Math.random() - 0.5) * 200);
-                    const jy = Math.round((Math.random() - 0.5) * 120);
-                    const b = this.addBlockSilent(def.type, def.label, def.x + jx, def.y + jy);
+                const defs = level.scaffold.blocks || [];
+                // Moduly rozházíme po ploše: zamíchané pozice v řídké mřížce + jitter,
+                // aby nebyly pod sebou (pořadí by jinak napovídalo řešení).
+                const cols = Math.max(2, Math.ceil(Math.sqrt(defs.length)));
+                const rows = Math.ceil(defs.length / cols);
+                const gapX = 440, gapY = 320;
+                const cells = [];
+                for (let r = 0; r < rows; r++) {
+                    for (let c = 0; c < cols; c++) {
+                        cells.push({
+                            x: Math.round((c - (cols - 1) / 2) * gapX),
+                            y: Math.round((r - (rows - 1) / 2) * gapY)
+                        });
+                    }
+                }
+                for (let i = cells.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [cells[i], cells[j]] = [cells[j], cells[i]];
+                }
+                defs.forEach((def, i) => {
+                    const cell = cells[i % cells.length];
+                    const jx = Math.round((Math.random() - 0.5) * 90);
+                    const jy = Math.round((Math.random() - 0.5) * 90);
+                    const b = this.addBlockSilent(def.type, def.label, cell.x + jx, cell.y + jy);
                     if (def.ioType) b.ioType = def.ioType;
                     if (def.yesPort) b.yesPort = def.yesPort;
                     if (def.noPort) b.noPort = def.noPort;
@@ -2857,8 +2878,8 @@
                     vy: this.vy,
                     vscale: this.vscale
                 });
-                localStorage.setItem(`blockflow_v2_ws_${slot}`, state);
-                localStorage.setItem('blockflow_v2_active_ws', this.activeWorkspace);
+                localStorage.setItem(`blockflow_v3_ws_${slot}`, state);
+                localStorage.setItem('blockflow_v3_active_ws', this.activeWorkspace);
             },
             
             rotatePorts(blockId, event) {
@@ -2891,7 +2912,7 @@
 
             loadWorkspace(slot) {
                 try {
-                    const saved = localStorage.getItem(`blockflow_v2_ws_${slot}`);
+                    const saved = localStorage.getItem(`blockflow_v3_ws_${slot}`);
                     if (saved) {
                         const parsed = JSON.parse(saved);
                         this.blocks = parsed.blocks || []; 
@@ -3954,7 +3975,7 @@
                     workspaces: {}
                 };
                 this.workspaceSlots().forEach(slot => {
-                    const raw = localStorage.getItem('blockflow_v2_ws_' + slot);
+                    const raw = localStorage.getItem('blockflow_v3_ws_' + slot);
                     if (raw) { try { data.workspaces[slot] = JSON.parse(raw); } catch (e) {} }
                 });
 
@@ -3978,7 +3999,7 @@
                             let count = 0;
                             this.workspaceSlots().forEach(slot => {
                                 if (parsed.workspaces[slot]) {
-                                    localStorage.setItem('blockflow_v2_ws_' + slot, JSON.stringify(parsed.workspaces[slot]));
+                                    localStorage.setItem('blockflow_v3_ws_' + slot, JSON.stringify(parsed.workspaces[slot]));
                                     count++;
                                 }
                             });
@@ -3987,7 +4008,7 @@
                             this.activeWorkspace = target;
                             if (this.modeOf(target) === 'campaign') this.lastCampaignSlot = target;
                             this.loadWorkspace(target);
-                            localStorage.setItem('blockflow_v2_active_ws', target);
+                            localStorage.setItem('blockflow_v3_active_ws', target);
                             this.stateHistory = []; this.historyIndex = -1; this.cheatStep = 0;
                             this.applyPalette(this.currentPalette());
                             this.updateWorkspaceUI();

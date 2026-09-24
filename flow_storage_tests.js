@@ -21,8 +21,8 @@ app.vy = 20;
 app.vscale = 1.5;
 app.saveWorkspace('space1');
 
-check('uloží klíč plochy', sandbox.localStorage.getItem('blockflow_v2_ws_space1') !== null);
-check('uloží aktivní plochu', sandbox.localStorage.getItem('blockflow_v2_active_ws') === 'space1');
+check('uloží klíč plochy', sandbox.localStorage.getItem('blockflow_v3_ws_space1') !== null);
+check('uloží aktivní plochu', sandbox.localStorage.getItem('blockflow_v3_active_ws') === 'space1');
 
 const app2 = makeApp(App);
 app2.blocks = [];
@@ -41,7 +41,7 @@ check('obnoví view (vx/vscale)', app2.vx === 10 && app2.vscale === 1.5);
 console.log('\n[okrajové stavy]');
 check('chybějící plocha = false', makeApp(App).loadWorkspace('neexistuje') === false);
 
-sandbox.localStorage.setItem('blockflow_v2_ws_bad', '{toto není json');
+sandbox.localStorage.setItem('blockflow_v3_ws_bad', '{toto není json');
 const app3 = makeApp(App);
 let threw = false;
 let res;

@@ -59,7 +59,7 @@ CÍL (1 věta, ≤ 15 slov) → SESTAV diagram (5–10 bloků) → SPUSTIT / OV�
 | Audio (click/error/success/data-scan) | zachovat + level-up jingle, odznakový sting |
 | Cyber-spark, glitch, neon, glass | zachovat; glitch pod `prefers-reduced-motion` |
 | Výchozí hra „Sbírání jablek" | zachována: **stupeň 4 = „Sběrač jablek 2.0"** a **volný režim = jablka demo** |
-| 3 pracovní plochy | reinterpretace: WS1 KAMPAŇ / WS2 VOLNÝ (jablka) / WS3 PROFI (§7.9) |
+| 3 pracovní plochy | reinterpretace: MISE + SPACE 1 (jablka) + SPACE 2–5 (prázdné) (§7.9) |
 
 ---
 
@@ -68,7 +68,7 @@ CÍL (1 věta, ≤ 15 slov) → SESTAV diagram (5–10 bloků) → SPUSTIT / OV�
 **Vrstva 1 — Studio (`App`):** editor + simulace + linter + export (dnešní kód).
 **Vrstva 2 — Hra (`Game`):** learning mode, jméno, stupně, XP/hodnost/odznaky, certifikáty, Kompas, Ladička, auto-kontrola, session hodiny (3 h).
 
-Datové klíče `blockflow_v2_*` v `localStorage` (migrace z `v1_1` bezeztrátová). Žádný server, žádný tracking.
+Datové klíče `blockflow_v2_player` / `blockflow_v2_progress` a `blockflow_v3_ws_*` (plochy) v `localStorage` (migrace z `v1_1` bezeztrátová). Žádný server, žádný tracking.
 
 ```
 Game        – stav hráče, jméno, XP, hodnost, odznaky, stav stupňů, session hodiny
@@ -209,9 +209,13 @@ Všechny stupně jsou **otevřené** (žák si může hrát napřeskáčku). Ka�
 - **SPACE 1** — **jablka demo** + volný editor (bez jména, bez hodin).
 - **SPACE 2–5** — prázdné plochy pro vlastní tvorbu (sloty `space2…space5`).
 - **Mise** zůstávají v hamburger menu (MISE) — přepínač režimů už v menu není.
-- **Vstup do mise:** klik na level → načte se **scaffolding** — rozházené, **NEpropojené**
-  moduly (spojení si žák vytváří sám) + omezená paleta → **level modal** s podrobným
-  zadáním (Typ, Cíl, „Co máš udělat", povolené bloky, ověření) + Kompas.
+- **Vstup do mise:** klik na level → načte se **scaffolding** — moduly **NEpropojené**
+  a **rozhozené po ploše** (zamíchané pozice v řídké 2D mřížce + jitter, ne pod sebou),
+  aby pozice nenapovídaly řešení; spojení si žák vytváří sám + omezená paleta →
+  **level modal** s podrobným zadáním (Typ, Cíl, „Co máš udělat", povolené bloky,
+  ověření) + Kompas.
+- **Klíče ploch (v3):** `blockflow_v3_ws_<slot>`, aktivní `blockflow_v3_active_ws`.
+  Starší klíče se nenačítají (migrace = F4) — po změně scaffoldu se tak načte čistý stav.
 - **Export/import (JSON):** jediná dvojice `⭳ EXPORT` / `⭱ IMPORT` uloží/načte
   **všechny plochy** (`{app:'blockflow-workspaces', active, workspaces:{slot:stav}}`);
   při importu jednoho schématu (`blocks`/`arrows`) se načte do aktuální plochy.
@@ -223,8 +227,8 @@ Všechny stupně jsou **otevřené** (žák si může hrát napřeskáčku). Ka�
 ## 8. Režimy, data a čas (learning mode / reset / 45 min / 3 h)
 
 ### 8.1 Režimy
-- **Learning mode (KAMPAŇ)**: při prvním startu modál „Jak se jmenuješ, operátore?" — **jméno povinné** (1–30 znaků), uloží se na zařízení. Generuje se z něj certifikát. Když je jméno prázdné, learning mode nejde spustit.
-- **Volný režim (jablka)**: bez jména, čistý editor + ukázka jablek, žádné XP.
+- **Learning mode (MISE, dříve KAMPAŇ)**: modál „Jak se jmenuješ, operátore?" se zobrazí **až při prvním kliknutí na level v menu** (ne při startu ani při přepnutí na MISE) — **jméno povinné** (1–30 znaků), uloží se na zařízení. Generuje se z něj certifikát. Po zadání už se neptá (až do RESETu).
+- **Volný režim (SPACE 1 – jablka)**: bez jména, čistý editor + ukázka jablek, žádné XP.
 
 ### 8.2 Persistence (tablet/mobil i PC)
 - Pokrok (jméno, XP, stupně, certifikáty v profilu) se ukládá do `localStorage` = **„cache prohlížeče do vymazání"** — přežije obnovení stránky.

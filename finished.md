@@ -11,14 +11,15 @@ Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS
   `reset()`. Kumulativní XP roste jen při prvním splnění stupně.
 - **`LEVELS`:** všech 6 stupňů z `PLAN.md` §16 (název, cíl ≤ 15 slov, bloky, `xpBase`,
   RVP, Kompas 4 stupně, testovací vektory) + `scaffold` (rozhozené nepropojené moduly).
-- **Plochy per level:** slot `lvl1…lvl6`; klíče `blockflow_v2_ws_<slot>`,
-  aktivní `blockflow_v2_active_ws`. Návrat k misi zachová rozdělanou práci.
+- **Plochy per level:** slot `lvl1…lvl6`; klíče `blockflow_v3_ws_<slot>`,
+  aktivní `blockflow_v3_active_ws`. Návrat k misi zachová rozdělanou práci.
+  (Bump v2→v3 zahodil staré uložené stavy, které měly propojené šipky.)
 - **Přepínač ploch v horní liště:** `MISE · SPACE 1–5` (aktivní zvýrazněn,
   `selectWorkspace`); hamburger menu už obsahuje jen MISE + NÁSTROJE.
 - **SPACE 1** = jablka demo (bývalý VOLNÝ); **SPACE 2–5** = prázdné plochy
   pro vlastní tvorbu (bývalý PROFI + 3 nové).
-- **Scaffolding v levelech:** rozházené a **NEpropojené** moduly (malý náhodný posun),
-  spojení si žák vytváří sám.
+- **Scaffolding v levelech:** **NEpropojené** moduly rozhozené po ploše (zamíchaná
+  řídká 2D mřížka + jitter, ne pod sebou), spojení si žák vytváří sám.
 - **Export/import (JSON):** jediná dvojice `⭳ EXPORT` / `⭱ IMPORT` uloží/načte
   **všechny plochy** (`{app:'blockflow-workspaces', active, workspaces:{slot:stav}}`);
   samostatné `WS` tlačítka zrušena jako nadbytečná.

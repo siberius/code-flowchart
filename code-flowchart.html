@@ -665,7 +665,7 @@
             #sim-text, #step-text, #stop-text { display: none; }
         }
 
-        /* ==== F1: HUD operátora, kampaňový panel, jméno, reset ==== */
+        /* ==== F1: HUD operátora, menu sekce, jméno, reset, level modal ==== */
         #hud {
             position: fixed; top: 56px; right: 12px; z-index: 300;
             background: rgba(10, 14, 22, 0.9); border: 1px solid var(--border);
@@ -679,28 +679,22 @@
         #hud .hud-val { color: var(--text); font-weight: 600; }
         #hud #hud-stars { color: var(--accent3); }
 
-        #campaign-panel {
-            position: fixed; top: 56px; left: 12px; z-index: 300;
-            width: 300px; max-height: calc(100vh - 80px); overflow-y: auto;
-            background: rgba(10, 14, 22, 0.94); border: 1px solid var(--border);
-            border-radius: 12px; padding: 14px; display: none;
-            box-shadow: 0 6px 24px rgba(0,0,0,0.5);
+        #side-menu { max-height: calc(100vh - 56px); overflow-y: auto; }
+        .menu-section-title {
+            padding: 12px 30px 6px; font-family: 'JetBrains Mono', monospace;
+            font-size: 10px; letter-spacing: 2px; color: var(--accent);
+            opacity: 0.7; text-transform: uppercase;
         }
-        #campaign-panel.show { display: block; }
-        #campaign-panel h3 { margin: 0 0 4px; color: var(--accent); font-size: 14px; letter-spacing: 1px; }
-        #campaign-panel .camp-sub { font-size: 11px; opacity: 0.7; margin-bottom: 10px; }
-        .camp-level {
-            border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px;
-            margin-bottom: 8px; cursor: pointer; transition: all 0.15s;
-            background: rgba(255,255,255,0.02);
+        .mode-link.active { color: var(--accent); border-left: 3px solid var(--accent); background: rgba(0,229,255,0.05); }
+        .menu-mission {
+            padding: 8px 30px; cursor: pointer; font-size: 12px; color: var(--text-dim);
+            transition: all 0.15s; border-left: 3px solid transparent;
         }
-        .camp-level:hover { border-color: var(--accent); box-shadow: inset 0 0 12px rgba(0,229,255,0.12); }
-        .camp-level.done { border-color: rgba(16,185,129,0.5); }
-        .camp-level .cl-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-        .camp-level .cl-name { font-size: 13px; font-weight: 600; }
-        .camp-level .cl-goal { font-size: 11px; opacity: 0.75; margin-top: 3px; }
-        .camp-level .cl-xp { font-size: 11px; color: var(--accent3); white-space: nowrap; }
-        .camp-level .cl-state { font-size: 11px; color: #10b981; }
+        .menu-mission:hover { color: var(--accent); background: rgba(0,229,255,0.05); border-left-color: var(--accent); }
+        .menu-mission.current { color: var(--accent); border-left-color: var(--accent); background: rgba(0,229,255,0.08); }
+        .menu-mission.done { color: #10b981; }
+        .menu-mission .mm-top { display: flex; justify-content: space-between; gap: 8px; }
+        .menu-mission .mm-stars { color: var(--accent3); }
 
         #name-modal .modal-box { border-color: rgba(0,229,255,0.3); }
         #name-input {
@@ -710,6 +704,11 @@
         }
         #name-input:focus { border-color: var(--accent); }
         #name-error { color: #ef4444; font-size: 12px; min-height: 16px; }
+        #level-body .lb-goal { color: var(--text); font-size: 15px; margin-bottom: 10px; }
+        #level-body .lb-step { color: var(--text); }
+        #level-body .lb-label { color: var(--accent); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; }
+        #level-body .lb-blocks { color: var(--accent3); }
+        #level-kompas .lk-label { color: var(--accent3); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -737,7 +736,7 @@
         <button class="top-btn" id="btn-undo" onclick="App.undo()" title="Zpět (Ctrl+Z)" disabled>↤ UNDO</button>
         <button class="top-btn" id="btn-redo" onclick="App.redo()" title="Vpřed (Ctrl+Y)" disabled>↦ REDO</button>
         <div style="width: 16px;"></div>
-        <button class="top-btn" id="btn-workspace" onclick="App.toggleWorkspace()" title="Přepnout pracovní plochu (1, 2, 3)">[ WS:01 ]</button>
+        <button class="top-btn" id="btn-workspace" onclick="App.toggleMenu(event)" title="Režim a plochy (menu)">[ KAMPAŇ ]</button>
         <button class="top-btn" onclick="document.getElementById('json-upload').click()" title="Nahrát projekt z PC (JSON)">⭱ IMPORT</button>
         <button class="top-btn" onclick="App.promptJsonExport()" title="Uložit projekt do PC (JSON)">⭳ EXPORT</button>
         <button class="top-btn" onclick="App.promptSvgExport()" title="Exportovat do SVG (Ctrl+S)">⍗ SVG</button>
@@ -752,15 +751,15 @@
         <div class="hud-row"><span class="hud-label">XP</span> <span class="hud-val" id="hud-xp">0</span> <span class="hud-val" id="hud-stars">★0</span></div>
     </div>
 
-    <!-- F1: Kampaňový panel (WS1 KAMPAŇ) -->
-    <div id="campaign-panel">
-        <h3>MISE</h3>
-        <div class="camp-sub">6 stupňů · jen pozitivní motivace</div>
-        <div id="campaign-list"></div>
-    </div>
-
     <!-- Boční Hamburger Menu -->
     <div id="side-menu">
+        <div class="menu-section-title">REŽIM</div>
+        <div class="side-menu-link mode-link" data-mode="campaign" onclick="App.setMode('campaign')"><span style="font-size: 16px;">◈</span> KAMPAŇ</div>
+        <div class="side-menu-link mode-link" data-mode="free" onclick="App.setMode('free')"><span style="font-size: 16px;">▤</span> VOLNÝ</div>
+        <div class="side-menu-link mode-link" data-mode="profi" onclick="App.setMode('profi')"><span style="font-size: 16px;">⚙</span> PROFI</div>
+        <div class="menu-section-title">MISE</div>
+        <div id="menu-missions"></div>
+        <div class="menu-section-title">NÁSTROJE</div>
         <div class="side-menu-link" onclick="App.openHelp()"><span style="font-size: 16px;">📖</span> Nápověda</div>
         <div class="side-menu-link" onclick="App.openAbout()"><span style="font-size: 16px;">ℹ️</span> O programu</div>
         <div class="side-menu-link" onclick="App.openAuthor()"><span style="font-size: 16px;">👨‍💻</span> O autorovi</div>
@@ -800,35 +799,35 @@
     <div id="sim-token"></div>
 
     <div id="toolbar">
-        <button class="tool-btn" onclick="App.addBlock('start')">
+        <button class="tool-btn" data-block="start" onclick="App.addBlock('start')">
             <span class="icon" style="color: var(--start-end)">▶</span>Start
             <div class="tooltip">Počáteční bod algoritmu</div>
         </button>
-        <button class="tool-btn" onclick="App.addBlock('process')">
+        <button class="tool-btn" data-block="process" onclick="App.addBlock('process')">
             <span class="icon" style="color: var(--process)">▬</span>Akce
             <div class="tooltip">Výpočet, změna proměnné</div>
         </button>
-        <button class="tool-btn" onclick="App.addBlock('decision')">
+        <button class="tool-btn" data-block="decision" onclick="App.addBlock('decision')">
             <span class="icon" style="color: var(--decision)">◆</span>Podmínka
             <div class="tooltip">Rozhodování (ANO/NE)</div>
         </button>
-        <button class="tool-btn" onclick="App.addBlock('io')">
+        <button class="tool-btn" data-block="io" onclick="App.addBlock('io')">
             <span class="icon" style="color: var(--io)">▱</span>Vstup/Výstup
             <div class="tooltip">Načtení nebo výpis dat</div>
         </button>
-        <button class="tool-btn" onclick="App.addBlock('loop')">
+        <button class="tool-btn" data-block="loop" onclick="App.addBlock('loop')">
             <span class="icon" style="color: var(--loop)">↻</span>Smyčka
             <div class="tooltip">Opakování (cyklus for/while)</div>
         </button>
-        <button class="tool-btn" onclick="App.addBlock('call')">
+        <button class="tool-btn" data-block="call" onclick="App.addBlock('call')">
             <span class="icon" style="color: var(--call)">ƒx</span>Volání
             <div class="tooltip">Odskok do podprogramu (funkce)</div>
         </button>
-        <button class="tool-btn" onclick="App.addBlock('note')">
+        <button class="tool-btn" data-block="note" onclick="App.addBlock('note')">
             <span class="icon" style="color: #fde047">//</span>Pozn.
             <div class="tooltip">Volná poznámka (neovlivní běh)</div>
         </button>
-        <button class="tool-btn" onclick="App.addBlock('end')">
+        <button class="tool-btn" data-block="end" onclick="App.addBlock('end')">
             <span class="icon" style="color: var(--start-end)">⏹</span>Konec
             <div class="tooltip">Ukončení programu</div>
         </button>
@@ -975,6 +974,19 @@
             <div class="btn-row">
                 <button class="btn" onclick="App.doReset()" style="flex: 1; padding: 10px; font-size: 13px; background: rgba(239,68,68,0.05); color: #ef4444; border-color: #ef4444; box-shadow: inset 0 0 15px rgba(239,68,68,0.2);">ANO (Smazat vše)</button>
                 <button class="btn" onclick="document.getElementById('reset-confirm-modal').classList.remove('show')" style="flex: 1; padding: 10px; font-size: 13px; background: rgba(16,185,129,0.05); color: #10b981; border-color: #10b981; box-shadow: inset 0 0 15px rgba(16,185,129,0.2);">NE (Zrušit)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- F1: Detail mise (zadání levelu) -->
+    <div id="level-modal" class="modal-overlay" style="z-index: 700;">
+        <div class="modal-box wide" style="border-color: rgba(0,229,255,0.3);">
+            <h3 id="level-title" style="color: var(--accent); text-shadow: 0 0 10px rgba(0,229,255,0.4);">Mise</h3>
+            <div id="level-body" style="text-align: left; font-size: 14px; line-height: 1.6;"></div>
+            <div id="level-kompas" style="display:none; text-align: left; font-size: 13px; line-height: 1.6; border-top: 1px dashed var(--border); margin-top: 12px; padding-top: 10px;"></div>
+            <div class="btn-row">
+                <button class="btn" onclick="App.closeLevelModal()" style="flex: 1; padding: 10px; font-size: 13px; background: rgba(0,229,255,0.05); color: var(--accent); border-color: var(--accent); box-shadow: inset 0 0 15px rgba(0,229,255,0.2);">JDU NA TO ▶</button>
+                <button class="btn" onclick="App.toggleLevelKompas()" style="flex: 1; padding: 10px; font-size: 13px; background: rgba(245,158,11,0.05); color: var(--accent3); border-color: var(--accent3);">KOMPAS 🧭</button>
             </div>
         </div>
     </div>
@@ -1414,8 +1426,10 @@
                 return outgoing[0] || null;
             },
 
-            activeWorkspace: 0,
+            activeWorkspace: 'lvl1',
             activeLevel: null,
+            lastCampaignSlot: 'lvl1',
+            pendingLevel: null,
             blocks: [], 
             arrows: [], 
             selectedBlocks: new Set(),
@@ -1492,11 +1506,14 @@
                 hudRank: document.getElementById('hud-rank'),
                 hudXp: document.getElementById('hud-xp'),
                 hudStars: document.getElementById('hud-stars'),
-                campaignPanel: document.getElementById('campaign-panel'),
-                campaignList: document.getElementById('campaign-list'),
+                menuMissions: document.getElementById('menu-missions'),
                 nameModal: document.getElementById('name-modal'),
                 nameInput: document.getElementById('name-input'),
-                nameError: document.getElementById('name-error')
+                nameError: document.getElementById('name-error'),
+                levelModal: document.getElementById('level-modal'),
+                levelTitle: document.getElementById('level-title'),
+                levelBody: document.getElementById('level-body'),
+                levelKompas: document.getElementById('level-kompas')
             },
 
             toggleMenu(e) {
@@ -2532,7 +2549,7 @@
                 this.saveWorkspace(this.activeWorkspace);
             },
 
-            saveWorkspace(index) {
+            saveWorkspace(slot) {
                 const state = JSON.stringify({ 
                     blocks: this.blocks, 
                     arrows: this.arrows, 
@@ -2541,8 +2558,8 @@
                     vy: this.vy,
                     vscale: this.vscale
                 });
-                localStorage.setItem(`blockflow_v1_1_ws_${index}`, state);
-                localStorage.setItem('blockflow_v1_1_active_ws', this.activeWorkspace.toString());
+                localStorage.setItem(`blockflow_v2_ws_${slot}`, state);
+                localStorage.setItem('blockflow_v2_active_ws', this.activeWorkspace);
             },
             
             rotatePorts(blockId, event) {
@@ -2573,9 +2590,9 @@
                 }
             },
 
-            loadWorkspace(index) {
+            loadWorkspace(slot) {
                 try {
-                    const saved = localStorage.getItem(`blockflow_v1_1_ws_${index}`);
+                    const saved = localStorage.getItem(`blockflow_v2_ws_${slot}`);
                     if (saved) {
                         const parsed = JSON.parse(saved);
                         this.blocks = parsed.blocks || []; 

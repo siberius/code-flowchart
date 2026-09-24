@@ -2,7 +2,7 @@
 // completeLevel + certifikát, persistence, reset.
 const { loadApp } = require('./flow_test_utils.js');
 
-const { App, Game, LEVELS, sandbox } = loadApp();
+const { App, Game, LEVELS, SAMPLES, sandbox } = loadApp();
 
 let pass = 0;
 let fail = 0;
@@ -39,6 +39,15 @@ check('každý stupeň má vzorové řešení (cheat)', LEVELS.every(l => l.solu
 check('řešení má šipky s platnými indexy', LEVELS.every(l => (l.solution.arrows || []).length > 0 && l.solution.arrows.every(a =>
     Array.isArray(a) && a.length === 4 && a[0] >= 0 && a[0] < l.solution.blocks.length && a[2] >= 0 && a[2] < l.solution.blocks.length)));
 check('level 4 (streamer) = „Moderace chatu"', LEVELS.find(l => l.id === 4).name === 'Moderace chatu');
+
+console.log('\n[SAMPLES — ukázkové diagramy]');
+check('alespoň 3 ukázky', SAMPLES.length >= 3, 'got ' + SAMPLES.length);
+check('ukázky mají id/název/bloky', SAMPLES.every(s => s.id && s.name && Array.isArray(s.blocks) && s.blocks.length > 0));
+check('ukázky začínají Startem a končí Koncem',
+    SAMPLES.every(s => s.blocks[0].type === 'start' && s.blocks[s.blocks.length - 1].type === 'end'));
+check('ukázky mají platné šipky', SAMPLES.every(s => (s.arrows || []).length > 0 && s.arrows.every(a =>
+    Array.isArray(a) && a.length === 4 && a[0] >= 0 && a[0] < s.blocks.length && a[2] >= 0 && a[2] < s.blocks.length)));
+check('ukázky mají bloky s pozicí', SAMPLES.every(s => s.blocks.every(b => b.type && b.label && typeof b.x === 'number' && typeof b.y === 'number')));
 
 console.log('\n[jméno — validace 1–30 znaků]');
 const g1 = makeGame();

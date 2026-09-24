@@ -1078,6 +1078,31 @@
                         <div class="help-item"><strong>Mezerník + tah</strong><br>Rychlý posun plátna</div>
                         <div class="help-item"><strong>F</strong><br>Vystředit a zacentrovat všechny bloky</div>
                     </div>
+
+                    <div class="help-section">
+                        <h4>Mise, hvězdy a hodnosti</h4>
+                        <div class="help-item"><strong>MISE</strong> — 6 stupňů od sekvence přes cykly až po záchranu systému. Stupeň spustíš kliknutím v menu.</div>
+                        <div class="help-item"><strong>Kompas</strong> — nápověda zdarma (Cíl → Háček → Vzor → Postup). Nápověda nic nestojí, XP se nikdy neodečítá.</div>
+                        <div class="help-item"><strong>Hvězdy</strong> — ★ 100–115 %, ★★ &gt;115–125 %, ★★★ &gt;125 %.</div>
+                        <div class="help-item"><strong>Hodnost</strong> roste s celkovým XP; po každém stupni si stáhneš certifikát (SVG).</div>
+                    </div>
+
+                    <div class="help-section">
+                        <h4>Plochy a ukázky</h4>
+                        <div class="help-item"><strong>MISE</strong> — úlohy; <strong>SPACE 1</strong> — demo „sbírání jablek"; <strong>SPACE 2–5</strong> — volné plochy pro vlastní tvorbu.</div>
+                        <div class="help-item"><strong>Ukázky</strong> v menu (Ahoj světe, Obsah kruhu, Součet 1..N, FizzBuzz) načtou hotový diagram do plochy — můžeš si je prohlédnout a upravit.</div>
+                        <div class="help-item"><strong>IMPORT / EXPORT</strong> (JSON) uloží a načte všechny plochy; <strong>SVG</strong> exportuje obrázek diagramu.</div>
+                    </div>
+
+                    <div class="help-section">
+                        <h4>Témata (Streamer / Operátor)</h4>
+                        <div class="help-item">Ikonou <span class="help-code">🎮</span>/<span class="help-code">🏭</span> v horním panelu přepneš příběh hry: <strong>Streamer</strong> (výchozí) nebo <strong>Operátor</strong> (původní sklad). Algoritmus úloh je stejný, mění se jen texty a hodnosti.</div>
+                    </div>
+
+                    <div class="help-section">
+                        <h4>Co si osvojíš (RVP G + SOŠ ICT)</h4>
+                        <div class="help-item">Zápis algoritmu vývojovým diagramem, proměnné a datové typy, vstup/výstup, větvení, cykly (fixní i podmíněné), podprogramy a dekompozice, ověření a oprava řešení, vlastní tvorba.</div>
+                    </div>
                 </div>
             </div>
             <div class="btn-row" style="margin-top: 10px; flex-shrink: 0;">
@@ -1089,9 +1114,10 @@
     <div id="about-modal" class="modal-overlay" style="z-index: 600;">
         <div class="modal-box">
             <h3>ℹ️ O programu</h3>
-            <p style="color: var(--text-dim); line-height: 1.6; font-size: 14px; margin-bottom: 10px;">CodeFlowChart EDU je moderní, plně interaktivní výukový nástroj navržený pro snadné a vizuální pochopení logických struktur, algoritmů a stavových proměnných. Spojuje návrh vývojových diagramů s krokovacím enginem a Visual RAM pamětí v reálném čase.</p>
-            <p style="color: var(--text-dim); line-height: 1.6; font-size: 14px;">Tato aplikace slouží jako ukázka pokročilé <strong style="color: var(--text);">SPA (Single Page Application)</strong> architektury. Je kompletně obsažena v jediném HTML souboru a byla vytvořena za asistence umělé inteligence <strong style="color: var(--accent);">Google Gemini 3.1 Pro</strong> v roce 2026.</p>
-            <p style="color: var(--accent2); font-family: 'JetBrains Mono', monospace; font-size: 12px; margin-top: 15px;">Verze jádra: 1.4<br>Codename: CyberCanvas</p>
+            <p style="color: var(--text-dim); line-height: 1.6; font-size: 14px; margin-bottom: 10px;">CodeFlowChart EDU je moderní, plně interaktivní výukový nástroj pro vizuální pochopení algoritmů, logických struktur a stavových proměnných. Spojuje návrh vývojových diagramů s krokovacím enginem a Visual RAM pamětí v reálném čase.</p>
+            <p style="color: var(--text-dim); line-height: 1.6; font-size: 14px; margin-bottom: 10px;">Obsahuje <strong style="color: var(--text);">6 herních stupňů</strong> (MISE) od sekvence přes větvení a cykly až po podprogramy, <strong style="color: var(--text);">hodnosti, hvězdy a certifikát</strong>, volné plochy SPACE 1–5, ukázkové diagramy a dvě přepínatelná narativní témata (Streamer / Operátor). Pokrývá učivo <strong style="color: var(--text);">RVP G a SOŠ (ICT základ)</strong>: zápis algoritmu, proměnné, vstup/výstup, větvení, cykly, podprogramy, ověření a tvorba.</p>
+            <p style="color: var(--text-dim); line-height: 1.6; font-size: 14px;">Aplikace je ukázkou pokročilé <strong style="color: var(--text);">SPA (Single Page Application)</strong> architektury — kompletně v jediném HTML souboru, offline, bez serveru a bez telemetrie.</p>
+            <p style="color: var(--accent2); font-family: 'JetBrains Mono', monospace; font-size: 12px; margin-top: 15px;">Verze jádra: 1.5<br>Codename: CyberCanvas</p>
             <div class="btn-row" style="margin-top: 20px;">
                 <button class="btn btn-yes-large" onclick="App.closeAbout()" style="width: 100%; border-color: var(--accent3); color: var(--accent3); box-shadow: inset 0 0 15px rgba(245, 158, 11, 0.2); text-shadow: 0 0 8px rgba(245, 158, 11, 0.6);">ZAVŘÍT</button>
             </div>
@@ -2396,20 +2422,70 @@
             },
             renderMenu() {
                 const list = this.dom.menuMissions;
+                if (list) {
+                    list.innerHTML = '';
+                    LEVELS.forEach(lvl => {
+                        const done = Game.isLevelDone(lvl.id);
+                        const rec = Game.levels[lvl.id];
+                        const stars = rec ? '★'.repeat(rec.stars) + '☆'.repeat(3 - rec.stars) : '☆☆☆';
+                        const cur = this.activeWorkspace === 'lvl' + lvl.id;
+                        const row = document.createElement('div');
+                        row.className = 'menu-mission' + (done ? ' done' : '') + (cur ? ' current' : '');
+                        row.innerHTML =
+                            '<div class="mm-top"><span>' + lvl.id + '. ' + lvl.name + '</span>' +
+                            '<span class="mm-stars">' + stars + '</span></div>';
+                        row.addEventListener('click', () => this.enterCampaignLevel(lvl.id));
+                        list.appendChild(row);
+                    });
+                }
+                this.renderSamples();
+            },
+            renderSamples() {
+                const list = this.dom.menuSamples;
                 if (!list) return;
                 list.innerHTML = '';
-                LEVELS.forEach(lvl => {
-                    const done = Game.isLevelDone(lvl.id);
-                    const rec = Game.levels[lvl.id];
-                    const stars = rec ? '★'.repeat(rec.stars) + '☆'.repeat(3 - rec.stars) : '☆☆☆';
-                    const cur = this.activeWorkspace === 'lvl' + lvl.id;
+                SAMPLES.forEach(s => {
                     const row = document.createElement('div');
-                    row.className = 'menu-mission' + (done ? ' done' : '') + (cur ? ' current' : '');
+                    row.className = 'menu-mission';
                     row.innerHTML =
-                        '<div class="mm-top"><span>' + lvl.id + '. ' + lvl.name + '</span>' +
-                        '<span class="mm-stars">' + stars + '</span></div>';
-                    row.addEventListener('click', () => this.enterCampaignLevel(lvl.id));
+                        '<div class="mm-top"><span>💡 ' + s.name + '</span></div>' +
+                        '<div style="font-size:11px;opacity:0.55;">' + s.hint + '</div>';
+                    row.addEventListener('click', () => this.loadSample(s.id));
                     list.appendChild(row);
+                });
+            },
+            loadSample(id) {
+                const s = SAMPLES.find(x => x.id === id);
+                if (!s) return;
+                this.closeMenu();
+                if (this.isSimulating) { this.toast('Nelze během běžící simulace.'); return; }
+                let slot = this.activeWorkspace;
+                if (this.modeOf(slot) === 'campaign') slot = 'space2';
+                if (slot !== this.activeWorkspace) this.switchWorkspace(slot);
+                const ask = (typeof window !== 'undefined' && typeof window.confirm === 'function') ? window.confirm : () => true;
+                if (this.blocks.length > 1 && !ask('Plocha není prázdná. Přepsat ukázkou „' + s.name + '“?')) return;
+                this.buildSample(s);
+                this.applyPalette(this.currentPalette());
+                this.updateWorkspaceUI();
+                this.renderAll();
+                this.saveWorkspace(this.activeWorkspace);
+                this.pushHistory();
+                setTimeout(() => { this.renderArrows(); this.fitToScreen(); }, 50);
+                this.toast('Ukázka: ' + s.name);
+            },
+            buildSample(s) {
+                this.blocks = []; this.arrows = []; this.nextId = 1;
+                this.vx = 0; this.vy = 0; this.vscale = 1;
+                const created = s.blocks.map(def => {
+                    const b = this.addBlockSilent(def.type, def.label, def.x, def.y);
+                    if (def.ioType) b.ioType = def.ioType;
+                    if (def.yesPort) b.yesPort = def.yesPort;
+                    if (def.noPort) b.noPort = def.noPort;
+                    return b;
+                });
+                s.arrows.forEach(a => {
+                    const from = created[a[0]], to = created[a[2]];
+                    if (from && to) this.addArrowSilent(from.id, a[1], to.id, a[3]);
                 });
             },
             enterCampaignLevel(id) {

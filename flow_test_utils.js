@@ -57,11 +57,11 @@ function loadApp() {
     };
     vm.createContext(sandbox);
 
-    const code = match[1] + '\n;globalThis.__App = App; globalThis.__Game = (typeof Game !== "undefined") ? Game : null; globalThis.__LEVELS = (typeof LEVELS !== "undefined") ? LEVELS : null;';
+    const code = match[1] + '\n;globalThis.__App = App; globalThis.__Game = (typeof Game !== "undefined") ? Game : null; globalThis.__LEVELS = (typeof LEVELS !== "undefined") ? LEVELS : null; globalThis.__SAMPLES = (typeof SAMPLES !== "undefined") ? SAMPLES : null;';
     new vm.Script(code, { filename: 'code-flowchart.html:inline-script' }).runInContext(sandbox);
 
     if (!sandbox.__App) throw new Error('App se nepodařilo načíst');
-    return { App: sandbox.__App, Game: sandbox.__Game, LEVELS: sandbox.__LEVELS, sandbox };
+    return { App: sandbox.__App, Game: sandbox.__Game, LEVELS: sandbox.__LEVELS, SAMPLES: sandbox.__SAMPLES, sandbox };
 }
 
 // Izolovaná instance s potlačenými vedlejšími efekty (logy, RAM render).

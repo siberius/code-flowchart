@@ -239,5 +239,14 @@ App.dom.simInputField.value = '7';
 App.resolveInputPrompt();
 check('platný vstup se odešle', inputResolved === true);
 
+console.log('\n[ukázky v menu]');
+App.renderSamples();
+check('menu ukázek naplněno', App.dom.menuSamples.children.length >= 3, 'got ' + App.dom.menuSamples.children.length);
+App.loadSample('hello');
+check('ukázka načtena do plochy', App.blocks.length === 4, 'bloky=' + App.blocks.length);
+check('ukázka má šipky', App.arrows.length === 3, 'šipky=' + App.arrows.length);
+check('ukázka začíná Startem', App.blocks[0].type === 'start');
+check('ukázka má výstupní blok', App.blocks.some(b => b.type === 'io' && b.ioType === 'output'));
+
 console.log(`\nVýsledek: ${pass} OK, ${fail} FAIL`);
 process.exit(fail === 0 ? 0 : 1);

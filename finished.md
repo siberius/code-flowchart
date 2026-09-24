@@ -19,8 +19,17 @@ Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS
 - **Šipky:** hrot ve tvaru **ocásku vlajky** (výstřih 25°, `polygon 18 8, 1 0, 4.73 8,
   1 16`) a `markerUnits="userSpaceOnUse"` → **hrot se nezvětšuje** při hoveru/highlightu
   (dřív scaling dle `stroke-width`). Aplikováno i na SVG export (`#ah`).
-- **Testy:** syntax OK · flow_tests 21 · flow_game 68 · flow_storage 10 · flow_ui 6 ·
-  flow_smoke 64 (celkem 169 kontrol). Přidány testy přepnutí témat (data i UI).
+- **Prázdné plochy (SPACE 2–5):** modul Start se po `fitToScreen` ukotví do **horní
+  třetiny** (`vy` kotva `wrapH/3` při jediném bloku), ne na střed.
+- **Ukázky (SAMPLES):** nová sekce **UKÁZKY** v menu — 4 hotové diagramy
+  (Ahoj světe, Obsah kruhu, Součet 1..N, FizzBuzz 1..N) se načtou do plochy
+  (`loadSample`/`buildSample`, přepis s potvrzením). Inspirace pro vlastní tvorbu.
+- **Nápověda + O programu:** doplněny sekce Mise/hvězdy/hodnosti, Plochy a ukázky,
+  Témata, „Co si osvojíš (RVP G + SOŠ ICT)"; About nově zmiňuje 6 stupňů, témata,
+  ukázky a RVP pokrytí. Verze jádra 1.5.
+- **Testy:** syntax OK · flow_tests 21 · flow_game 73 · flow_storage 10 · flow_ui 6 ·
+  flow_smoke 69 (celkem 179 kontrol). Přidány testy přepnutí témat (data i UI),
+  `SAMPLES` a načtení ukázky přes menu.
 
 ## 2026-09-24 — F1 (nezakomitováno)
 

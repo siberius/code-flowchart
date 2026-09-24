@@ -68,10 +68,10 @@ Pro vzdělávací obsah navíc: `md-skills/vzdelavaci-metodiky.md` (RVP/ŠVP, CZ
   - `node flow_storage_tests.js` — persistence (save/load workspace), okrajové stavy.
   - `node flow_ui_tests.js` — viewport, responzivní breakpoint, tablet porty bez hoveru.
   - `node flow_game_tests.js` (F1) — herní vrstva: `LEVELS` data, jméno, XP bonusy,
-    hvězdy, hodnosti, `completeLevel` + certifikát, persistence, reset.
+    hvězdy, hodnosti, `completeLevel` + certifikát, persistence, reset, `SAMPLES`.
   - `node flow_smoke_tests.js` (F1) — UI smoke: `App.init()` + HUD/kampaň/jméno/reset
-    nad bohatým DOM mockem.
-  - Sdílený `flow_test_utils.js` (načtení `App` + `Game` + `LEVELS` z inline `<script>` v Node).
+    nad bohatým DOM mockem, menu ukázek + `loadSample`.
+  - Sdílený `flow_test_utils.js` (načtení `App` + `Game` + `LEVELS` + `SAMPLES` z inline `<script>` v Node).
   - **Dev cheat:** `Ctrl+Alt+C` s aktivním CapsLockem v MISE vyřeší aktuální
     level krok za krokem ze vzorového řešení (`SOLUTIONS`); jen pro testování.
   - Plánováno (F7/F9): plný browser matrix 1440/1024/390/320 px, `prefers-reduced-motion`,

@@ -286,6 +286,32 @@ Konverze starých hlášek (jádro zachovat, zkrátit):
 
 > V PROFI: statická tabulka „stupeň ↔ RVP výstupy", žádný sběr dat o žákovi.
 
+### 11.1 RVP audit (2026-09-24) — pokrytí a mezery
+
+**Cíl:** RVP G (Informatika — algoritmizace a programování) + RVP SOŠ, obory
+s ICT základem (např. 18-20-M/01). NE cílení na maturitní 18-20-M/01 hloubku.
+
+**Pokryto dobře (jádro RVP G):** algoritmus jako posloupnost kroků; vývojový
+diagram; proměnné + vstup/výstup; větvení; cykly (fixní `for` i podmíněný
+`while` s počítadlem); podprogram/dekompozice; čtení a vysvětlení cizího
+diagramu; ověření a oprava; vlastní tvorba (SPACE 2–5 + ukázky).
+
+**Pokryto částečně / k doplnění:**
+
+| Oblast RVP | Stav | Doporučení |
+|---|---|---|
+| Logické hodnoty a složené podmínky (`&&`, `||`, `!`) | evaluátor umí, žák netrénuje | ukázka „Přestupný rok" / „Sudé a kladné" (F5+) |
+| Datové typy (číslo vs. text) | implicitně v úlohách | samostatná ukázka s textem/číslem |
+| Pole / seznamy | nepokryto (vektory jen jako testovací data) | rozšířený stupeň až F5/F6 (SOŠ ICT) |
+| Funkce s návratovou hodnotou | L5 volá podprogram, návrat jen minimálně | doplnit v F5 |
+| Ladění (debug) | Ladička plánovaná | F3 = „testuje a ladí" (RVP) |
+| Formativní sebehodnocení | jen hvězdy/XP | volitelně reflexe v certifikátu (F8) |
+
+**Závěr:** pro RVP G je pokrytí **dostatečné**; pro SOŠ ICT základ **téměř
+dostatečné** s mezerou u polí a funkcí s návratem (doplnit v F5/F6). Ukázky
+(`SAMPLES`) slouží jako „read + remix" příklady (Bloom: porozumění → aplikace),
+tvorba je na volných plochách (Bloom: tvorba).
+
 ---
 
 ## 12. Revize funkčnosti algoritmů a procesů (TACHI-style F0)

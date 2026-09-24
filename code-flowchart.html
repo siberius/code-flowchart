@@ -383,6 +383,10 @@
             transition: all 0.12s; z-index: 30; opacity: 0;
         }
         .block:hover .port, .block.selected .port { opacity: 1; }
+        /* Tablet/mobil: bez hoveru musí být porty stále vidět */
+        @media (hover: none) {
+            .block .port { opacity: 1; }
+        }
         .port:hover { background: var(--accent); transform: translate(-50%, -50%) scale(1.4); }
         .port.top    { top: 0;    left: 50%; }
         .port.bottom { top: 100%; left: 50%; }
@@ -1072,6 +1076,43 @@
                     this._reCache[key] = new RegExp(`(^|[^\\p{L}0-9_])(${escapedKey})(?=[^\\p{L}0-9_]|$)`, 'gu');
                 }
                 return this._reCache[key];
+            },
+
+            // Nahradí proměnné v textu VÝSTUPu — podporuje {var} i holé var.
+            // Hodnota se vkládá přes funkci, takže '$' ve hodnotě nerozbije replace.
+            replaceVars(text) {
+                let out = String(text);
+                for (let k in this.visualRAM) {
+                    if (Array.isArray(this.visualRAM[k])) continue;
+                    let printVal = this.visualRAM[k];
+                    if (typeof printVal === 'string' && printVal.startsWith('"') && printVal.endsWith('"')) {
+                        printVal = printVal.slice(1, -1);
+                    }
+                    const escapedKey = k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    out = out.replace(new RegExp(`\\{${escapedKey}\\}`, 'gu'), () => String(printVal));
+                    out = out.replace(this.getVarRegex(k), (m, p1) => p1 + String(printVal));
+                }
+                return out;
+            },
+
+            // Detekce nekonečné smyčky podle opakování stavu (blok + obsah RAM),
+            // ne podle pouhého počtu průchodů jedním blokem.
+            MAX_STATE_REPEAT: 200,
+            MAX_TOTAL_STEPS: 20000,
+            nextStateCount(counts, key) {
+                counts[key] = (counts[key] || 0) + 1;
+                return counts[key];
+            },
+            isRunaway(counts, key, totalSteps) {
+                return counts[key] > this.MAX_STATE_REPEAT || totalSteps > this.MAX_TOTAL_STEPS;
+            },
+            pickNextArrow(block, answer, arrows) {
+                const outgoing = arrows.filter(a => a.from === block.id);
+                if (block.type === 'decision' || block.type === 'loop') {
+                    const port = answer ? block.yesPort : block.noPort;
+                    return outgoing.find(a => a.fromPort === port) || null;
+                }
+                return outgoing[0] || null;
             },
 
             activeWorkspace: 0,
@@ -2456,28 +2497,32 @@
                 
                 this.dom.consoleOut.appendChild(entry); 
                 
-                if (this.simSpeed >= 100 || type === 'sys') {
-                    msgEl.innerHTML = msg;
-                    this.dom.consoleOut.scrollTop = this.dom.consoleOut.scrollHeight;
-                } else {
-                    let i = 0;
-                    const typeInterval = setInterval(() => {
-                        msgEl.innerHTML += msg.charAt(i);
-                        i++;
-                        this.dom.consoleOut.scrollTop = this.dom.consoleOut.scrollHeight;
-                        if (i >= msg.length) clearInterval(typeInterval);
-                    }, 10);
-                }
+                msgEl.textContent = msg;
+                this.dom.consoleOut.scrollTop = this.dom.consoleOut.scrollHeight;
             },
 
             updateRAM(vars) {
                 this.dom.ramOut.innerHTML = '';
                 for (let k in vars) {
-                    let valDisplay = vars[k];
+                    const row = document.createElement('div');
+                    row.className = 'ram-var';
+
+                    const nameEl = document.createElement('span');
+                    nameEl.className = 'ram-var-name';
+                    nameEl.textContent = k;
+
+                    const valEl = document.createElement('span');
+                    valEl.className = 'ram-var-val';
                     if (Array.isArray(vars[k])) {
-                        valDisplay = `<span style="color:#fbcfe8">[${vars[k].join(', ')}]</span>`;
+                        valEl.style.color = '#fbcfe8';
+                        valEl.textContent = `[${vars[k].join(', ')}]`;
+                    } else {
+                        valEl.textContent = vars[k];
                     }
-                    this.dom.ramOut.innerHTML += `<div class="ram-var"><span class="ram-var-name">${k}</span><span class="ram-var-val">${valDisplay}</span></div>`;
+
+                    row.appendChild(nameEl);
+                    row.appendChild(valEl);
+                    this.dom.ramOut.appendChild(row);
                 }
             },
             
@@ -2491,7 +2536,7 @@
                         line = line.trim();
                         if (!line) continue;
 
-                        if (!line.match(/[+\-*/%=]|(?:\+\+|--)/)) {
+                        if (!line.match(/[+\-*/%=]|(?:\+\+|--)/) && !line.match(this.REGEX.push)) {
                             continue;
                         }
 
@@ -2558,7 +2603,9 @@
                                         }
                                     }
                                     evaluated = Function(`"use strict"; return (${toEval})`)();
-                                } catch(e) {} 
+                                } catch(e) {
+                                    this.logConsole(`[CHYBA VÝRAZU] Nešlo vyhodnotit: '${rightSide}'`, "error");
+                                }
                             }
 
                             if (op === '=') this.visualRAM[varName] = evaluated;
@@ -2578,7 +2625,9 @@
                         }
                     }
                     this.updateRAM(this.visualRAM);
-                } catch(e) {} 
+                } catch(e) {
+                    this.logConsole(`[CHYBA VÝRAZU] Zpracování výrazu selhalo: '${expr}'`, "error");
+                }
             },
 
             runLinter() {
@@ -2738,7 +2787,7 @@
 
                 let currentBlock = starts[0];
                 let previousBlock = null;
-                let executionCounts = {};
+                let stateCounts = {};
                 let totalSteps = 0;
 
                 try {
@@ -2756,10 +2805,11 @@
                         if (el) el.classList.add('sim-active');
 
                         let val = currentBlock.label;
-                        executionCounts[currentBlock.id] = (executionCounts[currentBlock.id] || 0) + 1;
+                        const stateKey = currentBlock.id + '|' + JSON.stringify(this.visualRAM);
+                        this.nextStateCount(stateCounts, stateKey);
                         
-                        if (executionCounts[currentBlock.id] > 5000) {
-                            this.logConsole(`[CHYBA BĚHU] Detekován nekonečný cyklus v bloku '${val}'. Stack Overflow!`, "error");
+                        if (this.isRunaway(stateCounts, stateKey, totalSteps)) {
+                            this.logConsole(`[CHYBA BĚHU] Detekován nekonečný cyklus v bloku '${val}'. Zastavuji!`, "error");
                             if (el) el.classList.add('sim-error'); break;
                         }
 
@@ -2828,18 +2878,7 @@
                                 this.updateRAM(this.visualRAM);
 
                             } else {
-                                let outVal = currentBlock.label;
-                                for(let k in this.visualRAM) {
-                                    if (!Array.isArray(this.visualRAM[k])) {
-                                        const re = this.getVarRegex(k);
-                                        
-                                        let printVal = this.visualRAM[k];
-                                        if (typeof printVal === 'string' && printVal.startsWith('"') && printVal.endsWith('"')) {
-                                            printVal = printVal.slice(1, -1);
-                                        }
-                                        outVal = outVal.replace(re, `$1${printVal}`);
-                                    }
-                                }
+                                let outVal = this.replaceVars(currentBlock.label);
                                 this.logConsole(`[VÝSTUP] Konzole hlásí: '${outVal}'`, "io");
                                 
                                 if (this.simSpeed < 100) {
@@ -2874,8 +2913,7 @@
                             const textA = isLoop ? 'TĚLO' : 'ANO'; const textN = isLoop ? 'KONEC' : 'NE';
                             this.logConsole(`-> Architekt zvolil větev: ${answer ? textA : textN}`, "info");
                             
-                            const portToUse = answer ? currentBlock.yesPort : currentBlock.noPort;
-                            nextArrow = outgoingArrows.find(a => a.fromPort === portToUse);
+                            nextArrow = this.pickNextArrow(currentBlock, answer, this.arrows);
                             
                             if (!nextArrow) {
                                 this.logConsole(`[CHYBA BĚHU] Zvolená větev (${answer ? textA : textN}) nikam nevede! Slepá ulička.`, "error");

@@ -58,13 +58,14 @@ Pro vzdělávací obsah navíc: `md-skills/vzdelavaci-metodiky.md` (RVP/ŠVP, CZ
 
 ## Spuštění / testy
 - Hra běží offline přímo z `code-flowchart.html` (SPA, bez build kroku).
-- **Revize funkčnosti (TACHI-style, `PLAN.md` §12.2) — plánováno, zavádí se ve F0:**
+- **Revize funkčnosti (TACHI-style, `PLAN.md` §12) — zavedeno ve F0:**
   - `node syntax_check.js` — syntaxe inline `<script>` bloků.
-  - `node flow_tests.js` — jádro: parser, tester vektorů, porty ANO/NE/TĚLO/KONEC,
-    smyčky, VÝSTUP `{var}`.
-  - `node flow_storage_tests.js` — persistence, RESET, auto-reset 3 h, migrace v1→v2.
-  - `node flow_ui_tests.js` — responzivita (1440/1024/390/320 px), tablet porty,
-    `prefers-reduced-motion`.
-  - Self-test všech 6 stupňů (každý projde svými vektory).
+  - `node flow_tests.js` — jádro: parser, VÝSTUP `{var}`, porty ANO/NE/TĚLO/KONEC,
+    runaway smyčka, bezpečnost konzole/RAM.
+  - `node flow_storage_tests.js` — persistence (save/load workspace), okrajové stavy.
+  - `node flow_ui_tests.js` — viewport, responzivní breakpoint, tablet porty bez hoveru.
+  - Sdílený `flow_test_utils.js` (načtení `App` z inline `<script>` v Node).
+  - Plánováno (F7/F9): plný browser matrix 1440/1024/390/320 px, `prefers-reduced-motion`,
+    self-test všech 6 stupňů (až vzniknou).
 - Po každé změně ověřit přiměřeně riziku (MASTER §17); dokončené úkoly eviduj
-  v `finished.md` (vytvoř při prvním dokončeném úkolu, formát dle MASTER §14).
+  v `finished.md` (formát dle MASTER §14).

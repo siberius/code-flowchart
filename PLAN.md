@@ -1,4 +1,4 @@
-# Plán přestavby: BlockFlow EDU → BlockFlow „Operátor déčku" (v2)
+# Plán přestavby: CodeFlowChart EDU → CodeFlowChart „Operátor déčku" (v2)
 
 > **Verze plánu:** 2.1 (2026-09-24) · **Status:** obsah §16 čeká na revizi; implementace po schválení
 > **Rozsah:** analýza + návrh přestavby (kód hry se NEMĚNÍ, dokud plán neschválíš)
@@ -33,7 +33,7 @@
 ## 1. Vize a herní smyčka
 
 ### 1.1 Story (krátká, meme, sci-fi)
-> „Jsi **operátor BlockFlow déčku 7** — přístroj, který protlačuje data továrnou. Továrna stávkuje.
+> „Jsi **operátor CodeFlowChart déčku 7** — přístroj, který protlačuje data továrnou. Továrna stávkuje.
 > Napiš jí čistý algoritmus a dostaneš **certifikát směny**. Déčko se po 3 hodinách přepne do šumu — staň do té doby."
 
 - Story vrstva NIkdy nesmí zahltit — 1 motto ve spodním pruhu, hlášky v Ladičce/nápovědě, ne v úkolech.
@@ -58,7 +58,7 @@ CÍL (1 věta, ≤ 15 slov) → SESTAV diagram (5–10 bloků) → SPUSTIT / OV�
 | Undo/redo, marquee, kopírovat/vložit (i Word/PPT), export JSON/SVG, WIPE | zachovat → přesun do „Profi/Učitel" (§7.9) |
 | Audio (click/error/success/data-scan) | zachovat + level-up jingle, odznakový sting |
 | Cyber-spark, glitch, neon, glass | zachovat; glitch pod `prefers-reduced-motion` |
-| Výchozí hra „Sbírání jablek" | zachována: **stupeň 4 = „Sběrač jablek 2.0"** a **volný režim = jablka demo** |
+| Výchozí hra „Sbírání jablek" | zachována ve **volném režimu (SPACE 1 = jablka demo)**; stupeň 4 byl na žádost zadavatele přepracován na „Kontrola kvality" (§16.4) |
 | 3 pracovní plochy | reinterpretace: MISE + SPACE 1 (jablka) + SPACE 2–5 (prázdné) (§7.9) |
 
 ---
@@ -92,7 +92,7 @@ Všechny stupně jsou **otevřené** (žák si může hrát napřeskáčku). Ka�
 | **1** | „Průvodce skladem" | SEKvence, START/AKCE/KONEC, pořadí kroků | start, process, end, note | sestav | aplikace | zápis algoritmu diagramem |
 | **2** | „Pokladna" | Proměnná, VSTUP a VÝSTUP dat | start, io, process, end | sestav | aplikace | data, vstup/výstup |
 | **3** | „Vstupenka 15+" | Větvení PODMÍNKA (ANO/NE) + oprava | start, io, decision, process, end | sestav + oprav | aplikace→analýza | větvení, kontrola |
-| **4** | „Sběrač jablek 2.0" | Cyklus SMYČKA + počítadla (vylepšený default) | start, io, process, decision, loop, note, end | sestav | aplikace→analýza | cyklus, větvení |
+| **4** | „Kontrola kvality" | Podmíněný cyklus SMYČKA + počítadla | start, io, process, decision, loop, note, end | sestav | aplikace→analýza | cyklus, větvení |
 | **5** | „Volání opraváře" | Podprogram VOLÁNÍ + dekompozice | start, process, call, end | cti + sestav | porozumění→aplikace | podprogram, dekompozice |
 | **6** | „Záchrana serveru" | Boss: kombinace všeho + oprava + výběr efektivnější varianty | všechny | oprav + vyber + tvorba | analýza→hodnocení→tvorba | ověření, oprava, výběr |
 
@@ -100,42 +100,41 @@ Všechny stupně jsou **otevřené** (žák si může hrát napřeskáčku). Ka�
 
 ```js
 {
-  id: "s4_jablka",
-  nazev: "Sběrač jablek 2.0",
-  cil: "Seber 3 jablka. Spočti barvy, co máš rád.",   // ≤ 15 slov
+  id: "s4_kvalita",
+  nazev: "Kontrola kvality",
+  cil: "Skenuj díly, dokud nemáš 2 dobré. Spočítej, kolik jsi jich prošel.",   // ≤ 15 slov
   typ: "sestav",
   bloky: ["start","io","process","decision","loop","note","end"],
-  skaffold: { rozestavené: [start, vstupy jméno/barva1/barva2, poznámky] }, // ZPD
-  testy: [ { vstupy: {...}, vystup: [...] }, ... ],  // 2–3 vektory
+  skaffold: { rozestavené: [start, ok=0/sken=0, smyčka ok<2, vstup stav, sken++, podmínka, ok++, výstup, konec, poznámka] }, // ZPD
+  testy: [ { vstupy: { stavy: ["vadne","ok","ok"] }, vystup: "Dobré díly: 2 z 3." }, ... ],  // 2–3 vektory
   kompas: { cil:1v, hack:1v, vzor:1v, postup:≤1řádek+odkaz }, // zdarma
   refReseni: {...},
   maxCasMin: 45,
   bloom: "aplikace",
   xp: { zaklad: 200, bonus_noHint: 0.2, bonus_efektivni: 0.1, bonus_prvniPokus: 0.15 },
-  rvp: ["G: použije cyklus a větvení", "G: ověří správnost krokováním", "SOŠ-ICT: vstup → výstup"]
+  rvp: ["G: použije podmíněný cyklus a větvení", "G: ověří správnost krokováním", "SOŠ-ICT: vstup → výstup"]
 }
 ```
 
-> **Obsah stupňů:** kompletní specifikace všech 6 stupňů je v **§16** (zadání, scaffolding, testv vektory, Kompas, vzor, XP). Stupeň 4 (§16.4) je zároveň vzorový upgrade výchozího „Sbírání jablek".
+> **Obsah stupňů:** kompletní specifikace všech 6 stupňů je v **§16** (zadání, scaffolding, testv vektory, Kompas, vzor, XP). Stupeň 4 (§16.4) je vzorový příklad podmíněného cyklu.
 
 ---
 
-## 4. Vzorová specifikace stupně: „Sběrač jablek 2.0" (stupeň 4)
+## 4. Vzorová specifikace stupně: „Kontrola kvality" (stupeň 4)
 
-**Upgrade výchozího „Sbírání jablek"** — nic se neodhazuje, získává verifikaci. Kompletní specifikace (včetně vektorů B/C/D a scaffoldingu) je v **§16.4**.
+**Přepracováno na žádost zadavatele** (původní „Sběrač jablek 2.0" byl příliš podobný volnému demu s jablky a málo zajímavý). Nově jde o **podmíněný cyklus s počítadlem a zastavovací podmínkou**. Kompletní specifikace je v **§16.4**. Volný režim (SPACE 1) si ukázku jablek zachovává.
 
-- **Cíl:** „Sbírám 3 jablka. Spočti barvy, které máš rád."
+- **Cíl:** „Skenuj díly, dokud nemáš 2 dobré. Spočítej, kolik jsi jich prošel."
 - **Povolené bloky:** start, io, process, decision, loop, note, end.
-- **Výchozí plátno (scaffolding):** START + VSTUP `jméno`, `barva1`, `barva2` + POZNÁMKY rozestavěné; žák dokončí smyčku a rozhodování.
+- **Scaffolding:** START + AKCE `ok = 0`, `sken = 0` + SMYČKA `ok < 2` + VSTUP `stav` + AKCE `sken++` + PODMÍNKA `stav == "ok"` + AKCE `ok++` + VÝSTUP + KONEC + POZNÁMKA (nepropojené, rozhozené).
 - **Testy (auto-kontrola):**
   ```
-  Vektor A: jmeno=Eda, barva1=cervena, barva2=modra, barvy=[cervena, cervena, zluta]
-            → "Díky Eda! Má 2×cervena a 1×modra jablek."
-  Vektor B: jmeno=Ola, barva1=zluta, barva2=zelena, barvy=[zelena, zluta, zelena]
-  Vektor C: jmeno=Tim, barva1=cervena, barva2=zluta, barvy=[modra, modra, modra]
+  Vektor A: stavy=[vadne, ok, ok]          → "Dobré díly: 2 z 3."
+  Vektor B: stavy=[ok, ok]                 → "Dobré díly: 2 z 2."
+  Vektor C: stavy=[vadne, vadne, ok, ok]   → "Dobré díly: 2 z 4."
   ```
-- **Kompas (zdarma, 4 stupně, max 40 slov):** Cíl („Potřebuješ 3 otočení: utrhni a zjisti barvu.") → Háček („Kolikrát se má opakovat SMYČKA?") → Vzor („Smyčka krok<3 → uvnitř vstup + podmínka barvy → košík++") → Postup (+ vzorové řešení).
-- **XP:** základ 200; **bonusové** (jen pozitivní): bez nápovědy +20 %, první pokus +15 %, efektivní (smyčka místo kopií) +10 %. Nápověda nic nestojí.
+- **Kompas (zdarma, 4 stupně, max 40 slov):** Cíl („Potřebuješ 2 dobré díly — smyčka se točí, dokud je nemáš.") → Háček („Kolikrát se smyčka opakuje? Záleží to na vstupech?") → Vzor („Smyčka ok<2 → vstup stav → sken++ → když stav==ok, ok++") → Postup („Skenuj každý díl, počítej dobré a skonči, až jich máš 2.").
+- **XP:** základ 200; **bonusové** (jen pozitivní): bez nápovědy +20 %, první pokus +15 %, efektivní (počítadlo místo ručního vypisování) +10 %. Nápověda nic nestojí.
 
 ---
 
@@ -248,7 +247,7 @@ Všechny stupně jsou **otevřené** (žák si může hrát napřeskáčku). Ka�
 ## 9. Certifikát (SVG — odevzdávka po každém stupni)
 
 - Automaticky po splnění libovolného stupně (výrazněji u boss/stupně 6).
-- **Obsah:** logo · „CERTIFIKÁT OPERÁTORA" · název stupně · **jméno žáka** (z learning mode) · **datum + čas** dokončení · **XP a hvězdy** · **hodnost** · razítko „BlockFlow EDU • RVP G + ICT základ" · GPL footer. **Bez odznaků.**
+- **Obsah:** logo · „CERTIFIKÁT OPERÁTORA" · název stupně · **jméno žáka** (z learning mode) · **datum + čas** dokončení · **XP a hvězdy** · **hodnost** · razítko „CodeFlowChart EDU • RVP G + ICT základ" · GPL footer. **Bez odznaků.**
 - Generátor = nový SVG builder (stávající export schémat zůstává).
 - Šířka ~A4 na šířku, stahuje se „1 mířová" SVG; na tabletu i PC.
 
@@ -264,7 +263,7 @@ Všechny stupně jsou **otevřené** (žák si může hrát napřeskáčku). Ka�
 | Chyby | „Test 2: čekal jsem 8, máš 5." |
 
 Konverze starých hlášek (jádro zachovat, zkrátit):
-- „Inicializace BlockFlow Engine v1.1…" → „Systém: on."
+- „Inicializace CodeFlowChart Engine v1.1…" → „Systém: on."
 - „Alokuji paměťový rámec… / Zpracování vlákna… ÚSPĚCH" → „Volám funkci … → návrat ✓"
 - „Slepá ulička. Signál nemá kam pokračovat…" → „Zaseknuto: odtud nikam nevede šipka."
 - „Detekován nekonečný cyklus… Stack Overflow!" → „Nekonečná smyčka! Zastavuji."
@@ -328,7 +327,7 @@ Konverze starých hlášek (jádro zachovat, zkrátit):
 |---|---|---|
 | **F0** | **Revize funkčnosti** (§12): bugfixy `{var}`, tichá chyba výrazu, XSS, typewriter, death-loop, `fitToScreen`, porty | testy §12.2; session PASS |
 | **F1** | `Game` + jméno (learning mode) + `Data` (6 stupňů) + režimy a plochy per level + level modal + scaffolding loader + XP/hodnost (pozitivní) | 3 umělé mise dají XP i certifikát; vstup do mise vykreslí scaffolding |
-| **F2** | `Checker` (evaluace + tester) — režim OVĚŘIT | vektory A/B/C jablek projdou |
+| **F2** | `Checker` (evaluace + tester) — režim OVĚŘIT | vektory stupňů (i jablka A/B/C) projdou |
 | **F3** | Kompas (zdarma) + Ladička + vzorové řešení gating | scénář „žák úplně ztracen → sám projde" |
 | **F4** | `Session` (3 h odpočet, varování, auto-reset) + červené RESET + migrace v1→v2 | simulace času: reset při 03:00, RESET ručně |
 | **F5** | Stupně 1–3 obsahu (zadání, testy, kompas) | každý stupeň projde svými vektory |
@@ -436,27 +435,23 @@ Každá fáze končí **definovaným autotestem**, ne „to běží".
 
 ---
 
-### 16.4 Stupeň 4 — „Sběrač jablek 2.0" (cyklus + počítadla) — **vzor §4, kompletní**
+### 16.4 Stupeň 4 — „Kontrola kvality" (podmíněný cyklus + počítadla) — **vzor §4, kompletní**
 
-**Typ:** sestav · **Bloom:** aplikace → analýza · **Učivo:** cyklus, počítadla, větvení · **RVP:** cyklus, větvení.
+**Typ:** sestav · **Bloom:** aplikace → analýza · **Učivo:** cyklus s podmínkou, počítadla, větvení · **RVP:** cyklus (fixní i podmíněný), větvení.
 
-- **Cíl:** „Seber 3 jablka. Spočti barvy, co máš rád."
+- **Cíl:** „Skenuj díly, dokud nemáš 2 dobré. Spočítej, kolik jsi jich prošel."
 - **Povolené bloky:** start, io, process, decision, loop, note, end.
-- **Scaffolding:** START + VSTUP `jméno`, `barva1`, `barva2` + POZNÁMKA „utrhni a zjisti barvu" + SMYČKA (3×, prázdná).
-- **Úkoly:** uvnitř smyčky: VSTUP `barva` → PODMÍNKA `barva == barva1` → AKCE `pocet1 = pocet1 + 1`; jinak PODMÍNKA `barva == barva2` → AKCE `pocet2 = pocet2 + 1`; po smyčce VÝSTUP `„Díky {jméno}! oblíbená: {barva1}×{pocet1}, {barva2}×{pocet2}"`.
-- **Inicializace:** před smyčkou je potřeba `pocet1 = 0` a `pocet2 = 0` (součást scaffoldingu, aby AUTO testy i ruční běh vycházely z nuly).
+- **Scaffolding:** START + AKCE `ok = 0`, `sken = 0` + SMYČKA `ok < 2` + VSTUP `stav` + AKCE `sken++` + PODMÍNKA `stav == "ok"` + AKCE `ok++` + VÝSTUP `„Dobré díly: {ok} z {sken}."` + KONEC + POZNÁMKA „Smyčka končí, až máš 2 dobré." (nepropojené, rozhozené).
+- **Úkoly:** inicializuj počítadla; uvnitř smyčky načti `stav`, vždy zvyš `sken`, a když `stav == "ok"`, zvyš `ok`; po splnění `ok < 2` vypiš výsledek.
 - **Test (3 vektory):**
   ```
-  Vektor A: jméno=Eda, barva1=cervena, barva2=modra, [cervena,cervena,zluta]
-            → "Díky Eda! oblíbená: cervena×2, modra×0"
-  Vektor B: jméno=Ola, barva1=zluta, barva2=zelena, [zelena,zluta,zelena]
-            → "Díky Ola! oblíbená: zluta×1, zelena×2"
-  Vektor C: jméno=Tim, barva1=cervena, barva2=zluta, [cervena,cervena,cervena]
-            → "Díky Tim! oblíbená: cervena×3, zluta×0"
+  Vektor A: stavy=[vadne, ok, ok]          → "Dobré díly: 2 z 3."
+  Vektor B: stavy=[ok, ok]                 → "Dobré díly: 2 z 2."
+  Vektor C: stavy=[vadne, vadne, ok, ok]   → "Dobré díly: 2 z 4."
   ```
-- **Pozn. k vektoru C:** 3 jablka, jen jedna preferovaná — ověřuje, že se nic nepočítá 2× ani se neztrácí.
-- **Kompas:** Cíl: „Potřebuješ 3 otočení: utrhni a zjisti barvu." → Háček: „Kolikrát se má opakovat SMYČKA?" → Vzor: „Smyčka krok<3 → uvnitř vstup + podmínka barvy → košík++" → Postup: „Slož tělo smyčky a počítej do proměnných."
-- **XP:** zaklad 200; bonus efektivni za smyčku namísto 3 kopií AKCE-VSTUP.
+- **Pozn. k vektoru B:** smyčka proběhne jen 2× — ověřuje podmíněný cyklus (ne fixní počet).
+- **Kompas:** Cíl: „Potřebuješ 2 dobré díly — smyčka se točí, dokud je nemáš." → Háček: „Kolikrát se smyčka opakuje? Záleží to na vstupech?" → Vzor: „Smyčka ok<2 → vstup stav → sken++ → když stav==ok, ok++" → Postup: „Skenuj každý díl, počítej dobré a skonči, až jich máš 2."
+- **XP:** zaklad 200; bonus efektivni za použití počítadla a podmíněné smyčky místo ručního vypisování.
 
 ---
 

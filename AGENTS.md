@@ -1,4 +1,4 @@
-# BlockFlow EDU (code-flowchart) — výuková hra (algoritmizace, vývojové diagramy)
+# CodeFlowChart EDU (code-flowchart) — výuková hra (algoritmizace, vývojové diagramy)
 
 Výukový editor a simulátor vývojových diagramů v jediném `code-flowchart.html`
 (SPA, žádný build) pro žáky 15–19 let. Hra učí základní algoritmy zábavnou

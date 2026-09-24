@@ -1,4 +1,4 @@
-# finished.md — BlockFlow EDU (code-flowchart)
+# finished.md — CodeFlowChart EDU (code-flowchart)
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
@@ -39,11 +39,25 @@ Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS
   level krok za krokem ze vzorového řešení (`SOLUTIONS` pro všech 6 stupňů):
   každý stisk přidá další blok/šipku; po dokončení další stisk vyčistí plochu.
   Slouží k rychlému otestování libovolného levelu a jeho simulace.
-- **Testy:** `flow_game_tests.js` (58 OK) + `flow_smoke_tests.js` (49 OK, `App.init()`
+- **Testy:** `flow_game_tests.js` (59 OK) + `flow_smoke_tests.js` (55 OK, `App.init()`
   nad DOM mockem); `flow_test_utils.js` rozšířen o `Game`/`LEVELS`; persistence testy
-  přepsány na slot-klíče v2.
-- **Ověření:** syntax OK · flow_tests 21 · flow_game 58 · flow_storage 10 · flow_ui 6 ·
-  flow_smoke 49 (celkem 144 kontrol). Verifikace F1 „3 mise → XP i certifikát" splněna.
+  přepsány na slot-klíče v3.
+- **Doladění (playtest):**
+  - **Rebrand:** „BlockFlow" → **„CodeFlowChart"** (titulek, logo, terminál, nápověda,
+    export filenames, SVG/patička, paste attribut `data-codeflowchart`). Interní klíče
+    `blockflow_*` v localStorage ponechány (změna by zahodila data).
+  - **Menu — stejná velikost textu:** `.menu-section-title` i `.menu-mission` srovnány
+    na 13 px (dřív 10/12/13 px).
+  - **Stupeň 4 přepracován:** „Sběrač jablek 2.0" → **„Kontrola kvality"** — podmíněný
+    cyklus `ok < 2` + počítadla (`ok`, `sken`), místo počítání dvou barev jablek.
+    Aktualizováno `LEVELS[4]`, `SOLUTIONS[4]`, `SCAFFOLDS[4]`, `PLAN.md` §4/§16.4.
+  - **Validace prázdného vstupu:** simulační VSTUP i editace bloku odmítnou prázdný
+    text s inline chybou (dřív se prázdný vstup tiše uložil jako `""`).
+  - **Efekt při spuštění ▶:** světelný scan + glow přes plátno (`#canvas-wrap.sim-boot`,
+    respektuje `prefers-reduced-motion`).
+  - **RESET** v menu i modálu přejmenován na „RESET" (bez „smazat vše").
+- **Ověření:** syntax OK · flow_tests 21 · flow_game 59 · flow_storage 10 · flow_ui 6 ·
+  flow_smoke 55 (celkem 151 kontrol). Verifikace F1 „3 mise → XP i certifikát" splněna.
 - **Pozn.:** vlastní vyhodnocení misí (Checker/OVĚŘIT) = F2; doladění obsahu
   scaffoldingů = F5/F6; auto-reset 3 h = F4; SVG certifikát = F8.
 

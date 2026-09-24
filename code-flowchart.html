@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BlockFlow EDU</title>
+    <title>CodeFlowChart</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;700;800&display=swap');
 
@@ -718,13 +718,13 @@
 
         #side-menu { max-height: calc(100vh - 56px); overflow-y: auto; }
         .menu-section-title {
-            padding: 12px 30px 6px; font-family: 'JetBrains Mono', monospace;
-            font-size: 10px; letter-spacing: 2px; color: var(--accent);
-            opacity: 0.7; text-transform: uppercase;
+            padding: 14px 30px 6px; font-family: 'JetBrains Mono', monospace;
+            font-size: 13px; letter-spacing: 2px; color: var(--accent);
+            opacity: 0.7; text-transform: uppercase; font-weight: 700;
         }
 
         .menu-mission {
-            padding: 8px 30px; cursor: pointer; font-size: 12px; color: var(--text-dim);
+            padding: 12px 30px; cursor: pointer; font-size: 13px; color: var(--text-dim);
             transition: all 0.15s; border-left: 3px solid transparent;
         }
         .menu-mission:hover { color: var(--accent); background: rgba(0,229,255,0.05); border-left-color: var(--accent); }
@@ -756,7 +756,7 @@
             <span></span>
             <span></span>
         </div>
-        <div id="logo">Block<span>Flow</span></div>
+        <div id="logo">Code<span>Flow</span>Chart</div>
         <div class="topbar-sep"></div>
         <div class="topbar-btn-group">
             <button id="btn-simulate" onclick="App.toggleSimulation(false)">
@@ -877,7 +877,7 @@
     <div id="console-panel">
         <div class="console-header">
             <div style="display: flex; gap: 16px; align-items: center;">
-                <span>Terminal // BlockFlow Execution Engine v1.1</span>
+                <span>Terminal // CodeFlowChart Execution Engine v1.1</span>
                 <div class="sim-controls">
                     <select id="sim-speed-select" onchange="App.setSpeed(this.value)" title="Rychlost simulace">
                         <option value="1">Rychlost 1x</option>
@@ -948,7 +948,7 @@
             
             <div style="margin-bottom: 15px;">
                 <label style="font-size: 12px; color: var(--text-dim); margin-bottom: 4px; display: block;">Název souboru:</label>
-                <input type="text" id="svg-filename-input" class="input-dark" value="BlockFlow_Schema" placeholder="Zadejte název...">
+                <input type="text" id="svg-filename-input" class="input-dark" value="CodeFlowChart_Schema" placeholder="Zadejte název...">
             </div>
 
             <p style="color: var(--text); font-size: 14px; margin-bottom: 15px;">Přejete si do obrázku zahrnout i aktuální záznam z terminálu?</p>
@@ -969,7 +969,7 @@
             
             <div style="margin-bottom: 15px;">
                 <label style="font-size: 12px; color: var(--text-dim); margin-bottom: 4px; display: block;">Název souboru:</label>
-                <input type="text" id="json-filename-input" class="input-dark" value="BlockFlow_Projekt" placeholder="Zadejte název...">
+                <input type="text" id="json-filename-input" class="input-dark" value="CodeFlowChart_Projekt" placeholder="Zadejte název...">
             </div>
 
             <p style="color: var(--text); font-size: 14px; margin-bottom: 15px;">Tento soubor si můžete později znovu nahrát (tlačítko ⭱ IMPORT).</p>
@@ -1037,7 +1037,7 @@
     <!-- Modální okna pro Hamburger Menu -->
     <div id="help-modal" class="modal-overlay" style="z-index: 600;">
         <div class="modal-box wide">
-            <h3>📖 Nápověda — BlockFlow EDU</h3>
+            <h3>📖 Nápověda — CodeFlowChart EDU</h3>
             <div class="help-content-wrapper">
                 <div class="help-grid">
                     <div class="help-section">
@@ -1086,7 +1086,7 @@
     <div id="about-modal" class="modal-overlay" style="z-index: 600;">
         <div class="modal-box">
             <h3>ℹ️ O programu</h3>
-            <p style="color: var(--text-dim); line-height: 1.6; font-size: 14px; margin-bottom: 10px;">BlockFlow EDU je moderní, plně interaktivní výukový nástroj navržený pro snadné a vizuální pochopení logických struktur, algoritmů a stavových proměnných. Spojuje návrh vývojových diagramů s krokovacím enginem a Visual RAM pamětí v reálném čase.</p>
+            <p style="color: var(--text-dim); line-height: 1.6; font-size: 14px; margin-bottom: 10px;">CodeFlowChart EDU je moderní, plně interaktivní výukový nástroj navržený pro snadné a vizuální pochopení logických struktur, algoritmů a stavových proměnných. Spojuje návrh vývojových diagramů s krokovacím enginem a Visual RAM pamětí v reálném čase.</p>
             <p style="color: var(--text-dim); line-height: 1.6; font-size: 14px;">Tato aplikace slouží jako ukázka pokročilé <strong style="color: var(--text);">SPA (Single Page Application)</strong> architektury. Je kompletně obsažena v jediném HTML souboru a byla vytvořena za asistence umělé inteligence <strong style="color: var(--accent);">Google Gemini 3.1 Pro</strong> v roce 2026.</p>
             <p style="color: var(--accent2); font-family: 'JetBrains Mono', monospace; font-size: 12px; margin-top: 15px;">Verze jádra: 1.4<br>Codename: CyberCanvas</p>
             <div class="btn-row" style="margin-top: 20px;">
@@ -3156,10 +3156,10 @@
                         const encodedJson = encodeURIComponent(jsonString);
                         const base64Svg = btoa(unescape(encodeURIComponent(svgString)));
                         
-                        const htmlPayload = `<html data-blockflow="${encodedJson}"><body><!--StartFragment--><img src="data:image/svg+xml;base64,${base64Svg}" alt="BlockFlow Diagram"><!--EndFragment--></body></html>`;
+                        const htmlPayload = `<html data-codeflowchart="${encodedJson}"><body><!--StartFragment--><img src="data:image/svg+xml;base64,${base64Svg}" alt="CodeFlowChart Diagram"><!--EndFragment--></body></html>`;
 
                         e.clipboardData.setData('text/html', htmlPayload);
-                        e.clipboardData.setData('text/plain', '[BlockFlow Vector] Vložte schéma do programu, který podporuje obrázky (např. Word, PowerPoint, LibreOffice).');
+                        e.clipboardData.setData('text/plain', '[CodeFlowChart Vector] Vložte schéma do programu, který podporuje obrázky (např. Word, PowerPoint, LibreOffice).');
                     }
                     this.internalClipboard = clipData;
                     this.toast('Zkopírováno do schránky');
@@ -3173,7 +3173,7 @@
                     if (e.clipboardData) {
                         const htmlData = e.clipboardData.getData('text/html');
                         if (htmlData) {
-                            const match = htmlData.match(/data-blockflow="([^"]+)"/);
+                            const match = htmlData.match(/data-codeflowchart="([^"]+)"/);
                             if (match) {
                                 try {
                                     const parsed = JSON.parse(decodeURIComponent(match[1]));
@@ -3551,7 +3551,7 @@
                 
                 setTimeout(() => this.fitToScreen(), 50);
 
-                this.logConsole(`Inicializace BlockFlow Engine v1.1${stepMode ? ' (Krokování)' : ''}...`, "info");
+                this.logConsole(`Inicializace CodeFlowChart Engine v1.1${stepMode ? ' (Krokování)' : ''}...`, "info");
                 
                 const linterErrors = this.runLinter();
                 if (linterErrors > 0) {
@@ -3857,8 +3857,8 @@
             executeSvgExport(includeConsole) {
                 this.clearHighlight(); // Bezpečnostní vymazání před exportem
                 let filenameInput = document.getElementById('svg-filename-input');
-                let filename = filenameInput ? filenameInput.value.trim() : 'BlockFlow_Schema';
-                if (!filename) filename = 'BlockFlow_Schema';
+                let filename = filenameInput ? filenameInput.value.trim() : 'CodeFlowChart_Schema';
+                if (!filename) filename = 'CodeFlowChart_Schema';
                 if (!filename.toLowerCase().endsWith('.svg')) filename += '.svg';
 
                 document.getElementById('svg-export-modal').classList.remove('show');
@@ -3972,7 +3972,7 @@
                 if (includeConsole && logs.length > 0 && !subsetBlocks) {
                     const logStartY = H - 20;
                     svg += `<rect x="20" y="${logStartY}" width="${W - 40}" height="${logHeight}" rx="8" fill="#161920" stroke="#2a2f3d" stroke-width="2"/>`;
-                    svg += `<text x="40" y="${logStartY + 25}" font-family="monospace" font-size="14" font-weight="bold" fill="#64748b">TERMINAL // BlockFlow</text>`;
+                    svg += `<text x="40" y="${logStartY + 25}" font-family="monospace" font-size="14" font-weight="bold" fill="#64748b">TERMINAL // CodeFlowChart</text>`;
                     logs.forEach((log, idx) => {
                         const time = log.querySelector('.log-time').innerText;
                         const msg = log.querySelector('.log-msg').innerText;
@@ -3998,7 +3998,7 @@
                         statusColor = "#ef4444"; 
                     }
                     svg += `<text x="20" y="${totalH - 15}" font-family="monospace" font-size="14" font-weight="bold" fill="${statusColor}">${statusText}</text>`;
-                    svg += `<text x="${W - 20}" y="${totalH - 15}" font-family="monospace" font-size="12" fill="rgba(255,255,255,0.3)" text-anchor="end">GPLv3 © 2026 Luděk Sušický | BlockFlow EDU</text>`;
+                    svg += `<text x="${W - 20}" y="${totalH - 15}" font-family="monospace" font-size="12" fill="rgba(255,255,255,0.3)" text-anchor="end">GPLv3 © 2026 Luděk Sušický | CodeFlowChart EDU</text>`;
                 }
 
                 svg += `</svg>`;
@@ -4016,8 +4016,8 @@
 
             executeJsonExport() {
                 let filenameInput = document.getElementById('json-filename-input');
-                let filename = filenameInput ? filenameInput.value.trim() : 'BlockFlow_plochy';
-                if (!filename) filename = 'BlockFlow_plochy';
+                let filename = filenameInput ? filenameInput.value.trim() : 'CodeFlowChart_plochy';
+                if (!filename) filename = 'CodeFlowChart_plochy';
                 if (!filename.toLowerCase().endsWith('.json')) filename += '.json';
 
                 document.getElementById('json-export-modal').classList.remove('show');

@@ -815,11 +815,11 @@
             <div id="canvas">
                 <svg id="arrows-svg">
                     <defs>
-                        <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
-                            <polygon points="0 0, 8 3, 0 6" fill="#64748b"/>
+                        <marker id="arrowhead" markerWidth="18" markerHeight="16" refX="18" refY="8" orient="auto" markerUnits="userSpaceOnUse">
+                            <polygon points="18 8, 1 0, 4.73 8, 1 16" fill="#64748b"/>
                         </marker>
-                        <marker id="arrowhead-sel" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
-                            <polygon points="0 0, 8 3, 0 6" fill="#00e5ff"/>
+                        <marker id="arrowhead-sel" markerWidth="18" markerHeight="16" refX="18" refY="8" orient="auto" markerUnits="userSpaceOnUse">
+                            <polygon points="18 8, 1 0, 4.73 8, 1 16" fill="#00e5ff"/>
                         </marker>
                     </defs>
                 </svg>
@@ -1635,7 +1635,7 @@
                 return outgoing[0] || null;
             },
 
-            activeWorkspace: 'lvl1',
+            activeWorkspace: APPLES_SLOT,
             activeLevel: null,
             lastCampaignSlot: 'lvl1',
             pendingLevel: null,
@@ -1852,7 +1852,7 @@
                 }
                 
                 Game.load();
-                this.activeWorkspace = localStorage.getItem('blockflow_v3_active_ws') || 'lvl1';
+                this.activeWorkspace = localStorage.getItem('blockflow_v3_active_ws') || APPLES_SLOT;
                 this.cheatStep = 0;
                 if (this.modeOf(this.activeWorkspace) === 'campaign') {
                     this.lastCampaignSlot = this.activeWorkspace;

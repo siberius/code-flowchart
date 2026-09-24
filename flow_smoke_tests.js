@@ -103,11 +103,11 @@ try {
     check('init proběhl bez výjimky', false, e.stack);
 }
 
-check('výchozí plocha = lvl1 (KAMPAŇ)', App.activeWorkspace === 'lvl1', App.activeWorkspace);
-check('režim = campaign', App.modeOf(App.activeWorkspace) === 'campaign');
-check('HUD viditelný', App.dom.hud.classList.contains('show'));
+check('výchozí plocha = space1 (jablka demo)', App.activeWorkspace === 'space1', App.activeWorkspace);
+check('režim = space', App.modeOf(App.activeWorkspace) === 'space');
+check('HUD skrytý (ne v MISE)', !App.dom.hud.classList.contains('show'));
 check('6 mis v menu', App.dom.menuMissions.children.length === 6, 'got ' + App.dom.menuMissions.children.length);
-check('scaffold levelu 1 se postavil', App.blocks.length > 0, 'bloky=' + App.blocks.length);
+check('space1 má obsah (jablka)', App.blocks.length > 0, 'bloky=' + App.blocks.length);
 check('jmenný modal se při startu neotevřel', !App.dom.nameModal.classList.contains('show'));
 
 console.log('\n[jméno přes UI]');

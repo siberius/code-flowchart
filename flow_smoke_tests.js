@@ -108,6 +108,7 @@ check('režim = campaign', App.modeOf(App.activeWorkspace) === 'campaign');
 check('HUD viditelný', App.dom.hud.classList.contains('show'));
 check('6 mis v menu', App.dom.menuMissions.children.length === 6, 'got ' + App.dom.menuMissions.children.length);
 check('scaffold levelu 1 se postavil', App.blocks.length > 0, 'bloky=' + App.blocks.length);
+check('jmenný modal se při startu neotevřel', !App.dom.nameModal.classList.contains('show'));
 
 console.log('\n[jméno přes UI]');
 App.dom.nameInput.value = '  Evička  ';
@@ -173,7 +174,17 @@ console.log('\n[RESET]');
 App.doReset();
 check('jméno smazáno', Game.playerName === '');
 check('XP smazáno', Game.xp === 0);
-check('otevřel se jmenný modal', App.dom.nameModal.classList.contains('show'));
+check('jmenný modal se neotevřel (ptá se až u levelu)', !App.dom.nameModal.classList.contains('show'));
+
+console.log('\n[jméno se ptá až při kliknutí na level]');
+App.enterCampaignLevel(1);
+check('klik na level otevřel jmenný modal', App.dom.nameModal.classList.contains('show'));
+check('čeká na level 1', App.pendingLevel === 1);
+App.dom.nameInput.value = 'Operátor';
+App.submitName();
+check('jméno uloženo', Game.playerName === 'Operátor');
+check('rovnou vstoupil do levelu 1', App.activeWorkspace === 'lvl1', App.activeWorkspace);
+check('level modal otevřen', App.dom.levelModal.classList.contains('show'));
 
 console.log('\n[cheat Ctrl+Alt+C — krok za krokem]');
 App.switchWorkspace('lvl4');

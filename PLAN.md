@@ -199,19 +199,22 @@ Všechny stupně jsou **otevřené** (žák si může hrát napřeskáčku). Ka�
 - Manuální „Zavřít (Enter)" + minimální držení.
 
 ### 7.9 Režimy a pracovní plochy
-- **Přepínač ploch v horní liště:** `KAMPAŇ · SPACE 1 · SPACE 2 · SPACE 3 · SPACE 4 · SPACE 5`.
+- **Přepínač ploch v horní liště:** `MISE · SPACE 1 · SPACE 2 · SPACE 3 · SPACE 4 · SPACE 5`.
   Aktivní plocha je zvýrazněná; klik přepne plochu (každá má vlastní stav).
-- **KAMPAŇ** — learning mode: 6 stupňů, jméno povinné, XP/certifikáty, 3h hodiny.
-  Každý level má **vlastní plochu** (`lvl1…lvl6`) → návrat k misi zachová rozdělanou práci.
+- **MISE** (dříve „KAMPAŇ", interně `campaign`) — learning mode: 6 stupňů, jméno
+  povinné, XP/certifikáty, 3h hodiny. Každý level má **vlastní plochu** (`lvl1…lvl6`)
+  → návrat k misi zachová rozdělanou práci.
+- **Jméno:** modál se ptá **až při prvním kliknutí na level v menu** (ne při startu
+  ani při přepnutí na MISE); po zadání už se neptá (až do RESETu).
 - **SPACE 1** — **jablka demo** + volný editor (bez jména, bez hodin).
 - **SPACE 2–5** — prázdné plochy pro vlastní tvorbu (sloty `space2…space5`).
 - **Mise** zůstávají v hamburger menu (MISE) — přepínač režimů už v menu není.
 - **Vstup do mise:** klik na level → načte se **scaffolding** — rozházené, **NEpropojené**
   moduly (spojení si žák vytváří sám) + omezená paleta → **level modal** s podrobným
   zadáním (Typ, Cíl, „Co máš udělat", povolené bloky, ověření) + Kompas.
-- **Export/import ploch (JSON):** tlačítka `⭳ WS` / `⭱ WS` v liště uloží/načtou
-  **všechny plochy** (`{app:'blockflow-workspaces', active, workspaces:{slot:stav}}`).
-  Tlačítka IMPORT/EXPORT zůstávají pro jednu aktuální plochu.
+- **Export/import (JSON):** jediná dvojice `⭳ EXPORT` / `⭱ IMPORT` uloží/načte
+  **všechny plochy** (`{app:'blockflow-workspaces', active, workspaces:{slot:stav}}`);
+  při importu jednoho schématu (`blocks`/`arrows`) se načte do aktuální plochy.
 - **Cheat (jen pro vývoj/testování):** `Ctrl+Alt+C` s aktivním CapsLockem vyřeší
   aktuální level krok za krokem ze vzorového řešení; po dokončení další stisk vyčistí.
 

@@ -47,6 +47,9 @@ Pro vzdělávací obsah navíc: `md-skills/vzdelavaci-metodiky.md` (RVP/ŠVP, CZ
 - **Bez odznaků** — jen XP + hvězdy + hodnost; certifikát SVG po každém stupni
   (jméno, datum, čas, XP, hvězdy, hodnost).
 - Oba režimy simulace: ruční „žák = procesor" i AUTO-kontrola (skryté vektory).
+- **Narativní témata:** výchozí `streamer` (Gen Alfa), přepínatelné na `operator`
+  (původní sklad, pro obory E) ikonou v horním panelu (`NARRATIVES`, `toggleNarrative`);
+  mění jen texty/názvy/hodnosti, algoritmus úloh zůstává. Program startuje na SPACE 1.
 
 ### Konvence a mantinely
 - UI texty a komentáře v aplikaci jsou česky; kód, identifikátory a názvy

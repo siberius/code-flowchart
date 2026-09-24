@@ -365,6 +365,14 @@ Každá fáze končí **definovaným autotestem**, ne „to běží".
 
 ## 16. Kompletní obsah stupňů (k revizi)
 
+> **Narativní témata (F1):** obsah §16.1–§16.6 níže je verze **`operator`** (původní
+> sklad, pro obory E). **Výchozí téma je `streamer`** (Gen Alfa); obě sdílejí stejný
+> algoritmus (typy bloků, porty, šipky, pořadí) — liší se jen texty. Přepíná se ikonou
+> v horním panelu (`NARRATIVES`, `toggleNarrative`), persistence `blockflow_v3_narrative`.
+> Názvy stupňů ve `streamer`: 1 První stream · 2 Donáty a subs · 3 Turnaj 15+ ·
+> 4 Moderace chatu · 5 Zavolej moda · 6 Záchrana streamu; hodnosti: Nováček · Ranked hráč ·
+> Speedrunner · Legenda serveru. Kompletní texty jsou v `NARRATIVES` v `code-flowchart.html`.
+
 > Plná specifikace každého stupně stejným vzorem jako §4 — zadání, scaffolding, testovací vektory, Kompas, vzorové řešení (pseudodiagram) a XP. Syntaxe výrazů se finalizuje ve F2 podle evaluátoru (§5); zde je popisná/předpisová.
 
 ### 16.x Společná konvence (pro všechny stupně)

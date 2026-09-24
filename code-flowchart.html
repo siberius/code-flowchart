@@ -1797,6 +1797,24 @@
             }
         };
 
+        // Aplikuje narativní téma na data (LEVELS texty + hodnosti Game). Bez DOM.
+        // Volá se při načtení (výchozí téma) i při přepnutí ikonou v horním panelu.
+        function setNarrativeData(id) {
+            const nar = NARRATIVES[id] || NARRATIVES[DEFAULT_NARRATIVE];
+            Game.RANKS = nar.ranks.map((name, i) => ({ min: [0, 450, 900, 1400][i], name }));
+            LEVELS.forEach(lvl => {
+                const t = nar.levels[lvl.id];
+                if (!t) return;
+                lvl.name = t.name;
+                lvl.goal = t.goal;
+                lvl.kompas = t.kompas;
+                lvl.tests = t.tests;
+                if (lvl.scaffold) lvl.scaffold.blocks.forEach((b, i) => { if (t.scaffold[i] != null) b.label = t.scaffold[i]; });
+                if (lvl.solution) lvl.solution.blocks.forEach((b, i) => { if (t.solution[i] != null) b.label = t.solution[i]; });
+            });
+        }
+        setNarrativeData(DEFAULT_NARRATIVE);
+
         const App = {
             REGEX: {
                 pre: /(?<=.)\s+([\p{L}_][\p{L}0-9_]*\s*[+\-*/%]?=)/gu,
@@ -2283,22 +2301,13 @@
             // Přepne narativní téma (streamer ↔ operátor): názvy stupňů, cíle, Kompas,
             // texty bloků, hodnosti a HUD. Algoritmus úloh se nemění.
             applyNarrative(id) {
-                const nar = NARRATIVES[id] || NARRATIVES[DEFAULT_NARRATIVE];
-                this.narrative = id;
-                Game.RANKS = nar.ranks.map((name, i) => ({ min: [0, 450, 900, 1400][i], name }));
+                const key = NARRATIVES[id] ? id : DEFAULT_NARRATIVE;
+                const nar = NARRATIVES[key];
+                this.narrative = key;
+                setNarrativeData(key);
                 if (this.dom.hudRole) this.dom.hudRole.textContent = nar.hudRole;
                 if (this.dom.btnNarrative) this.dom.btnNarrative.textContent = nar.icon;
-                LEVELS.forEach(lvl => {
-                    const t = nar.levels[lvl.id];
-                    if (!t) return;
-                    lvl.name = t.name;
-                    lvl.goal = t.goal;
-                    lvl.kompas = t.kompas;
-                    lvl.tests = t.tests;
-                    if (lvl.scaffold) lvl.scaffold.blocks.forEach((b, i) => { if (t.scaffold[i] != null) b.label = t.scaffold[i]; });
-                    if (lvl.solution) lvl.solution.blocks.forEach((b, i) => { if (t.solution[i] != null) b.label = t.solution[i]; });
-                });
-                try { localStorage.setItem('blockflow_v3_narrative', id); } catch (e) {}
+                try { localStorage.setItem('blockflow_v3_narrative', key); } catch (e) {}
             },
             toggleNarrative() {
                 const next = this.narrative === 'streamer' ? 'operator' : 'streamer';

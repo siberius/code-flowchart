@@ -132,6 +132,20 @@ check('HUD XP = 174', App.dom.hudXp.textContent === '174 XP', App.dom.hudXp.text
 check('HUD hvězdy = ★3', App.dom.hudStars.textContent === '★3', App.dom.hudStars.textContent);
 check('HUD hodnost', App.dom.hudRank.textContent === 'Nováček');
 
+console.log('\n[narativní téma přes UI]');
+App.applyNarrative('streamer');
+check('ikona streamer', App.dom.btnNarrative.textContent === '🎮');
+check('HUD role = STREAMER', App.dom.hudRole.textContent === 'STREAMER');
+App.toggleNarrative();
+check('přepnuto na operátor', App.narrative === 'operator');
+check('ikona operátor', App.dom.btnNarrative.textContent === '🏭');
+check('HUD role = OPERÁTOR', App.dom.hudRole.textContent === 'OPERÁTOR');
+check('data: level 4 = Kontrola kvality', LEVELS.find(l => l.id === 4).name === 'Kontrola kvality');
+App.toggleNarrative();
+check('zpět streamer', App.narrative === 'streamer');
+check('HUD role zpět', App.dom.hudRole.textContent === 'STREAMER');
+check('data: level 4 = Moderace chatu', LEVELS.find(l => l.id === 4).name === 'Moderace chatu');
+
 console.log('\n[plochy SPACE 1–5]');
 App.selectWorkspace('space1');
 check('plocha space1', App.activeWorkspace === 'space1');
@@ -161,7 +175,7 @@ console.log('\n[vstup do mise → level modal]');
 App.enterCampaignLevel(3);
 check('aktivní plocha = lvl3', App.activeWorkspace === 'lvl3');
 check('level modal otevřen', App.dom.levelModal.classList.contains('show'));
-check('titulek = 3. Vstupenka 15+', App.dom.levelTitle.textContent === '3. Vstupenka 15+', App.dom.levelTitle.textContent);
+check('titulek = 3. Turnaj 15+', App.dom.levelTitle.textContent === '3. Turnaj 15+', App.dom.levelTitle.textContent);
 check('tělo obsahuje cíl', String(App.dom.levelBody.innerHTML).indexOf('Načti věk') !== -1);
 check('kompas skrytý', App.dom.levelKompas.style.display === 'none');
 App.toggleLevelKompas();

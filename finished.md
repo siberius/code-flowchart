@@ -2,6 +2,26 @@
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
+## 2026-09-24 — F1 UI + narativ (nezakomitováno)
+
+- **Narativní témata (přepínatelná):** `NARRATIVES` = `streamer` (výchozí, Gen Alfa)
+  a `operator` (původní sklad, pro obory E). Ikona v horním panelu (`🎮`/`🏭`,
+  `toggleNarrative`) mění názvy stupňů, cíle, Kompas, texty bloků, hodnosti a HUD;
+  algoritmus úloh (typy, porty, šipky) zůstává. Persistence `blockflow_v3_narrative`.
+  `setNarrativeData()` aplikuje téma i při načtení (mimo `init`, bez DOM).
+  Při přepnutí v MISE se level restartuje (jiné texty bloků).
+- **Výchozí plocha = SPACE 1 (jablka demo):** `activeWorkspace` default `APPLES_SLOT`
+  (dřív `lvl1`); program nezačíná na levelu.
+- **Rebrand:** „BlockFlow" → **„CodeFlowChart"** (titulek, logo, terminál, nápověda,
+  export filenames, SVG/patička, paste attribut `data-codeflowchart`). Interní klíče
+  `blockflow_*` v localStorage ponechány (změna by zahodila data).
+- **Menu — stejná velikost textu:** `.menu-section-title` i `.menu-mission` na 13 px.
+- **Šipky:** hrot ve tvaru **ocásku vlajky** (výstřih 25°, `polygon 18 8, 1 0, 4.73 8,
+  1 16`) a `markerUnits="userSpaceOnUse"` → **hrot se nezvětšuje** při hoveru/highlightu
+  (dřív scaling dle `stroke-width`). Aplikováno i na SVG export (`#ah`).
+- **Testy:** syntax OK · flow_tests 21 · flow_game 68 · flow_storage 10 · flow_ui 6 ·
+  flow_smoke 64 (celkem 169 kontrol). Přidány testy přepnutí témat (data i UI).
+
 ## 2026-09-24 — F1 (nezakomitováno)
 
 - **F1: herní vrstva + data stupňů + pracovní plochy + vstup do mise** (`PLAN.md` §13, §16).

@@ -19,7 +19,7 @@
 | Learning mode | **Vyžaduje jméno žáka** (uloží se 1× na zařízení, povinné 1–30 znaků); certifikát s jménem, datem, časem, XP a hodností po každém stupni |
 | Data (tablet/mobil i PC) | Pokrok v `localStorage` = „cache prohlížeče do vymazání"; **červené tlačítko RESET na všech zařízeních** (potvrzené modálem) pro kompletní výmaz kdykoli |
 | Auto-reset 3 h | **Vymaže vše včetně jména** — po 03:00 čistý start, žák se znovu představí |
-| Samostatnost žáka | **Kompas 4 stupně** (Cílí → Háček → Vzor → Postup) + **Ladička** (sókratické otázky); vzor až po 2 pokusech |
+| Samostatnost žáka | **Kompas 4 stupně** (Cíl → Háček → Vzor → Postup) + **Ladička** (sókratické otázky); vzor až po 2 pokusech |
 | Motivace | **Pouze pozitivní** — žádné penalizace (nápověda nic nestojí); jen XP bonusy za samostatnost a efektivitu |
 | Hodnocení | **XP + hodnost + hvězdy + certifikát (SVG) po každém stupni** — certifikát = odevzdávka; **bez odznaků** |
 | Simulace | **Oba režimy**: ruční „žák = procesor" (ANO/NE) **i** automatická kontrola (skrytý test vstupů) |
@@ -134,7 +134,7 @@ Všechny stupně jsou **otevřené** (žák si může hrát napřeskáčku). Ka�
   Vektor B: jmeno=Ola, barva1=zluta, barva2=zelena, barvy=[zelena, zluta, zelena]
   Vektor C: jmeno=Tim, barva1=cervena, barva2=zluta, barvy=[modra, modra, modra]
   ```
-- **Kompas (zdarma, 4 stupně, max 40 slov):** Cílí („Potřebuješ 3 otočení: utrhni a zjisti barvu.") → Háček („Kolikrát se má opakovat SMYČKA?") → Vzor („Smyčka krok<3 → uvnitř vstup + podmínka barvy → košík++") → Postup (+ vzorové řešení).
+- **Kompas (zdarma, 4 stupně, max 40 slov):** Cíl („Potřebuješ 3 otočení: utrhni a zjisti barvu.") → Háček („Kolikrát se má opakovat SMYČKA?") → Vzor („Smyčka krok<3 → uvnitř vstup + podmínka barvy → košík++") → Postup (+ vzorové řešení).
 - **XP:** základ 200; **bonusové** (jen pozitivní): bez nápovědy +20 %, první pokus +15 %, efektivní (smyčka místo kopií) +10 %. Nápověda nic nestojí.
 
 ---
@@ -354,10 +354,10 @@ Každá fáze končí **definovaným autotestem**, ne „to běží".
 - **Typy bloků:** `start`, `process (AKCE)`, `io (VSTUP/VÝSTUP)`, `decision (PODMÍNKA)`, `loop (SMYČKA)`, `call (VOLÁNÍ)`, `note (POZNÁMKA)`, `end (KONEC)`.
 - **Cíl:** vždy ≤ 15 slov; po zadání viditelný v topbaru.
 - **Testy:** 2–3 vektory; v AUTO režimu se VSTUP plní sekvenčně z vektoru, VÝSTUP se porovná s `očekávané`.
-- **Kompas:** 4 stupně, celkem ≤ 40 slov na misi (Cílí → Háček → Vzor → Postup). Vzor je blok „prohlédnout si hotové řešení".
+- **Kompas:** 4 stupně, celkem ≤ 40 slov na misi (Cíl → Háček → Vzor → Postup). Vzor je blok „prohlédnout si hotové řešení".
 - **XP:** `xp.zaklad` za splnění; **bonusy** (jen pozitivní): `noHint +20%` (bez otevřené nápovědy), `prvniPokus +15%` (PASS na 1. pokus), `efektivni +10%` (demonstrovatelně nejkratší validní řešení — od stejného počtu bloků jako referenční).
 - **Hvězdy:** princip vyhodnocení z celkového XP na stupeň: 100–115 % → ★, >115–125 % → ★★, >125 % → ★★★.
-- **Hodnost** (kumulativní napříč kampaní): 0–449 XP „Operátor-začátečník" · 450–899 „Zkušený operátor" · 900–1399 „Analytik sítě" · 1400+ „Legenda déčku".
+- **Hodnost** (kumulativní napříč kampaní, vlastní tovární řada „déčka" — bez vazby na jiné hry): 0–449 XP „Nováček u pásu" · 450–899 „Pásový operátor" · 900–1399 „Mistr toku" · 1400+ „Legenda déčka".
 
 ---
 
@@ -374,7 +374,7 @@ Každá fáze končí **definovaným autotestem**, ne „to běží".
   Vektor A: očekávaný sled = ["Otevři bránu","Vezmi bednu","Zavři bránu"]
             → PASS jen při přesném pořadí
   ```
-- **Kompas (≤40 slov):** Cílí: „Technik potřebuje vidět cestičku od STARTU до KONCE." → Háček: „Můžeš odejít ze skladu, aniž bys zavřel bránu?" → Vzor: vzorový diagram (START → 3× AKCE → KONEC) → Postup: „Krok 2: spoj AKCE pod sebe ve správném sledu."
+- **Kompas (≤40 slov):** Cíl: „Technik potřebuje vidět cestičku od STARTU do KONCE." → Háček: „Můžeš odejít ze skladu, aniž bys zavřel bránu?" → Vzor: vzorový diagram (START → 3× AKCE → KONEC) → Postup: „Krok 2: spoj AKCE pod sebe ve správném sledu."
 - **XP:** zaklad 100; bonusy dle §16.x.
 
 ---
@@ -393,7 +393,7 @@ Každá fáze končí **definovaným autotestem**, ne „to běží".
   Vektor B: cena=80, kusy=5  → "Mezisoučet: 400"
   Vektor C: cena=12.5, kusy=4→ "Mezisoučet: 50"   (desetinný vstup — ověření parseru)
   ```
-- **Kompas:** Cílí: „Mezisoučet vzniká z dvojice čísel." → Háček: „Vyhodí pokladna výsledek sám od sebe?" → Vzor: vzorový diagram s AKCE i VÝSTUP → Postup: „Doplň AKCE mezi vstupy a výstup."
+- **Kompas:** Cíl: „Mezisoučet vzniká z dvojice čísel." → Háček: „Vyhodí pokladna výsledek sám od sebe?" → Vzor: vzorový diagram s AKCE i VÝSTUP → Postup: „Doplň AKCE mezi vstupy a výstup."
 - **XP:** zaklad 120.
 
 ---
@@ -412,7 +412,7 @@ Každá fáze končí **definovaným autotestem**, ne „to běží".
   Vektor B: vek=12 → "Vstupenka NE"
   Vektor C: vek=15 → "Vstupenka ANO"   (hraniční hodnota — RVP preciznost)
   ```
-- **Kompas:** Cílí: „Přesně 15 let je ‚dost' — kde to rozseknem?" → Háček: „Co se stane, když je 15 přesně?" → Vzor: diagram s `vek >= 15` → Postup: „Sprav obě větve pod PODMÍNKOU."
+- **Kompas:** Cíl: „Přesně 15 let je ‚dost' — kde to rozseknem?" → Háček: „Co se stane, když je 15 přesně?" → Vzor: diagram s `vek >= 15` → Postup: „Sprav obě větve pod PODMÍNKOU."
 - **XP:** zaklad 140.
 
 ---
@@ -424,7 +424,8 @@ Každá fáze končí **definovaným autotestem**, ne „to běží".
 - **Cíl:** „Seber 3 jablka. Spočti barvy, co máš rád."
 - **Povolené bloky:** start, io, process, decision, loop, note, end.
 - **Scaffolding:** START + VSTUP `jméno`, `barva1`, `barva2` + POZNÁMKA „utrhni a zjisti barvu" + SMYČKA (3×, prázdná).
-- **Úkoly:** uvnitř smyčky: VSTUP `barva` → PODMÍNKA `barva == barva1` → AKCE `pocet1 = pocet1 + 1`; jinak PODMÍNKA `barva == barva2` → AKCE `pocet2 = pocet2 + 1`; po smyčce VÝSTUP `„Díky {jméno}! Má 2×barva1 a 1×barva2 jablek."` (čísla z proměnných).
+- **Úkoly:** uvnitř smyčky: VSTUP `barva` → PODMÍNKA `barva == barva1` → AKCE `pocet1 = pocet1 + 1`; jinak PODMÍNKA `barva == barva2` → AKCE `pocet2 = pocet2 + 1`; po smyčce VÝSTUP `„Díky {jméno}! oblíbená: {barva1}×{pocet1}, {barva2}×{pocet2}"`.
+- **Inicializace:** před smyčkou je potřeba `pocet1 = 0` a `pocet2 = 0` (součást scaffoldingu, aby AUTO testy i ruční běh vycházely z nuly).
 - **Test (3 vektory):**
   ```
   Vektor A: jméno=Eda, barva1=cervena, barva2=modra, [cervena,cervena,zluta]
@@ -435,7 +436,7 @@ Každá fáze končí **definovaným autotestem**, ne „to běží".
             → "Díky Tim! oblíbená: cervena×3, zluta×0"
   ```
 - **Pozn. k vektoru C:** 3 jablka, jen jedna preferovaná — ověřuje, že se nic nepočítá 2× ani se neztrácí.
-- **Kompas:** Cílí: „Potřebuješ 3 otočení: utrhni a zjisti barvu." → Háček: „Kolikrát se má opakovat SMYČKA?" → Vzor: „Smyčka krok<3 → uvnitř vstup + podmínka barvy → košík++" → Postup: „Slož tělo smyčky a počítej do proměnných."
+- **Kompas:** Cíl: „Potřebuješ 3 otočení: utrhni a zjisti barvu." → Háček: „Kolikrát se má opakovat SMYČKA?" → Vzor: „Smyčka krok<3 → uvnitř vstup + podmínka barvy → košík++" → Postup: „Slož tělo smyčky a počítej do proměnných."
 - **XP:** zaklad 200; bonus efektivni za smyčku namísto 3 kopií AKCE-VSTUP.
 
 ---
@@ -450,10 +451,10 @@ Každá fáze končí **definovaným autotestem**, ne „to běží".
 - **Část „cti":** náčrt s 1 chybným VOLÁNÍM (chybný parametr) → žák ho najde a znovu zavolá správně.
 - **Test (2 vektory — sled volání):**
   ```
-  Vektor A: očekávaný sled volání = [oprav(A), oprav(B), oprav(C)] → PASS při správném pořadí i parametrech
-  Vektor B: (alternativní pořadí parametrů) vyžaduje oprav(A), oprav(A), oprav(B) — žák si poradí
+  Vektor A: pořadí dílů [A, B, C] → PASS při sledu [oprav(A), oprav(B), oprav(C)]
+  Vektor B: pořadí dílů [C, A, B] (a 1 chybné VOLÁNÍ v náčrtu) → PASS při [oprav(C), oprav(A), oprav(B)]
   ```
-- **Kompas:** Cílí: „Opravář dělá totéž 3× — stačí jedno VOLÁNÍ s odlišným dílem." → Háček: „Co se stane, když zavoláš s díl=B?" → Vzor: vzorová sekvence VOLÁNÍ → Postup: „Nahraď AKCE-VOLÁNÍ za běžné AKCE."
+- **Kompas:** Cíl: „Opravář dělá totéž 3× — stačí jedno VOLÁNÍ s odlišným dílem." → Háček: „Co se stane, když zavoláš s díl=B?" → Vzor: vzorová sekvence VOLÁNÍ → Postup: „Místo ruční AKCE použij blok VOLÁNÍ s parametrem dílu."
 - **XP:** zaklad 180.
 
 ---
@@ -465,13 +466,13 @@ Každá fáze končí **definovaným autotestem**, ne „to běží".
 - **Cíl:** „Server padá. Oprav smyčku, vyber čistší tok."
 - **Povolené bloky:** všechny.
 - **Část 1 — „oprav":** diagram se 2 chybami: přehozené větve PODMÍNKY a smyčka končící o 1 dříve („krok < 3" místo „krok <= 3").
-- **Část 2 — „vyber":** nabídka 2 variant řešení téhož subproblému (rekurze vs. smyčka vs. 3 kopie) → žák vybere efektivnější a krátce česky zdůvodní (textové pole, není hodnoceno XP).
-- **Část 3 — „tvorba":** žák navrhne vlastní drobné řešení (1 resolve blok) pro předem daný úkol.
+- **Část 2 — „vyber":** nabídka 2 variant téhož subproblému (smyčka vs. 3× kopie) → žák vybere efektivnější a krátce česky zdůvodní (textové pole, není hodnoceno XP).
+- **Část 3 — „tvorba":** žák navrhne vlastní drobné řešení (1 blok AKCE) pro předem daný úkol.
 - **Test (3 vektory)** přes plné schéma:
   ```
-  Vektor A: [cervena, zluta, modra] → "OK: zpracováno 3 kusy"
-  Vektor B: [cervena]               → "OK: zpracováno 1 kusů"   (hraniční — krok=1)
-  Vektor C: [4×]                    → "OK: zpracováno 4 kusy"   (cyklus nesmí předčasně skončit)
+  Vektor A: [cervena, zluta, modra] → "OK: zpracováno 3"
+  Vektor B: [cervena]               → "OK: zpracováno 1"   (hraniční — krok=1)
+  Vektor C: [cervena, zluta, modra, zelena] → "OK: zpracováno 4"   (cyklus nesmí předčasně skončit)
   ```
-- **Kompas (2 fáze — protože boss):** fáze 1 = oprava (Cílí → Háček → Postup), fáze 2 = výběr (Výchozí = „Hledej, co se opakuje" → „Smyčka běží krok<=n" → vzor). Léčí pozitivně, nikdy neřekne „špatně si nevybral".
+- **Kompas (2 fáze — protože boss):** fáze 1 = oprava (Cíl → Háček → Postup), fáze 2 = výběr (Cíl = „Hledej, co se opakuje" → „Smyčka běží krok<=n" → vzor). Léčí pozitivně, nikdy neřekne „špatně si nevybral".
 - **XP:** zaklad 300; bonusy dle §16.x.

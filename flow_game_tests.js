@@ -2,7 +2,7 @@
 // completeLevel + certifikát, persistence, reset.
 const { loadApp } = require('./flow_test_utils.js');
 
-const { Game, LEVELS, sandbox } = loadApp();
+const { App, Game, LEVELS, sandbox } = loadApp();
 
 let pass = 0;
 let fail = 0;
@@ -38,7 +38,7 @@ check('scaffold je bez spojů (žák zapojuje sám)', LEVELS.every(l => !l.scaff
 check('každý stupeň má vzorové řešení (cheat)', LEVELS.every(l => l.solution && Array.isArray(l.solution.blocks) && l.solution.blocks.length > 0));
 check('řešení má šipky s platnými indexy', LEVELS.every(l => (l.solution.arrows || []).length > 0 && l.solution.arrows.every(a =>
     Array.isArray(a) && a.length === 4 && a[0] >= 0 && a[0] < l.solution.blocks.length && a[2] >= 0 && a[2] < l.solution.blocks.length)));
-check('level 4 přepracován na „Kontrola kvality"', LEVELS.find(l => l.id === 4).name === 'Kontrola kvality');
+check('level 4 (streamer) = „Moderace chatu"', LEVELS.find(l => l.id === 4).name === 'Moderace chatu');
 
 console.log('\n[jméno — validace 1–30 znaků]');
 const g1 = makeGame();
@@ -63,14 +63,27 @@ eq('125 % = ★★', Game.starsFor(125, 100), 2);
 eq('126 % = ★★★', Game.starsFor(126, 100), 3);
 eq('145 % = ★★★', Game.starsFor(145, 100), 3);
 
-console.log('\n[hodnosti — prahy]');
-eq('0 = Nováček u pásu', Game.rankFor(0), 'Nováček u pásu');
-eq('449 = Nováček u pásu', Game.rankFor(449), 'Nováček u pásu');
-eq('450 = Pásový operátor', Game.rankFor(450), 'Pásový operátor');
-eq('899 = Pásový operátor', Game.rankFor(899), 'Pásový operátor');
-eq('900 = Mistr toku', Game.rankFor(900), 'Mistr toku');
-eq('1399 = Mistr toku', Game.rankFor(1399), 'Mistr toku');
-eq('1400 = Legenda déčka', Game.rankFor(1400), 'Legenda déčka');
+console.log('\n[hodnosti — prahy, téma streamer (výchozí)]');
+eq('0 = Nováček', Game.rankFor(0), 'Nováček');
+eq('449 = Nováček', Game.rankFor(449), 'Nováček');
+eq('450 = Ranked hráč', Game.rankFor(450), 'Ranked hráč');
+eq('899 = Ranked hráč', Game.rankFor(899), 'Ranked hráč');
+eq('900 = Speedrunner', Game.rankFor(900), 'Speedrunner');
+eq('1399 = Speedrunner', Game.rankFor(1399), 'Speedrunner');
+eq('1400 = Legenda serveru', Game.rankFor(1400), 'Legenda serveru');
+
+console.log('\n[narativní témata — přepnutí]');
+check('výchozí téma = streamer', App.narrative === 'streamer');
+App.applyNarrative('operator');
+eq('operátor: level 4 = Kontrola kvality', LEVELS.find(l => l.id === 4).name, 'Kontrola kvality');
+eq('operátor: level 3 = Vstupenka 15+', LEVELS.find(l => l.id === 3).name, 'Vstupenka 15+');
+eq('operátor: hodnost 0', Game.rankFor(0), 'Nováček u pásu');
+eq('operátor: text bloku', LEVELS.find(l => l.id === 2).scaffold.blocks[1].label, 'cena');
+App.applyNarrative('streamer');
+eq('zpět streamer: level 4', LEVELS.find(l => l.id === 4).name, 'Moderace chatu');
+eq('zpět streamer: hodnost 0', Game.rankFor(0), 'Nováček');
+eq('zpět streamer: text bloku', LEVELS.find(l => l.id === 2).scaffold.blocks[1].label, 'cenaSub');
+eq('téma persistováno', sandbox.localStorage.getItem('blockflow_v3_narrative'), 'streamer');
 
 console.log('\n[3 mise → XP i certifikát]');
 sandbox.localStorage.clear();
@@ -88,7 +101,7 @@ eq('kumulativní XP', g3.xp, 135 + 120 + 168);
 eq('počet certifikátů', g3.certificates.length, 3);
 const cert = r3.certificate;
 check('certifikát má jméno', cert.playerName === 'Testik');
-check('certifikát má stupeň', cert.levelId === 3 && cert.levelName === 'Vstupenka 15+');
+check('certifikát má stupeň', cert.levelId === 3 && cert.levelName === 'Turnaj 15+');
 check('certifikát má datum', typeof cert.date === 'string' && cert.date.length > 0);
 check('certifikát má XP/hvězdy/hodnost', cert.xp === 168 && cert.stars === 2 && typeof cert.rank === 'string');
 eq('isLevelDone(1)', g3.isLevelDone(1), true);

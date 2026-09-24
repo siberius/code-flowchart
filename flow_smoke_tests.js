@@ -130,7 +130,7 @@ Game.completeLevel(2, { noHint: true, firstTry: true, efficient: true });
 App.updateGameUI();
 check('HUD XP = 174', App.dom.hudXp.textContent === '174 XP', App.dom.hudXp.textContent);
 check('HUD hvězdy = ★3', App.dom.hudStars.textContent === '★3', App.dom.hudStars.textContent);
-check('HUD hodnost', App.dom.hudRank.textContent === 'Nováček u pásu');
+check('HUD hodnost', App.dom.hudRank.textContent === 'Nováček');
 
 console.log('\n[plochy SPACE 1–5]');
 App.selectWorkspace('space1');

@@ -757,6 +757,7 @@
             <span></span>
         </div>
         <div id="logo">Code<span>Flow</span>Chart</div>
+        <button class="top-btn" id="btn-narrative" onclick="App.toggleNarrative()" title="Přepnout téma (Streamer / Operátor)">🎮</button>
         <div class="topbar-sep"></div>
         <div class="topbar-btn-group">
             <button id="btn-simulate" onclick="App.toggleSimulation(false)">
@@ -791,8 +792,8 @@
 
     <!-- F1: HUD operátora (learning mode) -->
     <div id="hud">
-        <div class="hud-row"><span class="hud-label">OPERÁTOR</span> <span class="hud-val" id="hud-name">—</span></div>
-        <div class="hud-row"><span class="hud-label">HODNOST</span> <span class="hud-val" id="hud-rank">Nováček u pásu</span></div>
+        <div class="hud-row"><span class="hud-label" id="hud-role">STREAMER</span> <span class="hud-val" id="hud-name">—</span></div>
+        <div class="hud-row"><span class="hud-label">HODNOST</span> <span class="hud-val" id="hud-rank">Nováček</span></div>
         <div class="hud-row"><span class="hud-label">XP</span> <span class="hud-val" id="hud-xp">0</span> <span class="hud-val" id="hud-stars">★0</span></div>
     </div>
 
@@ -1460,6 +1461,221 @@
         };
         LEVELS.forEach(l => { if (SOLUTIONS[l.id]) l.solution = SOLUTIONS[l.id]; });
 
+        // ==== F1: narativní témata (PLAN.md §4) ====
+        // Základní = „streamer" (Gen Alfa), přepínatelné na „operátor" (původní sklad,
+        // pro obory E) ikonou v horním panelu. Mění jen texty/názvy/hodnosti — algoritmus
+        // (typy bloků, porty, šipky, pořadí) zůstává stejný.
+        const NARRATIVES = {
+            streamer: {
+                label: 'Streamer', icon: '🎮', hudRole: 'STREAMER',
+                ranks: ['Nováček', 'Ranked hráč', 'Speedrunner', 'Legenda serveru'],
+                levels: {
+                    1: {
+                        name: 'První stream',
+                        goal: 'Nastartuj stream: kamera, mikrofon, live. Tři kroky v pořadí.',
+                        kompas: {
+                            cil: 'Chat čeká — uveď stream do vzduchu od STARTU do KONCE.',
+                            hacek: 'Můžeš jít live, aniž bys zapl kameru?',
+                            vzor: 'START → Zapni kameru → Zapni mikrofon → Spusť vysílání → KONEC',
+                            postup: 'Krok 2: spoj AKCE pod sebe ve správném sledu.'
+                        },
+                        scaffold: ['Start', 'Zapni kameru', 'Zapni mikrofon', 'Spusť vysílání', 'Pořadí je důležité!', 'Konec'],
+                        solution: ['Start', 'Zapni kameru', 'Zapni mikrofon', 'Spusť vysílání', 'Konec'],
+                        tests: [{ id: 'A', expected: ['Zapni kameru', 'Zapni mikrofon', 'Spusť vysílání'] }]
+                    },
+                    2: {
+                        name: 'Donáty a subs',
+                        goal: 'Načti cenu subu a počet subů. Vypiš výdělek.',
+                        kompas: {
+                            cil: 'Výdělek vzniká z dvojice čísel.',
+                            hacek: 'Spočítá stream výdělek sám od sebe?',
+                            vzor: 'START → VSTUP cenaSub → VSTUP pocetSubu → vydelok = cenaSub * pocetSubu → VÝSTUP → KONEC',
+                            postup: 'Doplň AKCE mezi vstupy a výstup.'
+                        },
+                        scaffold: ['Start', 'cenaSub', 'pocetSubu', 'vydelok = cenaSub * pocetSubu', 'Výdělek: {vydelok}', 'Konec'],
+                        solution: ['Start', 'cenaSub', 'pocetSubu', 'vydelok = cenaSub * pocetSubu', 'Výdělek: {vydelok}', 'Konec'],
+                        tests: [
+                            { id: 'A', inputs: { cenaSub: 15, pocetSubu: 3 }, expected: 'Výdělek: 45' },
+                            { id: 'B', inputs: { cenaSub: 80, pocetSubu: 5 }, expected: 'Výdělek: 400' },
+                            { id: 'C', inputs: { cenaSub: 12.5, pocetSubu: 4 }, expected: 'Výdělek: 50' }
+                        ]
+                    },
+                    3: {
+                        name: 'Turnaj 15+',
+                        goal: 'Načti věk. ANO=pusť do turnaje, NE=domů.',
+                        kompas: {
+                            cil: 'Přesně 15 let je „dost" — kde to rozseknem?',
+                            hacek: 'Co se stane, když je 15 přesně?',
+                            vzor: 'START → VSTUP vek → vek >= 15 ? ANO→„Přihlášen" / NE→„Zamítnut" → KONEC',
+                            postup: 'Sprav obě větve pod PODMÍNKOU.'
+                        },
+                        scaffold: ['Start', 'vek', '?', 'Zamítnut', 'Přihlášen', 'Podmínka: vek >= 15', 'Konec'],
+                        solution: ['Start', 'vek', 'vek >= 15', 'Přihlášen', 'Zamítnut', 'Konec'],
+                        tests: [
+                            { id: 'A', inputs: { vek: 18 }, expected: 'Přihlášen' },
+                            { id: 'B', inputs: { vek: 12 }, expected: 'Zamítnut' },
+                            { id: 'C', inputs: { vek: 15 }, expected: 'Přihlášen' }
+                        ]
+                    },
+                    4: {
+                        name: 'Moderace chatu',
+                        goal: 'Projdi zprávy, dokud nemáš 2 virální. Spočítej, kolik jsi jich prošel.',
+                        kompas: {
+                            cil: 'Potřebuješ 2 virální — smyčka se točí, dokud je nemáš.',
+                            hacek: 'Kolikrát se smyčka opakuje? Záleží to na vstupech?',
+                            vzor: 'Smyčka vir<2 → vstup kvalita → klip++ → když kvalita=="viral", vir++',
+                            postup: 'Skenuj každou zprávu, počítej virální a skonči, až jich máš 2.'
+                        },
+                        scaffold: ['Start', 'vir = 0\nklip = 0', 'vir < 2', 'kvalita', 'klip++', 'kvalita == "viral"', 'vir++', 'Virální: {vir} z {klip}.', 'Konec', 'Smyčka končí, až máš 2 virální.'],
+                        solution: ['Start', 'vir = 0\nklip = 0', 'vir < 2', 'kvalita', 'klip++', 'kvalita == "viral"', 'vir++', 'Virální: {vir} z {klip}.', 'Konec'],
+                        tests: [
+                            { id: 'A', inputs: { kvalita: ['nuda', 'viral', 'viral'] }, expected: 'Virální: 2 z 3.' },
+                            { id: 'B', inputs: { kvalita: ['viral', 'viral'] }, expected: 'Virální: 2 z 2.' },
+                            { id: 'C', inputs: { kvalita: ['nuda', 'nuda', 'viral', 'viral'] }, expected: 'Virální: 2 z 4.' }
+                        ]
+                    },
+                    5: {
+                        name: 'Zavolej moda',
+                        goal: 'Mod je zavolán třikrát. Zavolej ho správně.',
+                        kompas: {
+                            cil: 'Mod dělá totéž třikrát — stačí jedno VOLÁNÍ s jiným hráčem.',
+                            hacek: 'Co se stane, když zavoláš s hráč=Bob?',
+                            vzor: 'ban(hráč=A) → ban(hráč=B) → ban(hráč=C)',
+                            postup: 'Místo ruční AKCE použij blok VOLÁNÍ s parametrem hráče.'
+                        },
+                        scaffold: ['Start', 'PODPROGRAM: ban(hráč) → vyhodí hráče', 'ban(hráč=A)', 'ban(hráč=B)', 'ban(hráč=D)', 'Konec'],
+                        solution: ['Start', 'ban(hráč=A)', 'ban(hráč=B)', 'ban(hráč=C)', 'Konec'],
+                        tests: [
+                            { id: 'A', inputs: { hraci: ['A', 'B', 'C'] }, expected: ['ban(A)', 'ban(B)', 'ban(C)'] },
+                            { id: 'B', inputs: { hraci: ['C', 'A', 'B'] }, expected: ['ban(C)', 'ban(A)', 'ban(B)'] }
+                        ]
+                    },
+                    6: {
+                        name: 'Záchrana streamu',
+                        goal: 'Stream padá. Oprav smyčku, vyber čistší tok.',
+                        kompas: {
+                            cil: 'Najdi, co se opakuje, a nech smyčku doběhnout do konce.',
+                            hacek: 'Skončí smyčka dřív, než zpracuje poslední prvek?',
+                            vzor: 'Smyčka krok <= n → tělo → VÝSTUP „OK: zpracováno {n}"',
+                            postup: 'Oprav podmínky a vyber kratší variantu.'
+                        },
+                        scaffold: ['Start', 'n', 'krok = 0', 'krok < 3', 'krok = krok + 1', 'krok >= n', 'OK: zpracováno {n}', 'Konec'],
+                        solution: ['Start', 'n', 'krok = 0', 'krok <= n', 'krok = krok + 1', 'OK: zpracováno {n}', 'Konec'],
+                        tests: [
+                            { id: 'A', inputs: { prvky: ['cervena', 'zluta', 'modra'] }, expected: 'OK: zpracováno 3' },
+                            { id: 'B', inputs: { prvky: ['cervena'] }, expected: 'OK: zpracováno 1' },
+                            { id: 'C', inputs: { prvky: ['cervena', 'zluta', 'modra', 'zelena'] }, expected: 'OK: zpracováno 4' }
+                        ]
+                    }
+                }
+            },
+            operator: {
+                label: 'Operátor', icon: '🏭', hudRole: 'OPERÁTOR',
+                ranks: ['Nováček u pásu', 'Pásový operátor', 'Mistr toku', 'Legenda déčka'],
+                levels: {
+                    1: {
+                        name: 'Průvodce skladem',
+                        goal: 'Veronika nezná sklad. Slož jí cestičku: 3 kroky v pořadí.',
+                        kompas: {
+                            cil: 'Technik potřebuje vidět cestičku od STARTU do KONCE.',
+                            hacek: 'Můžeš odejít ze skladu, aniž bys zavřel bránu?',
+                            vzor: 'START → Otevři bránu → Vezmi bednu → Zavři bránu → KONEC',
+                            postup: 'Krok 2: spoj AKCE pod sebe ve správném sledu.'
+                        },
+                        scaffold: ['Začátek', 'Vezmi bednu', 'Otevři bránu', 'Zavři bránu', 'Pořadí je důležité!', 'Konec'],
+                        solution: ['Začátek', 'Otevři bránu', 'Vezmi bednu', 'Zavři bránu', 'Konec'],
+                        tests: [{ id: 'A', expected: ['Otevři bránu', 'Vezmi bednu', 'Zavři bránu'] }]
+                    },
+                    2: {
+                        name: 'Pokladna',
+                        goal: 'Načti cenu a kusy. Vypiš mezisoučet.',
+                        kompas: {
+                            cil: 'Mezisoučet vzniká z dvojice čísel.',
+                            hacek: 'Vyhodí pokladna výsledek sám od sebe?',
+                            vzor: 'START → VSTUP cena → VSTUP kusy → mezisoucet = cena * kusy → VÝSTUP → KONEC',
+                            postup: 'Doplň AKCE mezi vstupy a výstup.'
+                        },
+                        scaffold: ['Začátek', 'cena', 'kusy', 'mezisoucet = cena * kusy', 'Mezisoučet: {mezisoucet}', 'Konec'],
+                        solution: ['Začátek', 'cena', 'kusy', 'mezisoucet = cena * kusy', 'Mezisoučet: {mezisoucet}', 'Konec'],
+                        tests: [
+                            { id: 'A', inputs: { cena: 15, kusy: 3 }, expected: 'Mezisoučet: 45' },
+                            { id: 'B', inputs: { cena: 80, kusy: 5 }, expected: 'Mezisoučet: 400' },
+                            { id: 'C', inputs: { cena: 12.5, kusy: 4 }, expected: 'Mezisoučet: 50' }
+                        ]
+                    },
+                    3: {
+                        name: 'Vstupenka 15+',
+                        goal: 'Načti věk. ANO=pusť, NE=vykašli se.',
+                        kompas: {
+                            cil: 'Přesně 15 let je „dost" — kde to rozseknem?',
+                            hacek: 'Co se stane, když je 15 přesně?',
+                            vzor: 'START → VSTUP vek → vek >= 15 ? ANO→„Vstupenka ANO" / NE→„Vstupenka NE" → KONEC',
+                            postup: 'Sprav obě větve pod PODMÍNKOU.'
+                        },
+                        scaffold: ['Začátek', 'vek', '?', 'Vstupenka NE', 'Vstupenka ANO', 'Podmínka: vek >= 15', 'Konec'],
+                        solution: ['Začátek', 'vek', 'vek >= 15', 'Vstupenka ANO', 'Vstupenka NE', 'Konec'],
+                        tests: [
+                            { id: 'A', inputs: { vek: 18 }, expected: 'Vstupenka ANO' },
+                            { id: 'B', inputs: { vek: 12 }, expected: 'Vstupenka NE' },
+                            { id: 'C', inputs: { vek: 15 }, expected: 'Vstupenka ANO' }
+                        ]
+                    },
+                    4: {
+                        name: 'Kontrola kvality',
+                        goal: 'Skenuj díly, dokud nemáš 2 dobré. Spočítej, kolik jsi jich prošel.',
+                        kompas: {
+                            cil: 'Potřebuješ 2 dobré díly — smyčka se točí, dokud je nemáš.',
+                            hacek: 'Kolikrát se smyčka opakuje? Záleží to na vstupech?',
+                            vzor: 'Smyčka ok<2 → vstup stav → sken++ → když stav==ok, ok++',
+                            postup: 'Skenuj každý díl, počítej dobré a skonči, až jich máš 2.'
+                        },
+                        scaffold: ['Začátek', 'ok = 0\nsken = 0', 'ok < 2', 'stav', 'sken++', 'stav == "ok"', 'ok++', 'Dobré díly: {ok} z {sken}.', 'Konec', 'Smyčka končí, až máš 2 dobré.'],
+                        solution: ['Začátek', 'ok = 0\nsken = 0', 'ok < 2', 'stav', 'sken++', 'stav == "ok"', 'ok++', 'Dobré díly: {ok} z {sken}.', 'Konec'],
+                        tests: [
+                            { id: 'A', inputs: { stavy: ['vadne', 'ok', 'ok'] }, expected: 'Dobré díly: 2 z 3.' },
+                            { id: 'B', inputs: { stavy: ['ok', 'ok'] }, expected: 'Dobré díly: 2 z 2.' },
+                            { id: 'C', inputs: { stavy: ['vadne', 'vadne', 'ok', 'ok'] }, expected: 'Dobré díly: 2 z 4.' }
+                        ]
+                    },
+                    5: {
+                        name: 'Volání opraváře',
+                        goal: 'Opravář je zavolán 3×. Zavolej ho správně.',
+                        kompas: {
+                            cil: 'Opravář dělá totéž 3× — stačí jedno VOLÁNÍ s odlišným dílem.',
+                            hacek: 'Co se stane, když zavoláš s díl=B?',
+                            vzor: 'oprav(dil=A) → oprav(dil=B) → oprav(dil=C)',
+                            postup: 'Místo ruční AKCE použij blok VOLÁNÍ s parametrem dílu.'
+                        },
+                        scaffold: ['Začátek', 'PODPROGRAM: oprav(dil) → vrátí opraveno=1', 'oprav(dil=A)', 'oprav(dil=B)', 'oprav(dil=D)', 'Konec'],
+                        solution: ['Začátek', 'oprav(dil=A)', 'oprav(dil=B)', 'oprav(dil=C)', 'Konec'],
+                        tests: [
+                            { id: 'A', inputs: { dily: ['A', 'B', 'C'] }, expected: ['oprav(A)', 'oprav(B)', 'oprav(C)'] },
+                            { id: 'B', inputs: { dily: ['C', 'A', 'B'] }, expected: ['oprav(C)', 'oprav(A)', 'oprav(B)'] }
+                        ]
+                    },
+                    6: {
+                        name: 'Záchrana serveru',
+                        goal: 'Server padá. Oprav smyčku, vyber čistší tok.',
+                        kompas: {
+                            cil: 'Najdi, co se opakuje, a nech smyčku doběhnout do konce.',
+                            hacek: 'Skončí smyčka dřív, než zpracuje poslední prvek?',
+                            vzor: 'Smyčka krok <= n → tělo → VÝSTUP „OK: zpracováno {n}"',
+                            postup: 'Oprav podmínky a vyber kratší variantu.'
+                        },
+                        scaffold: ['Začátek', 'n', 'krok = 0', 'krok < 3', 'krok = krok + 1', 'krok >= n', 'OK: zpracováno {n}', 'Konec'],
+                        solution: ['Začátek', 'n', 'krok = 0', 'krok <= n', 'krok = krok + 1', 'OK: zpracováno {n}', 'Konec'],
+                        tests: [
+                            { id: 'A', inputs: { prvky: ['cervena', 'zluta', 'modra'] }, expected: 'OK: zpracováno 3' },
+                            { id: 'B', inputs: { prvky: ['cervena'] }, expected: 'OK: zpracováno 1' },
+                            { id: 'C', inputs: { prvky: ['cervena', 'zluta', 'modra', 'zelena'] }, expected: 'OK: zpracováno 4' }
+                        ]
+                    }
+                }
+            }
+        };
+        const DEFAULT_NARRATIVE = 'streamer';
+
+
         // ==== F1: registr ploch (horní lišta) — 5× SPACE, SPACE 1 = jablka demo ====
         const WORKSPACES = [
             { slot: 'space1', label: 'SPACE 1', mode: 'space' },
@@ -1636,6 +1852,7 @@
             },
 
             activeWorkspace: APPLES_SLOT,
+            narrative: DEFAULT_NARRATIVE,
             activeLevel: null,
             lastCampaignSlot: 'lvl1',
             pendingLevel: null,
@@ -1712,7 +1929,9 @@
                 jsonExportModal: document.getElementById('json-export-modal'),
                 sideMenu: document.getElementById('side-menu'),
                 hamburgerBtn: document.getElementById('hamburger-btn'),
+                btnNarrative: document.getElementById('btn-narrative'),
                 hud: document.getElementById('hud'),
+                hudRole: document.getElementById('hud-role'),
                 hudName: document.getElementById('hud-name'),
                 hudRank: document.getElementById('hud-rank'),
                 hudXp: document.getElementById('hud-xp'),
@@ -1852,6 +2071,7 @@
                 }
                 
                 Game.load();
+                this.applyNarrative(localStorage.getItem('blockflow_v3_narrative') || DEFAULT_NARRATIVE);
                 this.activeWorkspace = localStorage.getItem('blockflow_v3_active_ws') || APPLES_SLOT;
                 this.cheatStep = 0;
                 if (this.modeOf(this.activeWorkspace) === 'campaign') {
@@ -2059,6 +2279,39 @@
                 if (this.dom.hudXp) this.dom.hudXp.textContent = Game.xp + ' XP';
                 if (this.dom.hudStars) this.dom.hudStars.textContent = '★' + Game.totalStars();
                 this.renderMenu();
+            },
+            // Přepne narativní téma (streamer ↔ operátor): názvy stupňů, cíle, Kompas,
+            // texty bloků, hodnosti a HUD. Algoritmus úloh se nemění.
+            applyNarrative(id) {
+                const nar = NARRATIVES[id] || NARRATIVES[DEFAULT_NARRATIVE];
+                this.narrative = id;
+                Game.RANKS = nar.ranks.map((name, i) => ({ min: [0, 450, 900, 1400][i], name }));
+                if (this.dom.hudRole) this.dom.hudRole.textContent = nar.hudRole;
+                if (this.dom.btnNarrative) this.dom.btnNarrative.textContent = nar.icon;
+                LEVELS.forEach(lvl => {
+                    const t = nar.levels[lvl.id];
+                    if (!t) return;
+                    lvl.name = t.name;
+                    lvl.goal = t.goal;
+                    lvl.kompas = t.kompas;
+                    lvl.tests = t.tests;
+                    if (lvl.scaffold) lvl.scaffold.blocks.forEach((b, i) => { if (t.scaffold[i] != null) b.label = t.scaffold[i]; });
+                    if (lvl.solution) lvl.solution.blocks.forEach((b, i) => { if (t.solution[i] != null) b.label = t.solution[i]; });
+                });
+                try { localStorage.setItem('blockflow_v3_narrative', id); } catch (e) {}
+            },
+            toggleNarrative() {
+                const next = this.narrative === 'streamer' ? 'operator' : 'streamer';
+                this.applyNarrative(next);
+                const inCampaign = this.isCampaign();
+                if (inCampaign) {
+                    this.buildWorkspaceDefault(this.activeWorkspace);
+                    this.saveWorkspace(this.activeWorkspace);
+                    this.renderAll();
+                    this.renderArrows();
+                }
+                this.updateGameUI();
+                this.toast('Téma: ' + NARRATIVES[next].label + (inCampaign ? ' — level restartován' : ''));
             },
             renderMenu() {
                 const list = this.dom.menuMissions;
@@ -3909,7 +4162,7 @@
                 const totalH = H + logHeight + footerPadding;
                 const bgFill = transparentBg ? 'transparent' : '#0d0f14';
 
-                let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${totalH}" width="${W}" height="${totalH}"><defs><style>@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@600&amp;family=Syne:wght@700&amp;display=swap'); .text-label { font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 700; fill: rgba(255,255,255,0.6); letter-spacing: 1px;} .text-code { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; fill: white; }</style><marker id="ah" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#64748b"/></marker></defs><rect width="100%" height="100%" fill="${bgFill}" />`;
+                let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${totalH}" width="${W}" height="${totalH}"><defs><style>@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@600&amp;family=Syne:wght@700&amp;display=swap'); .text-label { font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 700; fill: rgba(255,255,255,0.6); letter-spacing: 1px;} .text-code { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; fill: white; }</style><marker id="ah" markerWidth="18" markerHeight="16" refX="18" refY="8" orient="auto" markerUnits="userSpaceOnUse"><polygon points="18 8, 1 0, 4.73 8, 1 16" fill="#64748b"/></marker></defs><rect width="100%" height="100%" fill="${bgFill}" />`;
 
                 targetArrows.forEach(a => {
                     const from = this.getPortPos(a.from, a.fromPort); const to = this.getPortPos(a.to, a.toPort); if(!from || !to) return;

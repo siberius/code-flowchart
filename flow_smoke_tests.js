@@ -131,30 +131,29 @@ check('HUD XP = 174', App.dom.hudXp.textContent === '174 XP', App.dom.hudXp.text
 check('HUD hvězdy = ★3', App.dom.hudStars.textContent === '★3', App.dom.hudStars.textContent);
 check('HUD hodnost', App.dom.hudRank.textContent === 'Nováček u pásu');
 
-console.log('\n[režimy a plochy]');
-App.setMode('free');
-check('režim free', App.activeWorkspace === 'free');
-check('HUD skryt ve VOLNÉM', !App.dom.hud.classList.contains('show'));
-check('jablka se postavila (bloky > 0)', App.blocks.length > 0, 'bloky=' + App.blocks.length);
-App.setMode('profi');
-check('režim profi', App.activeWorkspace === 'profi');
+console.log('\n[plochy SPACE 1–5]');
 App.selectWorkspace('space1');
 check('plocha space1', App.activeWorkspace === 'space1');
 check('modeOf(space1) = space', App.modeOf('space1') === 'space');
-check('space1 prázdná (jen Start)', App.blocks.length === 1, 'bloky=' + App.blocks.length);
+check('SPACE 1 má jablka (bloky > 0)', App.blocks.length > 0, 'bloky=' + App.blocks.length);
+check('HUD skrytý v SPACE', !App.dom.hud.classList.contains('show'));
 App.selectWorkspace('space2');
-check('plocha space2', App.activeWorkspace === 'space2');
+check('space2 prázdná (jen Start)', App.blocks.length === 1, 'bloky=' + App.blocks.length);
 App.selectWorkspace('space3');
 check('plocha space3', App.activeWorkspace === 'space3');
-check('aktivní plocha persistována', sandbox.localStorage.getItem('blockflow_v2_active_ws') === 'space3');
+App.selectWorkspace('space4');
+check('plocha space4', App.activeWorkspace === 'space4');
+App.selectWorkspace('space5');
+check('plocha space5', App.activeWorkspace === 'space5');
+check('aktivní plocha persistována', sandbox.localStorage.getItem('blockflow_v2_active_ws') === 'space5');
 App.selectWorkspace('campaign');
 check('zpět do KAMPAŇě na poslední level', App.activeWorkspace === 'lvl1', App.activeWorkspace);
 check('HUD zpět viditelný', App.dom.hud.classList.contains('show'));
 
 console.log('\n[registr ploch]');
 const slots = App.workspaceSlots();
-check('obsahuje free/profi/space1-3 i lvl1-6',
-    ['free', 'profi', 'space1', 'space2', 'space3', 'lvl1', 'lvl6'].every(s => slots.indexOf(s) !== -1));
+check('obsahuje space1-5 i lvl1-6',
+    ['space1', 'space2', 'space3', 'space4', 'space5', 'lvl1', 'lvl6'].every(s => slots.indexOf(s) !== -1));
 check('celkem 11 ploch (5 + 6)', slots.length === 11, 'got ' + slots.length);
 
 console.log('\n[vstup do mise → level modal]');

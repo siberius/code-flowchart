@@ -12,17 +12,17 @@ function check(name, cond, extra = '') {
 
 console.log('\n[saveWorkspace / loadWorkspace — sloty]');
 const app = makeApp(App);
-app.activeWorkspace = 'free';
+app.activeWorkspace = 'space1';
 app.blocks = [{ id: 'b1', type: 'start', label: 'Start', x: 0, y: 0 }];
 app.arrows = [{ id: 'a1', from: 'b1', fromPort: 'bottom', to: 'b2' }];
 app.nextId = 5;
 app.vx = 10;
 app.vy = 20;
 app.vscale = 1.5;
-app.saveWorkspace('free');
+app.saveWorkspace('space1');
 
-check('uloží klíč plochy', sandbox.localStorage.getItem('blockflow_v2_ws_free') !== null);
-check('uloží aktivní plochu', sandbox.localStorage.getItem('blockflow_v2_active_ws') === 'free');
+check('uloží klíč plochy', sandbox.localStorage.getItem('blockflow_v2_ws_space1') !== null);
+check('uloží aktivní plochu', sandbox.localStorage.getItem('blockflow_v2_active_ws') === 'space1');
 
 const app2 = makeApp(App);
 app2.blocks = [];
@@ -31,7 +31,7 @@ app2.nextId = 1;
 app2.vx = 0;
 app2.vy = 0;
 app2.vscale = 1;
-const ok = app2.loadWorkspace('free');
+const ok = app2.loadWorkspace('space1');
 check('load vrátí true', ok === true);
 check('obnoví bloky', app2.blocks.length === 1 && app2.blocks[0].id === 'b1');
 check('obnoví šipky', app2.arrows.length === 1 && app2.arrows[0].id === 'a1');

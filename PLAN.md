@@ -199,17 +199,16 @@ Všechny stupně jsou **otevřené** (žák si může hrát napřeskáčku). Ka�
 - Manuální „Zavřít (Enter)" + minimální držení.
 
 ### 7.9 Režimy a pracovní plochy
-- **Přepínač ploch v horní liště:** `KAMPAŇ · VOLNÝ · PROFI · SPACE 1 · SPACE 2 · SPACE 3`.
+- **Přepínač ploch v horní liště:** `KAMPAŇ · SPACE 1 · SPACE 2 · SPACE 3 · SPACE 4 · SPACE 5`.
   Aktivní plocha je zvýrazněná; klik přepne plochu (každá má vlastní stav).
 - **KAMPAŇ** — learning mode: 6 stupňů, jméno povinné, XP/certifikáty, 3h hodiny.
   Každý level má **vlastní plochu** (`lvl1…lvl6`) → návrat k misi zachová rozdělanou práci.
-- **VOLNÝ** — **jablka demo** + čistý editor, bez jména, bez hodin (slot `free`).
-- **PROFI** — administrace: všechny nástroje, tisk/RVP mapa, bez mise (slot `profi`).
-- **SPACE 1–3** — prázdné plochy pro vlastní tvorbu (sloty `space1…space3`).
+- **SPACE 1** — **jablka demo** + volný editor (bez jména, bez hodin).
+- **SPACE 2–5** — prázdné plochy pro vlastní tvorbu (sloty `space2…space5`).
 - **Mise** zůstávají v hamburger menu (MISE) — přepínač režimů už v menu není.
-- **Vstup do mise:** klik na level → načte se **scaffolding** (předpřipravené moduly
-  na plátně + omezená paleta) → **level modal** s podrobným zadáním (Typ, Cíl,
-  „Co máš udělat", povolené bloky, ověření) + Kompas.
+- **Vstup do mise:** klik na level → načte se **scaffolding** — rozházené, **NEpropojené**
+  moduly (spojení si žák vytváří sám) + omezená paleta → **level modal** s podrobným
+  zadáním (Typ, Cíl, „Co máš udělat", povolené bloky, ověření) + Kompas.
 - **Export/import ploch (JSON):** tlačítka `⭳ WS` / `⭱ WS` v liště uloží/načtou
   **všechny plochy** (`{app:'blockflow-workspaces', active, workspaces:{slot:stav}}`).
   Tlačítka IMPORT/EXPORT zůstávají pro jednu aktuální plochu.

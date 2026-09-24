@@ -751,11 +751,11 @@
         <div style="width: 16px;"></div>
         <div id="ws-tabs">
             <button class="ws-tab" data-ws="campaign" onclick="App.selectWorkspace('campaign')" title="Kampaň — mise, jméno, XP">KAMPAŇ</button>
-            <button class="ws-tab" data-ws="free" onclick="App.selectWorkspace('free')" title="Volný režim — jablka demo + čistý editor">VOLNÝ</button>
-            <button class="ws-tab" data-ws="profi" onclick="App.selectWorkspace('profi')" title="Profi — všechny nástroje, bez mise">PROFI</button>
-            <button class="ws-tab" data-ws="space1" onclick="App.selectWorkspace('space1')" title="Prázdná plocha 1">SPACE 1</button>
+            <button class="ws-tab" data-ws="space1" onclick="App.selectWorkspace('space1')" title="Plocha 1 — jablka demo">SPACE 1</button>
             <button class="ws-tab" data-ws="space2" onclick="App.selectWorkspace('space2')" title="Prázdná plocha 2">SPACE 2</button>
             <button class="ws-tab" data-ws="space3" onclick="App.selectWorkspace('space3')" title="Prázdná plocha 3">SPACE 3</button>
+            <button class="ws-tab" data-ws="space4" onclick="App.selectWorkspace('space4')" title="Prázdná plocha 4">SPACE 4</button>
+            <button class="ws-tab" data-ws="space5" onclick="App.selectWorkspace('space5')" title="Prázdná plocha 5">SPACE 5</button>
         </div>
         <div style="width: 16px;"></div>
         <button class="top-btn" onclick="document.getElementById('ws-upload').click()" title="Nahrát všechny plochy z PC (JSON)">⭱ WS</button>
@@ -1282,8 +1282,8 @@
             }
         ];
 
-        // ==== F1: scaffolding — předpřipravené moduly na plátně (PLAN.md §16) ====
-        // arrows = [fromIndex, fromPort, toIndex, toPort]; indexy odkazují do blocks.
+        // ==== F1: scaffolding — rozházené, NEpropojené moduly na plátně (PLAN.md §16) ====
+        // Žák si spojení vytváří sám; loader přidá malý náhodný posun (rozházení).
         // Obsah stupňů doladí F5/F6; zde první verze, aby šel loader otestovat.
         const SCAFFOLDS = {
             1: {
@@ -1294,8 +1294,7 @@
                     { type: 'process', label: 'Zavři bránu', x: 0, y: 260 },
                     { type: 'note', label: 'Pořadí je důležité!', x: 360, y: 40 },
                     { type: 'end', label: 'Konec', x: 0, y: 420 }
-                ],
-                arrows: []
+                ]
             },
             2: {
                 blocks: [
@@ -1305,8 +1304,7 @@
                     { type: 'note', label: 'mezisoucet = cena * kusy', x: 360, y: 100 },
                     { type: 'io', label: 'Mezisoučet: {mezisoucet}', ioType: 'output', x: 0, y: 380 },
                     { type: 'end', label: 'Konec', x: 0, y: 540 }
-                ],
-                arrows: [[0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'], [4, 'bottom', 5, 'top']]
+                ]
             },
             3: {
                 blocks: [
@@ -1317,8 +1315,7 @@
                     { type: 'io', label: 'Vstupenka ANO', ioType: 'output', x: -320, y: 260 },
                     { type: 'note', label: 'Podmínka: vek >= 15', x: 380, y: 60 },
                     { type: 'end', label: 'Konec', x: 0, y: 450 }
-                ],
-                arrows: [[0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'], [2, 'right', 3, 'top'], [2, 'left', 4, 'top'], [3, 'bottom', 6, 'top'], [4, 'bottom', 6, 'top']]
+                ]
             },
             4: {
                 blocks: [
@@ -1331,8 +1328,7 @@
                     { type: 'note', label: 'utrhni a zjisti barvu', x: 400, y: 540 },
                     { type: 'io', label: 'Díky {jméno}! oblíbená: {barva1}×{pocet1}, {barva2}×{pocet2}', ioType: 'output', x: 400, y: 760 },
                     { type: 'end', label: 'Konec', x: 400, y: 920 }
-                ],
-                arrows: [[0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'], [2, 'bottom', 3, 'top'], [3, 'bottom', 4, 'top'], [4, 'bottom', 5, 'top'], [5, 'right', 7, 'top'], [7, 'bottom', 8, 'top']]
+                ]
             },
             5: {
                 blocks: [
@@ -1342,8 +1338,7 @@
                     { type: 'call', label: 'oprav(dil=B)', x: 0, y: 100 },
                     { type: 'call', label: 'oprav(dil=D)', x: 0, y: 260 },
                     { type: 'end', label: 'Konec', x: 0, y: 420 }
-                ],
-                arrows: [[0, 'bottom', 2, 'top'], [2, 'bottom', 3, 'top'], [3, 'bottom', 4, 'top'], [4, 'bottom', 5, 'top']]
+                ]
             },
             6: {
                 blocks: [
@@ -1355,8 +1350,7 @@
                     { type: 'decision', label: 'krok >= n', x: 380, y: 400, yesPort: 'right', noPort: 'bottom' },
                     { type: 'io', label: 'OK: zpracováno {n}', ioType: 'output', x: 380, y: 600 },
                     { type: 'end', label: 'Konec', x: 380, y: 760 }
-                ],
-                arrows: [[0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'], [2, 'bottom', 3, 'top'], [3, 'bottom', 4, 'top'], [4, 'bottom', 3, 'left'], [3, 'right', 5, 'top'], [5, 'bottom', 6, 'top'], [6, 'bottom', 7, 'top']]
+                ]
             }
         };
         LEVELS.forEach(l => { if (SCAFFOLDS[l.id]) l.scaffold = SCAFFOLDS[l.id]; });
@@ -1445,14 +1439,15 @@
         };
         LEVELS.forEach(l => { if (SOLUTIONS[l.id]) l.solution = SOLUTIONS[l.id]; });
 
-        // ==== F1: registr ploch (horní lišta) — VOLNÝ, PROFI + 3 prázdné SPACE ====
+        // ==== F1: registr ploch (horní lišta) — 5× SPACE, SPACE 1 = jablka demo ====
         const WORKSPACES = [
-            { slot: 'free', label: 'VOLNÝ', mode: 'free' },
-            { slot: 'profi', label: 'PROFI', mode: 'profi' },
             { slot: 'space1', label: 'SPACE 1', mode: 'space' },
             { slot: 'space2', label: 'SPACE 2', mode: 'space' },
-            { slot: 'space3', label: 'SPACE 3', mode: 'space' }
+            { slot: 'space3', label: 'SPACE 3', mode: 'space' },
+            { slot: 'space4', label: 'SPACE 4', mode: 'space' },
+            { slot: 'space5', label: 'SPACE 5', mode: 'space' }
         ];
+        const APPLES_SLOT = 'space1';
         const CAMPAIGN_SLOTS = LEVELS.map(l => 'lvl' + l.id);
 
         // ==== F1: Game (learning mode) — jméno, XP, hodnost, stupně, certifikáty ====
@@ -1884,8 +1879,7 @@
             // ==== F1: režimy a plochy (slot na level) ====
             modeOf(slot) {
                 if (typeof slot === 'string' && slot.indexOf('lvl') === 0) return 'campaign';
-                const ws = WORKSPACES.find(w => w.slot === slot);
-                return ws ? ws.mode : 'campaign';
+                return 'space';
             },
             workspaceSlots() { return CAMPAIGN_SLOTS.concat(WORKSPACES.map(w => w.slot)); },
             isCampaign() { return this.modeOf(this.activeWorkspace) === 'campaign'; },
@@ -1903,10 +1897,6 @@
                 if (mode === 'campaign') {
                     if (!Game.playerName) { this.pendingMode = 'campaign'; this.openNameModal(); return; }
                     this.switchWorkspace(this.lastCampaignSlot || 'lvl1');
-                } else if (mode === 'free') {
-                    this.switchWorkspace('free');
-                } else {
-                    this.switchWorkspace('profi');
                 }
             },
             switchWorkspace(slot) {
@@ -1937,12 +1927,12 @@
                 }, 50);
             },
             buildWorkspaceDefault(slot) {
-                if (slot === 'free') {
-                    this.buildDefaultGameLoop();
-                } else if (this.modeOf(slot) === 'campaign') {
+                if (this.modeOf(slot) === 'campaign') {
                     const lvl = LEVELS.find(l => 'lvl' + l.id === slot);
                     if (lvl) this.buildLevelScaffold(lvl);
                     else this.clearCanvasSilent();
+                } else if (slot === APPLES_SLOT) {
+                    this.buildDefaultGameLoop();
                 } else {
                     this.clearCanvasSilent();
                 }
@@ -1962,17 +1952,15 @@
                 this.blocks = []; this.arrows = []; this.nextId = 1;
                 this.vx = 0; this.vy = 0;
                 if (!level.scaffold) { this.clearCanvasSilent(); return; }
-                const created = (level.scaffold.blocks || []).map(def => {
-                    const b = this.addBlockSilent(def.type, def.label, def.x, def.y);
+                (level.scaffold.blocks || []).forEach(def => {
+                    const jx = Math.round((Math.random() - 0.5) * 200);
+                    const jy = Math.round((Math.random() - 0.5) * 120);
+                    const b = this.addBlockSilent(def.type, def.label, def.x + jx, def.y + jy);
                     if (def.ioType) b.ioType = def.ioType;
                     if (def.yesPort) b.yesPort = def.yesPort;
                     if (def.noPort) b.noPort = def.noPort;
-                    return b;
                 });
-                (level.scaffold.arrows || []).forEach(a => {
-                    const from = created[a[0]], to = created[a[2]];
-                    if (from && to) this.addArrowSilent(from.id, a[1], to.id, a[3]);
-                });
+                // Spojení se záměrně nekreslí — žák si zapojení vytváří sám.
             },
             cheatSolveStep() {
                 if (this.isSimulating) { this.toast('Cheat nejde během simulace.'); return; }
@@ -2968,7 +2956,7 @@
             },
 
             resetToTemplate() {
-                this.toast('Pro návrat k výchozí šabloně použij plochu VOLNÝ v horní liště.');
+                this.toast('Pro návrat k výchozí šabloně použij plochu SPACE 1 v horní liště.');
             },
 
             pasteBlocks(copiedBlocks, copiedArrows) {

@@ -216,6 +216,30 @@
             background-position: center;
         }
 
+        /* Efekt při spuštění běhu (▶) — světelný scan přes plátno */
+        @keyframes sim-boot-sweep {
+            0% { transform: translateY(-100%); opacity: 0; }
+            12% { opacity: 1; }
+            100% { transform: translateY(100%); opacity: 0; }
+        }
+        @keyframes sim-boot-glow {
+            0% { box-shadow: inset 0 0 0 rgba(0, 229, 255, 0); }
+            40% { box-shadow: inset 0 0 140px rgba(0, 229, 255, 0.28); }
+            100% { box-shadow: inset 0 0 0 rgba(0, 229, 255, 0); }
+        }
+        #canvas-wrap.sim-boot::after {
+            content: ''; position: absolute; left: 0; right: 0; top: 0; height: 100%;
+            background: linear-gradient(to bottom,
+                transparent 0%, rgba(0, 229, 255, 0.15) 44%,
+                rgba(0, 229, 255, 0.5) 50%, rgba(0, 229, 255, 0.15) 56%, transparent 100%);
+            pointer-events: none; z-index: 60;
+            animation: sim-boot-sweep 0.7s ease-out both;
+        }
+        #canvas-wrap.sim-boot { animation: sim-boot-glow 0.7s ease-out both; }
+        @media (prefers-reduced-motion: reduce) {
+            #canvas-wrap.sim-boot::after, #canvas-wrap.sim-boot { animation: none; }
+        }
+
         #canvas {
             position: absolute; top: 0; left: 0;
             width: 8000px; height: 8000px;
@@ -780,7 +804,7 @@
         <div class="side-menu-link" onclick="App.openHelp()"><span style="font-size: 16px;">📖</span> Nápověda</div>
         <div class="side-menu-link" onclick="App.openAbout()"><span style="font-size: 16px;">ℹ️</span> O programu</div>
         <div class="side-menu-link" onclick="App.openAuthor()"><span style="font-size: 16px;">👨‍💻</span> O autorovi</div>
-        <div class="side-menu-link" onclick="App.promptReset()" style="color:#ef4444; border-top:1px solid rgba(239,68,68,0.25); margin-top:6px;"><span style="font-size: 16px;">🧹</span> RESET (smazat vše)</div>
+        <div class="side-menu-link" onclick="App.promptReset()" style="color:#ef4444; border-top:1px solid rgba(239,68,68,0.25); margin-top:6px;"><span style="font-size: 16px;">🧹</span> RESET</div>
     </div>
 
     <!-- Skrytý input pro nahrávání JSON souborů -->
@@ -881,6 +905,7 @@
         <div class="modal-box">
             <h3>✎ Editovat blok</h3>
             <textarea id="edit-input" class="input-dark" placeholder="Zadejte text... (Shift+Enter pro nový řádek)" rows="3" style="resize: vertical; min-height: 80px;"></textarea>
+            <p id="edit-error" style="display:none; color:#ef4444; font-size:12px; margin-top:6px;">Text bloku nesmí být prázdný.</p>
             <div class="btn-row">
                 <button class="btn" onclick="App.closeEdit()">Zrušit</button>
                 <button class="btn btn-primary" onclick="App.saveEdit()">Uložit</button>
@@ -892,6 +917,7 @@
         <div class="modal-box">
             <h3 id="sim-input-title">Zadejte hodnotu</h3>
             <input type="text" id="sim-input-field" class="input-dark" placeholder="Hodnota...">
+            <p id="sim-input-error" style="display:none; color:#ef4444; font-size:12px; margin-top:6px;">Hodnota nesmí být prázdná.</p>
             <div class="btn-row" style="margin-top: 10px;">
                 <button class="btn btn-submit-large" onclick="App.resolveInputPrompt()" style="width: 100%">ODESLAT (ENTER)</button>
             </div>
@@ -985,11 +1011,11 @@
     <!-- F1: Potvrzení RESET (kompletní výmaz) -->
     <div id="reset-confirm-modal" class="modal-overlay" style="z-index: 700;">
         <div class="modal-box" style="border-color: rgba(239, 68, 68, 0.3);">
-            <h3 style="color: #ef4444; text-shadow: 0 0 10px rgba(239, 68, 68, 0.4);">⚠️ RESET — smazat vše</h3>
+            <h3 style="color: #ef4444; text-shadow: 0 0 10px rgba(239, 68, 68, 0.4);">⚠️ RESET</h3>
             <p style="color: var(--text); font-size: 14px; margin-bottom: 6px;">Smaže jméno, XP, stupně i certifikáty. Nejde vrátit.</p>
             <p style="color: var(--text); font-size: 12px; opacity: 0.7; margin-bottom: 15px;">Data zůstávají v prohlížeči, dokud nesmažeš (RESET).</p>
             <div class="btn-row">
-                <button class="btn" onclick="App.doReset()" style="flex: 1; padding: 10px; font-size: 13px; background: rgba(239,68,68,0.05); color: #ef4444; border-color: #ef4444; box-shadow: inset 0 0 15px rgba(239,68,68,0.2);">ANO (Smazat vše)</button>
+                <button class="btn" onclick="App.doReset()" style="flex: 1; padding: 10px; font-size: 13px; background: rgba(239,68,68,0.05); color: #ef4444; border-color: #ef4444; box-shadow: inset 0 0 15px rgba(239,68,68,0.2);">ANO (smazat)</button>
                 <button class="btn" onclick="document.getElementById('reset-confirm-modal').classList.remove('show')" style="flex: 1; padding: 10px; font-size: 13px; background: rgba(16,185,129,0.05); color: #10b981; border-color: #10b981; box-shadow: inset 0 0 15px rgba(16,185,129,0.2);">NE (Zrušit)</button>
             </div>
         </div>
@@ -1228,20 +1254,20 @@
                 ]
             },
             {
-                id: 4, name: 'Sběrač jablek 2.0', type: 'sestav',
-                goal: 'Seber 3 jablka. Spočti barvy, co máš rád.',
+                id: 4, name: 'Kontrola kvality', type: 'sestav',
+                goal: 'Skenuj díly, dokud nemáš 2 dobré. Spočítej, kolik jsi jich prošel.',
                 blocks: ['start', 'io', 'process', 'decision', 'loop', 'note', 'end'], xpBase: 200,
                 rvp: 'Cykly (fixní i podmíněný)',
                 kompas: {
-                    cil: 'Potřebuješ 3 otočení: utrhni a zjisti barvu.',
-                    hacek: 'Kolikrát se má opakovat SMYČKA?',
-                    vzor: 'Smyčka krok<3 → uvnitř vstup + podmínka barvy → košík++',
-                    postup: 'Slož tělo smyčky a počítej do proměnných.'
+                    cil: 'Potřebuješ 2 dobré díly — smyčka se točí, dokud je nemáš.',
+                    hacek: 'Kolikrát se smyčka opakuje? Záleží to na vstupech?',
+                    vzor: 'Smyčka ok<2 → vstup stav → sken++ → když stav==ok, ok++',
+                    postup: 'Skenuj každý díl, počítej dobré a skonči, až jich máš 2.'
                 },
                 tests: [
-                    { id: 'A', inputs: { jmeno: 'Eda', barva1: 'cervena', barva2: 'modra', barvy: ['cervena', 'cervena', 'zluta'] }, expected: 'Díky Eda! oblíbená: cervena×2, modra×0' },
-                    { id: 'B', inputs: { jmeno: 'Ola', barva1: 'zluta', barva2: 'zelena', barvy: ['zelena', 'zluta', 'zelena'] }, expected: 'Díky Ola! oblíbená: zluta×1, zelena×2' },
-                    { id: 'C', inputs: { jmeno: 'Tim', barva1: 'cervena', barva2: 'zluta', barvy: ['cervena', 'cervena', 'cervena'] }, expected: 'Díky Tim! oblíbená: cervena×3, zluta×0' }
+                    { id: 'A', inputs: { stavy: ['vadne', 'ok', 'ok'] }, expected: 'Dobré díly: 2 z 3.' },
+                    { id: 'B', inputs: { stavy: ['ok', 'ok'] }, expected: 'Dobré díly: 2 z 2.' },
+                    { id: 'C', inputs: { stavy: ['vadne', 'vadne', 'ok', 'ok'] }, expected: 'Dobré díly: 2 z 4.' }
                 ]
             },
             {
@@ -1317,15 +1343,16 @@
             },
             4: {
                 blocks: [
-                    { type: 'start', label: 'Začátek', x: 0, y: -280 },
-                    { type: 'io', label: 'jméno', ioType: 'input', x: 0, y: -120 },
-                    { type: 'io', label: 'barva1', ioType: 'input', x: 0, y: 40 },
-                    { type: 'io', label: 'barva2', ioType: 'input', x: 0, y: 200 },
-                    { type: 'process', label: 'pocet1 = 0\npocet2 = 0\nkrok = 0', x: 0, y: 360 },
-                    { type: 'loop', label: 'krok < 3', x: 0, y: 540, yesPort: 'bottom', noPort: 'right' },
-                    { type: 'note', label: 'utrhni a zjisti barvu', x: 400, y: 540 },
-                    { type: 'io', label: 'Díky {jméno}! oblíbená: {barva1}×{pocet1}, {barva2}×{pocet2}', ioType: 'output', x: 400, y: 760 },
-                    { type: 'end', label: 'Konec', x: 400, y: 920 }
+                    { type: 'start', label: 'Začátek' },
+                    { type: 'process', label: 'ok = 0\nsken = 0' },
+                    { type: 'loop', label: 'ok < 2', yesPort: 'bottom', noPort: 'right' },
+                    { type: 'io', label: 'stav', ioType: 'input' },
+                    { type: 'process', label: 'sken++' },
+                    { type: 'decision', label: 'stav == "ok"', yesPort: 'right', noPort: 'bottom' },
+                    { type: 'process', label: 'ok++' },
+                    { type: 'io', label: 'Dobré díly: {ok} z {sken}.', ioType: 'output' },
+                    { type: 'end', label: 'Konec' },
+                    { type: 'note', label: 'Smyčka končí, až máš 2 dobré.' }
                 ]
             },
             5: {
@@ -1390,26 +1417,22 @@
             },
             4: {
                 blocks: [
-                    { type: 'start', label: 'Začátek', x: 0, y: -400 },
-                    { type: 'io', label: 'jméno', ioType: 'input', x: 0, y: -260 },
-                    { type: 'io', label: 'barva1', ioType: 'input', x: 0, y: -120 },
-                    { type: 'io', label: 'barva2', ioType: 'input', x: 0, y: 20 },
-                    { type: 'process', label: 'pocet1 = 0\npocet2 = 0\nkrok = 0', x: 0, y: 160 },
-                    { type: 'loop', label: 'krok < 3', x: 0, y: 320, yesPort: 'bottom', noPort: 'right' },
-                    { type: 'io', label: 'barva', ioType: 'input', x: 0, y: 500 },
-                    { type: 'decision', label: 'barva == barva1', x: 0, y: 660, yesPort: 'right', noPort: 'bottom' },
-                    { type: 'process', label: 'pocet1++\nkrok++', x: 320, y: 660 },
-                    { type: 'decision', label: 'barva == barva2', x: 0, y: 840, yesPort: 'right', noPort: 'bottom' },
-                    { type: 'process', label: 'pocet2++\nkrok++', x: 320, y: 840 },
-                    { type: 'io', label: 'Díky {jméno}! oblíbená: {barva1}×{pocet1}, {barva2}×{pocet2}', ioType: 'output', x: 420, y: 320 },
-                    { type: 'end', label: 'Konec', x: 420, y: 500 }
+                    { type: 'start', label: 'Začátek', x: 0, y: -420 },
+                    { type: 'process', label: 'ok = 0\nsken = 0', x: 0, y: -280 },
+                    { type: 'loop', label: 'ok < 2', x: 0, y: -140, yesPort: 'bottom', noPort: 'right' },
+                    { type: 'io', label: 'stav', ioType: 'input', x: 0, y: 20 },
+                    { type: 'process', label: 'sken++', x: 0, y: 180 },
+                    { type: 'decision', label: 'stav == "ok"', x: 0, y: 340, yesPort: 'right', noPort: 'bottom' },
+                    { type: 'process', label: 'ok++', x: 340, y: 340 },
+                    { type: 'io', label: 'Dobré díly: {ok} z {sken}.', ioType: 'output', x: 340, y: -140 },
+                    { type: 'end', label: 'Konec', x: 340, y: 20 }
                 ],
                 arrows: [
-                    [0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'], [2, 'bottom', 3, 'top'], [3, 'bottom', 4, 'top'], [4, 'bottom', 5, 'top'],
-                    [5, 'bottom', 6, 'top'], [6, 'bottom', 7, 'top'],
-                    [7, 'right', 8, 'left'], [8, 'bottom', 5, 'left'],
-                    [7, 'bottom', 9, 'top'], [9, 'right', 10, 'left'], [10, 'bottom', 5, 'left'], [9, 'bottom', 5, 'left'],
-                    [5, 'right', 11, 'left'], [11, 'bottom', 12, 'top']
+                    [0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'], [2, 'bottom', 3, 'top'],
+                    [3, 'bottom', 4, 'top'], [4, 'bottom', 5, 'top'],
+                    [5, 'right', 6, 'left'], [6, 'left', 2, 'left'],
+                    [5, 'bottom', 2, 'left'],
+                    [2, 'right', 7, 'left'], [7, 'bottom', 8, 'top']
                 ]
             },
             5: {
@@ -1676,6 +1699,8 @@
                 simInputModal: document.getElementById('sim-input-modal'),
                 simInputField: document.getElementById('sim-input-field'),
                 simInputTitle: document.getElementById('sim-input-title'),
+                simInputError: document.getElementById('sim-input-error'),
+                editError: document.getElementById('edit-error'),
                 btnNextStep: document.getElementById('btn-next-step'),
                 simDecisionModal: document.getElementById('sim-decision-modal'),
                 simDecisionTitle: document.getElementById('sim-decision-title'),
@@ -3173,26 +3198,40 @@
                 });
 
                 this.dom.simInputField.addEventListener('keydown', e => { if (e.key === 'Enter') this.resolveInputPrompt(); });
+                this.dom.simInputField.addEventListener('input', () => {
+                    if (this.dom.simInputError && this.dom.simInputField.value.trim() !== '') this.dom.simInputError.style.display = 'none';
+                });
                 this.dom.editInput.addEventListener('keydown', e => { 
                     if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey) { 
                         e.preventDefault(); 
                         this.saveEdit(); 
                     } 
                 });
+                this.dom.editInput.addEventListener('input', () => {
+                    if (this.dom.editError && this.dom.editInput.value.trim() !== '') this.dom.editError.style.display = 'none';
+                });
             },
 
             currentEditId: null,
             openEdit(id) {
                 const b = this.blocks.find(x => x.id === id); if (!b) return;
-                this.currentEditId = id; this.dom.editInput.value = b.label; this.dom.editModal.classList.add('show');
+                this.currentEditId = id; this.dom.editInput.value = b.label;
+                if (this.dom.editError) this.dom.editError.style.display = 'none';
+                this.dom.editModal.classList.add('show');
                 setTimeout(() => this.dom.editInput.focus(), 50);
             },
             closeEdit() { this.dom.editModal.classList.remove('show'); this.currentEditId = null; },
             saveEdit() {
                 if (!this.currentEditId) return;
+                const text = this.dom.editInput.value.trim();
+                if (!text) {
+                    if (this.dom.editError) this.dom.editError.style.display = 'block';
+                    this.dom.editInput.focus();
+                    return;
+                }
                 const b = this.blocks.find(x => x.id === this.currentEditId);
                 if (b) { 
-                    b.label = this.dom.editInput.value.trim() || this.LABELS[b.type]; 
+                    b.label = text; 
                     this.renderBlock(b); 
                     
                     setTimeout(() => {
@@ -3424,13 +3463,23 @@
                 return new Promise(resolve => {
                     this.dom.simInputTitle.innerText = textLabel;
                     this.dom.simInputField.value = '';
+                    if (this.dom.simInputError) this.dom.simInputError.style.display = 'none';
                     this.dom.simInputModal.classList.add('show');
                     setTimeout(() => this.dom.simInputField.focus(), 50);
                     this.resolveInputFn = (val) => { this.dom.simInputModal.classList.remove('show'); resolve(val); };
                     signal.addEventListener('abort', () => { this.dom.simInputModal.classList.remove('show'); resolve(null); });
                 });
             },
-            resolveInputPrompt() { if (this.resolveInputFn) this.resolveInputFn(this.dom.simInputField.value); },
+            resolveInputPrompt() {
+                if (!this.resolveInputFn) return;
+                const val = this.dom.simInputField.value;
+                if (val.trim() === '') {
+                    if (this.dom.simInputError) this.dom.simInputError.style.display = 'block';
+                    this.dom.simInputField.focus();
+                    return;
+                }
+                this.resolveInputFn(val);
+            },
 
             displayOutputModal(text, signal, speed) {
                 return new Promise(resolve => {
@@ -3492,6 +3541,13 @@
                 this.dom.consolePanel.classList.add('open');
                 this.dom.canvasWrap.style.filter = ""; 
                 this.dom.canvas.style.filter = ""; 
+                
+                // Efekt při spuštění běhu: světelný scan přes plátno
+                const wrap = this.dom.canvasWrap;
+                wrap.classList.remove('sim-boot');
+                void wrap.offsetWidth;
+                wrap.classList.add('sim-boot');
+                setTimeout(() => wrap.classList.remove('sim-boot'), 750);
                 
                 setTimeout(() => this.fitToScreen(), 50);
 

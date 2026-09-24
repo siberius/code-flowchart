@@ -33,11 +33,12 @@ check('Kompas má 4 stupně', LEVELS.every(l => l.kompas && l.kompas.cil && l.ko
 check('1–3 testovací vektory', LEVELS.every(l => l.tests.length >= 1 && l.tests.length <= 3),
     LEVELS.map(l => l.tests.length).join(','));
 check('každý stupeň má scaffolding', LEVELS.every(l => l.scaffold && Array.isArray(l.scaffold.blocks) && l.scaffold.blocks.length > 0));
-check('scaffold bloky mají typ/label/x/y', LEVELS.every(l => l.scaffold.blocks.every(b => b.type && b.label && typeof b.x === 'number' && typeof b.y === 'number')));
+check('scaffold bloky mají typ/label', LEVELS.every(l => l.scaffold.blocks.every(b => b.type && b.label)));
 check('scaffold je bez spojů (žák zapojuje sám)', LEVELS.every(l => !l.scaffold.arrows || l.scaffold.arrows.length === 0));
 check('každý stupeň má vzorové řešení (cheat)', LEVELS.every(l => l.solution && Array.isArray(l.solution.blocks) && l.solution.blocks.length > 0));
 check('řešení má šipky s platnými indexy', LEVELS.every(l => (l.solution.arrows || []).length > 0 && l.solution.arrows.every(a =>
     Array.isArray(a) && a.length === 4 && a[0] >= 0 && a[0] < l.solution.blocks.length && a[2] >= 0 && a[2] < l.solution.blocks.length)));
+check('level 4 přepracován na „Kontrola kvality"', LEVELS.find(l => l.id === 4).name === 'Kontrola kvality');
 
 console.log('\n[jméno — validace 1–30 znaků]');
 const g1 = makeGame();

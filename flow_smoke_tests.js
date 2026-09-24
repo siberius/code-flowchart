@@ -202,5 +202,28 @@ App.cheatSolveStep();
 check('další stisk resetuje na prázdno', App.blocks.length === 0 && App.arrows.length === 0);
 check('cheatStep vynulován', App.cheatStep === 0);
 
+console.log('\n[validace prázdného vstupu]');
+App.switchWorkspace('space2');
+App.blocks = []; App.arrows = [];
+const eb = App.addBlockSilent('process', 'Původní', 0, 0);
+App.openEdit(eb.id);
+App.dom.editInput.value = '   ';
+App.saveEdit();
+check('prázdný text bloku se neuloží', App.blocks.find(x => x.id === eb.id).label === 'Původní');
+check('u editace se zobrazí chyba', App.dom.editError.style.display === 'block');
+App.dom.editInput.value = 'Nový text';
+App.saveEdit();
+check('platný text bloku se uloží', App.blocks.find(x => x.id === eb.id).label === 'Nový text');
+
+let inputResolved = false;
+App.resolveInputFn = () => { inputResolved = true; };
+App.dom.simInputField.value = '';
+App.resolveInputPrompt();
+check('prázdný vstup se neodešle', inputResolved === false);
+check('u vstupu se zobrazí chyba', App.dom.simInputError.style.display === 'block');
+App.dom.simInputField.value = '7';
+App.resolveInputPrompt();
+check('platný vstup se odešle', inputResolved === true);
+
 console.log(`\nVýsledek: ${pass} OK, ${fail} FAIL`);
 process.exit(fail === 0 ? 0 : 1);

@@ -57,6 +57,20 @@ eq('znak $ ve hodnotě', app.replaceVars('[{v}]'), '[a$&b]');
 app.visualRAM = { jmeno: '"Eda"' };
 eq('string z VSTUPu bez uvozovek', app.replaceVars('Díky {jmeno}!'), 'Díky Eda!');
 
+console.log('\n[literály v uvozovkách nejsou proměnné]');
+app.visualRAM = { ok: 2, stav: 'ok' };
+eq('replaceVars: literál "ok" zůstává', app.replaceVars('Stav: "ok" / {stav}'), 'Stav: "ok" / ok');
+app.visualRAM = { ok: 2 };
+app.parseVariable('x = 1');
+eq('parser: přiřazení do x', app.visualRAM.x, 1);
+app.visualRAM = { ok: 2 };
+app.parseVariable('s = "ok"');
+eq('parser: literál v uvozovkách se neexpanduje', app.visualRAM.s, 'ok');
+app.visualRAM = { ok: 2, stav: 'ok' };
+eq('podmínka se vyhodnotí správně', app.evalCondition('stav == "ok"', app.visualRAM), true);
+app.visualRAM = { ok: 0, stav: 'vadne' };
+eq('podmínka s jiným stavem', app.evalCondition('stav == "ok"', app.visualRAM), false);
+
 console.log('\n[tichá chyba výrazu]');
 app.visualRAM = {};
 app.logs = [];

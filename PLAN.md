@@ -10,7 +10,7 @@
 
 | Oblast | Volba |
 |---|---|
-| RVP cíl | **Gymnázium (RVP G „nová informatika") + SOŠ ostatní obory (ICT základ)** — minimum pro základní algoritmy |
+| RVP cíl | **Gymnázium (RVP G „nová informatika") + SOŠ neprogramátorské obory** (informatika jako součást oboru / digitální kompetence) — minimum pro základní algoritmy; NE specializace ICT (18-20-M/01) |
 | Věk / tón | 15–19, **Gen Z / casual**: max ~15 slov na obrazovku, ikony, humor, žádné „firemní" texty |
 | Struktura | **Otevřené stupně (levely)** + volný režim; bez odeMýkací řetězce |
 | Počet úrovní | **Minimum RVP — 6 otevřených stupňů** (ne 27) + volný režim (ukázka jablek) |
@@ -112,7 +112,7 @@ Všechny stupně jsou **otevřené** (žák si může hrát napřeskáčku). Ka�
   maxCasMin: 45,
   bloom: "aplikace",
   xp: { zaklad: 200, bonus_noHint: 0.2, bonus_efektivni: 0.1, bonus_prvniPokus: 0.15 },
-  rvp: ["G: použije podmíněný cyklus a větvení", "G: ověří správnost krokováním", "SOŠ-ICT: vstup → výstup"]
+  rvp: ["G: použije podmíněný cyklus a větvení", "G: ověří správnost krokováním", "SOŠ: vstup → výstup"]
 }
 ```
 
@@ -247,7 +247,7 @@ Všechny stupně jsou **otevřené** (žák si může hrát napřeskáčku). Ka�
 ## 9. Certifikát (SVG — odevzdávka po každém stupni)
 
 - Automaticky po splnění libovolného stupně (výrazněji u boss/stupně 6).
-- **Obsah:** logo · „CERTIFIKÁT OPERÁTORA" · název stupně · **jméno žáka** (z learning mode) · **datum + čas** dokončení · **XP a hvězdy** · **hodnost** · razítko „CodeFlowChart EDU • RVP G + ICT základ" · GPL footer. **Bez odznaků.**
+- **Obsah:** logo · „CERTIFIKÁT OPERÁTORA" · název stupně · **jméno žáka** (z learning mode) · **datum + čas** dokončení · **XP a hvězdy** · **hodnost** · razítko „CodeFlowChart EDU • RVP G + SOŠ" · GPL footer. **Bez odznaků.**
 - Generátor = nový SVG builder (stávající export schémat zůstává).
 - Šířka ~A4 na šířku, stahuje se „1 mířová" SVG; na tabletu i PC.
 
@@ -271,7 +271,7 @@ Konverze starých hlášek (jádro zachovat, zkrátit):
 
 ---
 
-## 11. Vztah k RVP G a SOŠ ICT (štítky → 6 stupňů)
+## 11. Vztah k RVP G a SOŠ (neprogramátorské obory) (štítky → 6 stupňů)
 
 | Dovednost | Stupeň | Štítek |
 |---|---|---|
@@ -288,8 +288,9 @@ Konverze starých hlášek (jádro zachovat, zkrátit):
 
 ### 11.1 RVP audit (2026-09-24) — pokrytí a mezery
 
-**Cíl:** RVP G (Informatika — algoritmizace a programování) + RVP SOŠ, obory
-s ICT základem (např. 18-20-M/01). NE cílení na maturitní 18-20-M/01 hloubku.
+**Cíl:** RVP G (Informatika — algoritmizace a programování) + RVP SOŠ
+**neprogramátorských oborů** (informatika jako součást oboru / digitální
+kompetence). NE cílení na specializaci ICT (18-20-M/01) ani maturitní hloubku.
 
 **Pokryto dobře (jádro RVP G):** algoritmus jako posloupnost kroků; vývojový
 diagram; proměnné + vstup/výstup; větvení; cykly (fixní `for` i podmíněný
@@ -302,15 +303,14 @@ diagramu; ověření a oprava; vlastní tvorba (SPACE 2–5 + ukázky).
 |---|---|---|
 | Logické hodnoty a složené podmínky (`&&`, `||`, `!`) | evaluátor umí, žák netrénuje | ukázka „Přestupný rok" / „Sudé a kladné" (F5+) |
 | Datové typy (číslo vs. text) | implicitně v úlohách | samostatná ukázka s textem/číslem |
-| Pole / seznamy | nepokryto (vektory jen jako testovací data) | rozšířený stupeň až F5/F6 (SOŠ ICT) |
-| Funkce s návratovou hodnotou | L5 volá podprogram, návrat jen minimálně | doplnit v F5 |
 | Ladění (debug) | Ladička plánovaná | F3 = „testuje a ladí" (RVP) |
 | Formativní sebehodnocení | jen hvězdy/XP | volitelně reflexe v certifikátu (F8) |
+| Pole / seznamy, funkce s návratem | nepokryto | **mimo cíl** (neprogramátorské obory); jen volitelně pro nadstavbu |
 
-**Závěr:** pro RVP G je pokrytí **dostatečné**; pro SOŠ ICT základ **téměř
-dostatečné** s mezerou u polí a funkcí s návratem (doplnit v F5/F6). Ukázky
-(`SAMPLES`) slouží jako „read + remix" příklady (Bloom: porozumění → aplikace),
-tvorba je na volných plochách (Bloom: tvorba).
+**Závěr:** pro RVP G i SOŠ neprogramátorské obory je pokrytí **dostatečné**
+(jádro algoritmizace bez specializačního programování). Ukázky (`SAMPLES`)
+slouží jako „read + remix" příklady (Bloom: porozumění → aplikace), tvorba je
+na volných plochách (Bloom: tvorba).
 
 ---
 

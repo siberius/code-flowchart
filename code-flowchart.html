@@ -1024,6 +1024,30 @@
         </div>
     </div>
 
+    <!-- F1: Obecné potvrzení (herní design místo window.confirm) -->
+    <div id="confirm-modal" class="modal-overlay" style="z-index: 720;">
+        <div class="modal-box">
+            <h3 id="confirm-title" style="color: var(--accent); text-shadow: 0 0 10px rgba(0,229,255,0.4);">Potvrzení</h3>
+            <p id="confirm-text" style="color: var(--text); font-size: 14px; margin-bottom: 6px;"></p>
+            <div class="btn-row">
+                <button id="confirm-yes" class="btn" onclick="App.confirmYes()" style="flex: 1; padding: 10px; font-size: 13px; background: rgba(0,229,255,0.05); color: var(--accent); border-color: var(--accent); box-shadow: inset 0 0 15px rgba(0,229,255,0.2);">ANO</button>
+                <button class="btn" onclick="App.closeConfirm()" style="flex: 1; padding: 10px; font-size: 13px; background: rgba(255,255,255,0.03); color: var(--text); border-color: var(--border);">Zrušit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- F1: Výsledek mise (hvězdy, XP, hodnost) -->
+    <div id="level-result-modal" class="modal-overlay" style="z-index: 720;">
+        <div class="modal-box" style="border-color: rgba(16,185,129,0.35);">
+            <h3 id="result-title" style="color: #10b981; text-shadow: 0 0 12px rgba(16,185,129,0.45);">Mise splněna!</h3>
+            <div id="result-stars" style="font-size: 42px; letter-spacing: 6px; color: var(--accent3); margin: 6px 0 2px; text-shadow: 0 0 18px rgba(245,158,11,0.5);">★★★</div>
+            <p id="result-body" style="color: var(--text); font-size: 14px; line-height: 1.7; margin-bottom: 4px;"></p>
+            <div class="btn-row">
+                <button class="btn" onclick="App.closeLevelResult()" style="flex: 1; padding: 10px; font-size: 13px; background: rgba(16,185,129,0.05); color: #10b981; border-color: #10b981; box-shadow: inset 0 0 15px rgba(16,185,129,0.2);">POKRAČOVAT ▶</button>
+            </div>
+        </div>
+    </div>
+
     <!-- F1: Detail mise (zadání levelu) -->
     <div id="level-modal" class="modal-overlay" style="z-index: 700;">
         <div class="modal-box wide" style="border-color: rgba(0,229,255,0.3);">
@@ -1238,6 +1262,7 @@
             {
                 id: 1, name: 'Průvodce skladem', type: 'sestav',
                 goal: 'Veronika nezná sklad. Slož jí cestičku: 3 kroky v pořadí.',
+                story: 'Řídíš proces ve skladu: seřaď kroky (brána → bedna → brána), než projede vozík.',
                 blocks: ['start', 'process', 'note', 'end'], xpBase: 100,
                 rvp: 'Zápis algoritmu vývojovým diagramem',
                 kompas: {
@@ -1251,6 +1276,7 @@
             {
                 id: 2, name: 'Pokladna', type: 'sestav',
                 goal: 'Načti cenu a kusy. Vypiš mezisoučet.',
+                story: 'Obsluhuješ pokladnu: z ceny a počtu kusů spočítáš mezisoučet a vypíšeš ho.',
                 blocks: ['start', 'io', 'process', 'note', 'end'], xpBase: 120,
                 rvp: 'Proměnné, vstup a výstup',
                 kompas: {
@@ -1268,6 +1294,7 @@
             {
                 id: 3, name: 'Vstupenka 15+', type: 'sestav+oprav',
                 goal: 'Načti věk. ANO=pusť, NE=vykašli se.',
+                story: 'Řídíš vstupenkový systém 15+: podmínkou pustíš nebo odmítneš návštěvníka.',
                 blocks: ['start', 'io', 'decision', 'process', 'note', 'end'], xpBase: 140,
                 rvp: 'Větvení (podmínka) + kontrola',
                 kompas: {
@@ -1285,6 +1312,7 @@
             {
                 id: 4, name: 'Kontrola kvality', type: 'sestav',
                 goal: 'Skenuj díly, dokud nemáš 2 dobré. Spočítej, kolik jsi jich prošel.',
+                story: 'Řídíš kontrolu kvality: skenuješ díly, dokud nemáš 2 dobré, a počítáš, kolik jsi jich prošel.',
                 blocks: ['start', 'io', 'process', 'decision', 'loop', 'note', 'end'], xpBase: 200,
                 rvp: 'Cykly (fixní i podmíněný)',
                 kompas: {
@@ -1302,6 +1330,7 @@
             {
                 id: 5, name: 'Volání opraváře', type: 'cti+sestav',
                 goal: 'Opravář je zavolán 3×. Zavolej ho správně.',
+                story: 'Voláš opraváře: místo ruční opravy použiješ podprogram (VOLÁNÍ) pro každý díl.',
                 blocks: ['start', 'process', 'call', 'note', 'end'], xpBase: 180,
                 rvp: 'Podprogram, dekompozice',
                 kompas: {
@@ -1318,6 +1347,7 @@
             {
                 id: 6, name: 'Záchrana serveru', type: 'oprav+vyber+tvorba',
                 goal: 'Server padá. Oprav smyčku, vyber čistší tok.',
+                story: 'Zachraňuješ server: najdeš chybu ve smyčce, opravíš ji a zvolíš čistší tok.',
                 blocks: ['start', 'io', 'process', 'decision', 'loop', 'call', 'note', 'end'], xpBase: 300,
                 rvp: 'Ověření, oprava, výběr, tvorba',
                 kompas: {
@@ -1501,6 +1531,7 @@
                     1: {
                         name: 'První stream',
                         goal: 'Nastartuj stream: kamera, mikrofon, live. Tři kroky v pořadí.',
+                        story: 'Zapojuješ streamovací studio: nastav kameru, mikrofon a spusť vysílání ve správném pořadí.',
                         kompas: {
                             cil: 'Chat čeká — uveď stream do vzduchu od STARTU do KONCE.',
                             hacek: 'Můžeš jít live, aniž bys zapl kameru?',
@@ -1514,6 +1545,7 @@
                     2: {
                         name: 'Donáty a subs',
                         goal: 'Načti cenu subu a počet subů. Vypiš výdělek.',
+                        story: 'Řídíš výdělek z donátů a subs: z ceny subu a počtu subů spočítáš, kolik stream vydělal.',
                         kompas: {
                             cil: 'Výdělek vzniká z dvojice čísel.',
                             hacek: 'Spočítá stream výdělek sám od sebe?',
@@ -1531,6 +1563,7 @@
                     3: {
                         name: 'Turnaj 15+',
                         goal: 'Načti věk. ANO=pusť do turnaje, NE=domů.',
+                        story: 'Řídíš vstup do turnaje 15+: podmínkou rozhodneš, kdo je Přihlášen a kdo Zamítnut.',
                         kompas: {
                             cil: 'Přesně 15 let je „dost" — kde to rozseknem?',
                             hacek: 'Co se stane, když je 15 přesně?',
@@ -1904,6 +1937,7 @@
                 if (!t) return;
                 lvl.name = t.name;
                 lvl.goal = t.goal;
+                lvl.story = t.story;
                 lvl.kompas = t.kompas;
                 lvl.tests = t.tests;
                 if (lvl.scaffold) lvl.scaffold.blocks.forEach((b, i) => { if (t.scaffold[i] != null) b.label = t.scaffold[i]; });
@@ -2013,6 +2047,9 @@
             visualRAM: {}, 
             lastSimStatus: 'untested', 
             internalClipboard: null,
+            levelHintUsed: false,
+            levelFailed: false,
+            pendingConfirm: null,
 
             LABELS: { start: 'START', end: 'END', process: 'Skóre += 1', decision: 'Je skóre > 10?', io: 'Zadej věk', loop: 'Pro každý prvek', call: 'Vykresli_Mapu()', note: 'Zde je poznámka k bloku...' },
 
@@ -2059,7 +2096,15 @@
                 levelModal: document.getElementById('level-modal'),
                 levelTitle: document.getElementById('level-title'),
                 levelBody: document.getElementById('level-body'),
-                levelKompas: document.getElementById('level-kompas')
+                levelKompas: document.getElementById('level-kompas'),
+                confirmModal: document.getElementById('confirm-modal'),
+                confirmTitle: document.getElementById('confirm-title'),
+                confirmText: document.getElementById('confirm-text'),
+                confirmYes: document.getElementById('confirm-yes'),
+                levelResultModal: document.getElementById('level-result-modal'),
+                resultTitle: document.getElementById('result-title'),
+                resultStars: document.getElementById('result-stars'),
+                resultBody: document.getElementById('result-body')
             },
 
             toggleMenu(e) {
@@ -2462,16 +2507,26 @@
                 let slot = this.activeWorkspace;
                 if (this.modeOf(slot) === 'campaign') slot = 'space2';
                 if (slot !== this.activeWorkspace) this.switchWorkspace(slot);
-                const ask = (typeof window !== 'undefined' && typeof window.confirm === 'function') ? window.confirm : () => true;
-                if (this.blocks.length > 1 && !ask('Plocha není prázdná. Přepsat ukázkou „' + s.name + '“?')) return;
-                this.buildSample(s);
-                this.applyPalette(this.currentPalette());
-                this.updateWorkspaceUI();
-                this.renderAll();
-                this.saveWorkspace(this.activeWorkspace);
-                this.pushHistory();
-                setTimeout(() => { this.renderArrows(); this.fitToScreen(); }, 50);
-                this.toast('Ukázka: ' + s.name);
+                const doLoad = () => {
+                    this.buildSample(s);
+                    this.applyPalette(this.currentPalette());
+                    this.updateWorkspaceUI();
+                    this.renderAll();
+                    this.saveWorkspace(this.activeWorkspace);
+                    this.pushHistory();
+                    setTimeout(() => { this.renderArrows(); this.fitToScreen(); }, 50);
+                    this.toast('Ukázka: ' + s.name);
+                };
+                if (this.blocks.length > 1) {
+                    this.openConfirm({
+                        title: 'Plocha není prázdná',
+                        text: 'Přepsat plochu ukázkou <strong>' + s.name + '</strong>?',
+                        confirmLabel: 'Přepsat',
+                        onConfirm: doLoad
+                    });
+                    return;
+                }
+                doLoad();
             },
             buildSample(s) {
                 this.blocks = []; this.arrows = []; this.nextId = 1;
@@ -2493,6 +2548,8 @@
                 if (!lvl) return;
                 if (!Game.playerName) { this.pendingLevel = id; this.openNameModal(); return; }
                 this.activeLevel = id;
+                this.levelHintUsed = false;
+                this.levelFailed = false;
                 this.switchWorkspace('lvl' + id);
                 this.openLevelModal(lvl);
                 this.closeMenu();
@@ -2529,6 +2586,7 @@
                 if (!this.dom.levelKompas) return;
                 const shown = this.dom.levelKompas.style.display !== 'none';
                 this.dom.levelKompas.style.display = shown ? 'none' : 'block';
+                if (!shown) this.levelHintUsed = true;
             },
             openNameModal() {
                 if (!this.dom.nameModal) return;
@@ -2566,6 +2624,55 @@
                 if (modal) modal.classList.remove('show');
                 this.updateGameUI();
                 this.toast('Vše vymazáno. Jméno se zeptá při vstupu do mise.', 3500);
+            },
+
+            // ==== Obecné potvrzení v herním designu (místo window.confirm) ====
+            openConfirm(opts = {}) {
+                if (!this.dom.confirmModal) { if (opts.onConfirm) opts.onConfirm(); return; }
+                this.pendingConfirm = opts.onConfirm || null;
+                if (this.dom.confirmTitle) this.dom.confirmTitle.textContent = opts.title || 'Potvrzení';
+                if (this.dom.confirmText) this.dom.confirmText.innerHTML = opts.text || '';
+                if (this.dom.confirmYes) this.dom.confirmYes.textContent = opts.confirmLabel || 'ANO';
+                this.dom.confirmModal.classList.add('show');
+            },
+            closeConfirm() {
+                if (this.dom.confirmModal) this.dom.confirmModal.classList.remove('show');
+                this.pendingConfirm = null;
+            },
+            confirmYes() {
+                const cb = this.pendingConfirm;
+                this.closeConfirm();
+                if (cb) cb();
+            },
+            closeLevelResult() {
+                if (this.dom.levelResultModal) this.dom.levelResultModal.classList.remove('show');
+            },
+            onLevelSuccess() {
+                if (!this.activeLevel) return;
+                const lvl = this.currentLevel();
+                if (!lvl) return;
+                const opts = {
+                    noHint: !this.levelHintUsed,
+                    firstTry: !this.levelFailed,
+                    efficient: lvl.solution ? (this.blocks.length <= lvl.solution.blocks.length) : false
+                };
+                const res = Game.completeLevel(this.activeLevel, opts);
+                this.updateGameUI();
+                if (res) this.showLevelResult(res);
+            },
+            showLevelResult(res) {
+                if (!this.dom.levelResultModal) return;
+                const filled = '★'.repeat(res.stars);
+                const empty = '☆'.repeat(3 - res.stars);
+                if (this.dom.resultTitle) this.dom.resultTitle.textContent = res.firstTime ? 'Mise splněna!' : 'Mise splněna znovu!';
+                if (this.dom.resultStars) this.dom.resultStars.textContent = filled + empty;
+                if (this.dom.resultBody) {
+                    this.dom.resultBody.innerHTML =
+                        '<strong>' + res.certificate.levelName + '</strong><br>' +
+                        'Získáno <strong>' + res.xp + ' XP</strong> · hodnost <strong>' + res.rank + '</strong><br>' +
+                        'Celkem <strong>' + Game.totalStars() + ' ★</strong> · ' + Game.xp + ' XP';
+                }
+                this.dom.levelResultModal.classList.add('show');
             },
 
             buildDefaultGameLoop() {
@@ -4164,11 +4271,13 @@
                     }
                     
                     if (this.lastSimStatus === 'error') {
+                        if (this.isCampaign()) this.levelFailed = true;
                         document.body.classList.add('glitch-shake');
                         setTimeout(() => document.body.classList.remove('glitch-shake'), 300);
                         AudioSys.playError();
                     } else if (this.lastSimStatus === 'success') {
                         AudioSys.playSuccess();
+                        if (this.isCampaign()) this.onLevelSuccess();
                     }
                     this.logConsole("--- Běh ukončen ---", "info");
                     

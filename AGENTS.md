@@ -89,7 +89,9 @@ Pro vzdělávací obsah navíc: `md-skills/vzdelavaci-metodiky.md` (RVP/ŠVP, CZ
     přehled importu (open/cancel, pendingImportSnapshot),
     UX: vstup do MISE přes jméno (MISE top + `pendingCampaign`), SVG ikony toolbaru bez emoji, validace vstupu číslo/text,
     start = SPACE 1 (obnova rozehraného levelu), expirace na PC (90 min nečinnosti, mobil nikdy), O autorovi/O programu/nápověda (zdroj HTML), MIT licence,
-    ukázky v samostatném modalu (Alt+S, mimo menu), paleta (Ctrl+K, spustitelná s hledáním), výsledkový modal: SVG řešení s OVĚŘENO/testy/jméno + POKRAČOVAT → další mise.
+    ukázky v samostatném modalu (Alt+S, mimo menu, mimo hamburger), paleta (Ctrl+K, spustitelná s hledáním,
+    20 příkazů = všechny zkratky kromě cheatu + Ctrl+Alt+H/I/A/J/O/W/M a Ctrl+Alt+1–5, plochy SPACE v jedné
+    položce s rozbalením), výsledkový modal: SVG řešení s OVĚŘENO/testy/jméno + POKRAČOVAT → další mise.
   - Sdílený `flow_test_utils.js` (načtení `App` + `Game` + `MISSIONS` + `SAMPLES` z inline `<script>` v Node).
   - **Dev cheat:** `Ctrl+Alt+C` s aktivním CapsLockem v MISE vyřeší aktuální
     level krok za krokem ze vzorového řešení (per-mise `solution` v `MISSIONS`); jen pro testování.

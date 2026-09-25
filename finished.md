@@ -2,6 +2,31 @@
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
+## 2026-09-25 — Paleta = přehled všech zkratek (bez cheatu), plochy souhrnně, menu bez odkazů na paletu/ukázky (nezakomitováno)
+
+- **Paleta a Ukázky pryč z hamburger menu** (žádné „openPalette"/„openSamples" odkazy v NÁSTROJE).
+- **Paleta (Ctrl+K) = plný přehled klávesových zkratek kromě cheatu** (20 příkazů), každý
+  proveditelný: Zpět `Ctrl+Z`, Znovu `Ctrl+Y/Ctrl+Shift+Z`, Vybrat vše `Ctrl+A`,
+  Smazat vybrané `Delete/Backspace`, Export SVG `Ctrl+S`, Paleta `Ctrl+K`, Ukázky `Alt+S`,
+  Zaměřit `F`, Střed `Mezerník`, Přiblížit `+/−`, Zavřít `Esc`, RESET (bez zkratky).
+- **Nové nekolizní zkratky rodiny `Ctrl+Alt+`** (bez konfliktů s prohlížečem v PWA):
+  Nápověda `Ctrl+Alt+H`, O programu `Ctrl+Alt+I`, O autorovi `Ctrl+Alt+A`,
+  Export JSON `Ctrl+Alt+J`, Import JSON `Ctrl+Alt+O`, Vymazat plochu `Ctrl+Alt+W`,
+  MISE `Ctrl+Alt+M`, SPACE 1–5 `Ctrl+Alt+1…5` (nelze `Ctrl+1…5` — přepíná karty prohlížeče;
+  `Ctrl+Alt+F1…` nejedou na čísla).
+- **Plochy v paletě jediná položka** „Plochy · Ctrl+Alt+1–5" (`keepOpen`), Enter ji rozbalí na
+  5 podpoložek + „‹ Zpět na přehled" (`paletteScope` main/spaces); plochy se v hlavním seznamu
+  nikdy nevykreslují každá zvlášť.
+- **Refaktoring klávesovnice pro testovatelnost:** vybrat vše → `selectAllBlocks()`,
+  střed → `centerView()`; nové větve keydown pro `Ctrl+Alt+*`.
+- **Nápověda:** sekce zkratek doplněna o `Ctrl+Alt+…` řadu a odkaz „vše v paletě Ctrl+K".
+- **Testy:** `flow_smoke_tests.js` → **182** (z 173): +9 (20 příkazů palety, souhrn zkratek
+  undo/redo/select/del/fit/zoom/esc/etc., plochy souhrnně – žádná položka `SPACE ` nahoře,
+  menu bez openPalette/openSamples, Ctrl+Alt v keydown, rozbalení Ploch → 6 řádků + open,
+  výběr SPACE 3, filtr export → 2).
+- **Ověření:** syntax OK · flow_tests 39 · flow_check 70 · flow_game 90 · flow_storage 55 ·
+  flow_ui 6 · flow_smoke 182 (celkem **442** kontrol, 0 FAIL).
+
 ## 2026-09-25 — Ukázky do modalu (Alt+S), paleta příkazů (Ctrl+K), RVP bez G, About +30 % šířky, POKRAČOVAT → další level (nezakomitováno)
 
 - **Ukázky mimo hamburger menu:** sekce UKÁZKY se z `#side-menu` odstranila; nový samostatný

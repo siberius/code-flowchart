@@ -878,9 +878,7 @@
     <div id="side-menu">
         <div class="menu-section-title">MISE</div>
         <div id="menu-missions"></div>
-        <div class="menu-section-title">NÁSTROJE</div>
-        <div class="side-menu-link" onclick="App.openPalette()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Paleta (Ctrl+K)</div>
-        <div class="side-menu-link" onclick="App.openSamples()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.2 2.6c-1 1.5-2 3.4-2.4 5.2-1.7 0-4.9 1.6-6.1 4.2C3 15 3.8 19 6.7 21c3 2 6.5.6 8.9-1.4 2.2-1.9 3.6-4.7 3.6-7.6 2.7-.8 4.4-2.6 4.8-4.3"./><path d="M9.5 15.5 14.5 9"/></svg> Ukázky (Alt+S)</div>
+<div class="menu-section-title">NÁSTROJE</div>
         <div class="side-menu-link" onclick="App.openHelp()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> Nápověda</div>
         <div class="side-menu-link" onclick="App.openAbout()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg> O programu</div>
         <div class="side-menu-link" onclick="App.openAuthor()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> O autorovi</div>
@@ -1208,6 +1206,8 @@
                         <div class="help-item"><strong>Ctrl + S</strong><br>Rychlý export do SVG</div>
                         <div class="help-item"><strong>Ctrl + K</strong><br>Paleta — spustitelné příkazy a seznam zkratek</div>
                         <div class="help-item"><strong>Alt + S</strong><br>Výběr ukázky</div>
+                        <div class="help-item"><strong>Ctrl + Alt + …</strong><br>H nápověda · I o programu · A o autorovi · J export JSON · O import · W vymazat plochu · M MISE · 1–5 plocha SPACE</div>
+                        <div class="help-item"><em>Všechny klávesové zkratky (i Práce s plátnem) najdeš přehledně v paletě <strong>Ctrl+K</strong>.</em></div>
                         <div class="help-item"><strong>Mezerník + tah</strong><br>Rychlý posun plátna</div>
                         <div class="help-item"><strong>F</strong><br>Vystředit a zacentrovat všechny bloky</div>
                     </div>
@@ -2879,26 +2879,48 @@
             paletteCommands() {
                 const getMax = x => document.getElementById(x);
                 return [
-                    { label: 'MISE — úlohy', hint: 'aktivní kontext', shortcut: '', run: () => this.selectWorkspace('campaign') },
-                    { label: 'SPACE 1 — jablka', hint: 'demo plocha', shortcut: '', run: () => this.selectWorkspace('space1') },
-                    { label: 'SPACE 2 — prázdná', hint: 'volná plocha', shortcut: '', run: () => this.selectWorkspace('space2') },
-                    { label: 'SPACE 3 — prázdná', hint: 'volná plocha', shortcut: '', run: () => this.selectWorkspace('space3') },
-                    { label: 'SPACE 4 — prázdná', hint: 'volná plocha', shortcut: '', run: () => this.selectWorkspace('space4') },
-                    { label: 'SPACE 5 — prázdná', hint: 'volná plocha', shortcut: '', run: () => this.selectWorkspace('space5') },
-                    { label: 'Export diagramu', hint: 'aktuální plátno', shortcut: 'Ctrl+S', run: () => this.promptSvgExport() },
-                    { label: 'Export postupu', hint: 'celý snímek JSON', shortcut: '', run: () => this.promptJsonExport() },
-                    { label: 'Import postupu', hint: 'načíst JSON z PC', shortcut: '', run: () => { const inp = getMax('json-upload'); if (inp) inp.click(); } },
-                    { label: 'Vymazat plochu', hint: 'potvrzené', shortcut: '', run: () => this.promptClearCanvas() },
-                    { label: 'Nápověda', hint: 'syntaxe, zkratky, ukládání', shortcut: '', run: () => this.openHelp() },
-                    { label: 'O programu', hint: 'SPA, licence MIT', shortcut: '', run: () => this.openAbout() },
-                    { label: 'O autorovi', hint: 'kontakt', shortcut: '', run: () => this.openAuthor() },
-                    { label: 'RESET', hint: 'celkové vymazání (potvrzené)', shortcut: '', run: () => this.promptReset() }
+                    { label: 'Zpět (Undo)', hint: 'vrátit poslední krok', shortcut: 'Ctrl+Z', run: () => this.undo() },
+                    { label: 'Znovu (Redo)', hint: 'obnovit krok zpět', shortcut: 'Ctrl+Y / Ctrl+Shift+Z', run: () => this.redo() },
+                    { label: 'Vybrat vše', hint: 'všechny bloky na plátně', shortcut: 'Ctrl+A', run: () => this.selectAllBlocks() },
+                    { label: 'Smazat vybrané', hint: 'bloky a šipky výběru', shortcut: 'Delete / Backspace', run: () => this.deleteSelected() },
+                    { label: 'Export diagramu', hint: 'SVG aktuálního plátna', shortcut: 'Ctrl+S', run: () => this.promptSvgExport() },
+                    { label: 'Export postupu', hint: 'celý snímek JSON', shortcut: 'Ctrl+Alt+J', run: () => this.promptJsonExport() },
+                    { label: 'Import postupu', hint: 'načíst JSON z PC', shortcut: 'Ctrl+Alt+O', run: () => { const inp = getMax('json-upload'); if (inp) inp.click(); } },
+                    { label: 'Vymazat plochu', hint: 'potvrzené smazání', shortcut: 'Ctrl+Alt+W', run: () => this.promptClearCanvas() },
+                    { label: 'Paleta', hint: 'tento seznam příkazů', shortcut: 'Ctrl+K', keepOpen: true, run: () => {} },
+                    { label: 'Ukázky', hint: 'hotové diagramy', shortcut: 'Alt+S', run: () => this.openSamples() },
+                    { label: 'Nápověda', hint: 'syntaxe, zkratky, uložení', shortcut: 'Ctrl+Alt+H', run: () => this.openHelp() },
+                    { label: 'O programu', hint: 'SPA, licence MIT', shortcut: 'Ctrl+Alt+I', run: () => this.openAbout() },
+                    { label: 'O autorovi', hint: 'kontakt', shortcut: 'Ctrl+Alt+A', run: () => this.openAuthor() },
+                    { label: 'MISE — úlohy', hint: 'aktivní kontext', shortcut: 'Ctrl+Alt+M', run: () => this.selectWorkspace('campaign') },
+                    { label: 'Plochy', hint: 'SPACE 1–5 → výběr plochy', shortcut: 'Ctrl+Alt+1–5', keepOpen: true, run: () => this.expandSpaces() },
+                    { label: 'Zaměřit diagram', hint: 'vše se vejde na plátno', shortcut: 'F', run: () => this.fitToScreen() },
+                    { label: 'Střed pohledu', hint: 'centrum / nula', shortcut: 'Mezerník', run: () => this.centerView() },
+                    { label: 'Přiblížit plátno', hint: 'oddálit: −', shortcut: '+ / −', run: () => this.zoom(1.1) },
+                    { label: 'Zavřít okno', hint: 'dialog / paleta', shortcut: 'Esc', run: () => {} },
+                    { label: 'RESET', hint: 'celkové vymazání (potvrzené)', shortcut: '—', run: () => this.promptReset() }
                 ];
+            },
+            // Plochy SPACE 1–5 — souhrnně skryté pod jednou položkou, rozbalí se až po výběru.
+            spaceCommands() {
+                return [
+                    { label: '‹ Zpět na přehled', hint: '', shortcut: '', keepOpen: true, run: () => { this.paletteScope = 'main'; this.renderPalette(''); } },
+                    { label: 'SPACE 1 — jablka', hint: 'demo plocha', shortcut: 'Ctrl+Alt+1', run: () => this.switchWorkspace('space1') },
+                    { label: 'SPACE 2 — prázdná', hint: 'volná plocha', shortcut: 'Ctrl+Alt+2', run: () => this.switchWorkspace('space2') },
+                    { label: 'SPACE 3 — prázdná', hint: 'volná plocha', shortcut: 'Ctrl+Alt+3', run: () => this.switchWorkspace('space3') },
+                    { label: 'SPACE 4 — prázdná', hint: 'volná plocha', shortcut: 'Ctrl+Alt+4', run: () => this.switchWorkspace('space4') },
+                    { label: 'SPACE 5 — prázdná', hint: 'volná plocha', shortcut: 'Ctrl+Alt+5', run: () => this.switchWorkspace('space5') }
+                ];
+            },
+            expandSpaces() {
+                this.paletteScope = 'spaces';
+                this.renderPalette(this.dom.paletteInput ? this.dom.paletteInput.value : '');
             },
             paletteIsOpen() { return !!(this.dom.paletteModal && this.dom.paletteModal.classList.contains('show')); },
             openPalette() {
                 if (!this.dom.paletteModal) return;
                 this.closeMenu();
+                this.paletteScope = 'main';
                 this.dom.paletteModal.classList.add('show');
                 this.renderPalette('');
                 if (this.dom.paletteInput) {
@@ -2911,7 +2933,8 @@
                 const list = this.dom.paletteList;
                 if (!list) return;
                 const q = String(filter || '').toLowerCase();
-                this.paletteItems = this.paletteCommands().filter(c =>
+                const source = this.paletteScope === 'spaces' ? this.spaceCommands() : this.paletteCommands();
+                this.paletteItems = source.filter(c =>
                     !q || (c.label + ' ' + c.hint + ' ' + c.shortcut).toLowerCase().indexOf(q) !== -1);
                 this.paletteIndex = 0;
                 list.innerHTML = '';
@@ -2944,7 +2967,7 @@
             paletteRun() {
                 const c = this.paletteItems && this.paletteItems[this.paletteIndex];
                 if (!c) return;
-                this.closePalette();
+                if (!c.keepOpen) this.closePalette();
                 c.run();
             },
             enterCampaignLevel(id) {
@@ -3320,6 +3343,15 @@
                 this.dom.canvas.style.transition = "transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)";
                 this.applyTransform();
                 setTimeout(() => { this.dom.canvas.style.transition = ""; }, 600);
+            },
+            centerView() {
+                this.vx = 0; this.vy = 0; this.vscale = 1; this.applyTransform();
+                this.toast("Střed pohledu");
+            },
+            selectAllBlocks() {
+                this.blocks.forEach(b => this.selectedBlocks.add(b.id));
+                this.updateSelectionDOM();
+                this.toast("Vybráno vše");
             },
 
             toast(msg, duration = 2500) {
@@ -4189,22 +4221,33 @@
                         e.preventDefault(); this.redo(); 
                     } else if (e.ctrlKey && e.key.toLowerCase() === 'a') {
                         e.preventDefault();
-                        this.blocks.forEach(b => this.selectedBlocks.add(b.id));
-                        this.updateSelectionDOM();
-                        this.toast("Vybráno vše");
+                        this.selectAllBlocks();
                     } else if (e.key.toLowerCase() === 'f' && !e.ctrlKey && !e.shiftKey) {
                         e.preventDefault();
                         this.fitToScreen();
                     } else if (e.key === ' ') {
                         e.preventDefault();
-                        this.vx = 0; this.vy = 0; this.vscale = 1; this.applyTransform();
-                        this.toast("Střed pohledu");
+                        this.centerView();
                     } else if (e.key === '+' || e.key === '=') {
                         e.preventDefault();
                         this.zoom(1.1);
                     } else if (e.key === '-' || e.key === '_') {
                         e.preventDefault();
                         this.zoom(0.9);
+                    } else if (e.ctrlKey && e.altKey) {
+                        const k = e.key.toLowerCase();
+                        if (k === 'h') { e.preventDefault(); this.openHelp(); }
+                        else if (k === 'i') { e.preventDefault(); this.openAbout(); }
+                        else if (k === 'a') { e.preventDefault(); this.openAuthor(); }
+                        else if (k === 'j') { e.preventDefault(); this.promptJsonExport(); }
+                        else if (k === 'o') { e.preventDefault(); const inp = document.getElementById('json-upload'); if (inp) inp.click(); }
+                        else if (k === 'w') { e.preventDefault(); this.promptClearCanvas(); }
+                        else if (k === 'm') { e.preventDefault(); this.selectWorkspace('campaign'); }
+                        else if (k === '1') { e.preventDefault(); this.switchWorkspace('space1'); }
+                        else if (k === '2') { e.preventDefault(); this.switchWorkspace('space2'); }
+                        else if (k === '3') { e.preventDefault(); this.switchWorkspace('space3'); }
+                        else if (k === '4') { e.preventDefault(); this.switchWorkspace('space4'); }
+                        else if (k === '5') { e.preventDefault(); this.switchWorkspace('space5'); }
                     }
                 });
 

@@ -8,8 +8,9 @@ formou (cyberpunková linka „Operátor déčku"). Řídící dokument přestav
 ## Nadřazená pravidla — POVINNÉ ČTENÍ
 Žádná pravidla v tomto souboru NEJSOU náhradou za nadřazené dokumenty.
 Před jakýmkoliv rozhodováním nebo první úpravou přečti:
-1. `/home/lu/Dokumenty/aicoding/MASTER-AGENTS.md` — centrální dashboard
-   (mapa projektů, seznam hlavních MD souborů, globální pravidla).
+1. `/home/lu/Dokumenty/aicoding/MASTER-AGENTS.md` — pracovní jádro aicoding
+   (hranice, provedení, kontext/routování, git/verifikace/dokončení).
+   Mapa projektů a operace: `governance/PROJECT-MAP.md` a `governance/PROJECT-OPERATIONS.md`.
 2. `/home/lu/Dokumenty/aicoding/governance/REFLECT-AUDIT.md` — procesní audit,
    kterým se řídíme od 2026-09-06 (mód „reflect-audit").
 Obsah nadřazených souborů je závazný a přebíjí tento soubor; při konfliktu
@@ -77,5 +78,5 @@ Pro vzdělávací obsah navíc: `md-skills/vzdelavaci-metodiky.md` (RVP/ŠVP, CZ
     level krok za krokem ze vzorového řešení (`SOLUTIONS`); jen pro testování.
   - Plánováno (F7/F9): plný browser matrix 1440/1024/390/320 px, `prefers-reduced-motion`,
     self-test všech 6 stupňů (až vzniknou).
-- Po každé změně ověřit přiměřeně riziku (MASTER §17); dokončené úkoly eviduj
-  v `finished.md` (formát dle MASTER §14).
+- Po každé změně ověřit přiměřeně riziku (MASTER „Git, verification and completion");
+  dokončené úkoly eviduj v `finished.md` (formát dle MASTER completion + `governance/PROJECT-OPERATIONS.md` changelog).

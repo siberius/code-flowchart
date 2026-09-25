@@ -305,6 +305,7 @@ check('zdroj: 12 ukázek včetně předmětů s poznámkami',
     (html.match(/id: '(hello|circle|sum|fizzbuzz|calculator|pythagoras|interest|wage|fuel|waste|bmi|scale)'/g) || []).length === 12 &&
     html.includes("type: 'note'", undefined) && /op == \"soucet\"/.test(html));
 check('zdroj: ukázky z předmětů používají Math.sqrt / Math.round', /Math\.sqrt\(a\)/.test(html) && /Math\.round\(hruba/.test(html));
+check('zdroj: svod — víc šipek do jednoho portu vykresleno s rozkrokem (fan)', /const fanCount = into\[k\]/.test(html) && /\(fanIdx - \(fanCount - 1\) \/ 2\) \* 14/.test(html) && /SVOD:/.test(html));
 
 console.log('\n[paleta Ctrl+K — spustitelná, s hledáním, souhrnné zkratky]');
 const haveShortcut = k => App.paletteCommands().some(c => c.shortcut.indexOf(k) !== -1);

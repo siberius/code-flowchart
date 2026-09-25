@@ -63,6 +63,13 @@ check('ukázky napříč předměty: kalkulačka, √, úrok, odpad, BMI',
     SAMPLES.some(s => s.id === 'waste') && SAMPLES.some(s => s.id === 'bmi') &&
     SAMPLES.filter(s => !['hello','circle','sum','fizzbuzz'].includes(s.id))
         .every(s => s.blocks.some(b => b.type === 'note')));
+check('svod: Kalkulačka, Třídění a BMI mají JEDEN KONEC (mnoho cest → jeden konec)', 
+    SAMPLES.filter(s => ['calculator','waste','bmi'].includes(s.id))
+        .every(s => s.blocks.filter(b => b.type === 'end').length === 1));
+check('svod: do jednoho KONCE vede u Kalkulačky 7 a u Třídění/BMI 5/4 šipek',
+    SAMPLES.find(s => s.id === 'calculator').arrows.filter(a => a[2] === SAMPLES.find(x => x.id === 'calculator').blocks.length - 1).length === 7 &&
+    SAMPLES.find(s => s.id === 'waste').arrows.filter(a => a[2] === SAMPLES.find(x => x.id === 'waste').blocks.length - 1).length === 5 &&
+    SAMPLES.find(s => s.id === 'bmi').arrows.filter(a => a[2] === SAMPLES.find(x => x.id === 'bmi').blocks.length - 1).length === 4);
 
 console.log('\n[jméno — dobrovolné, 0–30 znaků (prázdné → null)]');
 const g1 = makeGame();

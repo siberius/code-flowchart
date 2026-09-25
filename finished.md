@@ -2,6 +2,31 @@
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
+## 2026-09-25 — Svod: víc cest → jeden KONEC (fan-out, ukázky s jedním koncem) (nezakomitováno)
+
+- **Systémově osvětleno a schváleno (rozhodnutí zadavatele):** konců může být více (pro
+  předčasné ukončení), ale výchozí vzor = **jeden KONEC, do kterého se sbíhá mnoho cest**.
+  Jádro to dataově podporovalo už dříve (seznam `arrows` nemá unikátní index); chybělo
+  jen vykreslení a vzor pro ukázky.
+- **Motor — svod (fan-out):** `renderArrows` spočítá příchozí šipky na cíl+port
+  (`into`/`used`) a `getPortPos(blockId, portName, fanIdx, fanCount)` rozloží konce po hraně
+  portu (`(fanIdx − (fanCount−1)/2) · 14 px`); šipky se poslední chvíli rozejdou a nekryjí.
+  Jediná změna je vizuální — běh, krokování i AUTO-kontrola sdílené beze změny.
+- **Ukázky přepsány na jediný KONEC (+ poznámka SVOD):**
+  - **Kalkulačka** — 27 bloků, 7 cest (6 větví + neznámý operátor) → jeden KONEC vpravo
+    dole (x 880, y 1960) přes horní port (fan 7).
+  - **Třídění odpadu** — 15 bloků, 5 cest (4 kontejnery + neznámý) → KONEC (880, 1060);
+    „neznámý" přesunut do sloupce větví (460, 850).
+  - **BMI** — 15 bloků, 4 cesty (podváha/norma/nadváha/obezita) → KONEC (780, 1100);
+    „obezita" vlevo dole (0, 1050).
+  - Ostatní ukázky (README-style SD prstem…) — beze změny, končí rovnou do KONCE.
+- **Testy:** +3 v `flow_game_tests` (jediný `end` u calculator/waste/bmi; počet šipek
+  do koncového bloku 7/5/4; keep stávající `blocks[last] === end`), **+1** v
+  `flow_smoke_tests` (fan výpočet v `renderArrows` + poznámka SVOD v zdroji). Opraven
+  indexový přešlap (SVOD note posunul `end` na index 26 → šipky na 26).
+- **Ověření:** syntax OK · flow_tests 39 · flow_check 70 · flow_game 93 · flow_storage 55 ·
+  flow_ui 6 · flow_smoke 214 (celkem **477** kontrol, 0 FAIL).
+
 ## 2026-09-25 — KONEC u větvených ukázek vyhozen do vlastního sloupce (nezakomitováno)
 
 - **Kalkulačka, Třídění odpadu a BMI:** bloky `KONEC` už nevisí pod výstupem ve stejném

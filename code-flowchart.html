@@ -2070,46 +2070,41 @@
                     { type: 'note', label: 'KALKULAČKA:\nZadáme číslo a, operátor (text)\na číslo b (pro ÷ a mocninu).\n√ používá jen číslo a.', x: -440, y: -160 },
                     { type: 'decision', label: 'op == "soucet"', yesPort: 'right', noPort: 'bottom', x: 0, y: 160 },
                     { type: 'process', label: 'vysledek = a + b', x: 560, y: 160 },
-                    { type: 'io', label: 'Výsledek: {vysledek}', ioType: 'output', x: 560, y: 340 },
-                    { type: 'end', label: 'Konec', x: 880, y: 340 },
-                    { type: 'decision', label: 'op == "rozdil"', yesPort: 'right', noPort: 'bottom', x: 0, y: 400 },
-                    { type: 'process', label: 'vysledek = a - b', x: 560, y: 400 },
-                    { type: 'io', label: 'Výsledek: {vysledek}', ioType: 'output', x: 560, y: 580 },
-                    { type: 'end', label: 'Konec', x: 880, y: 580 },
-                    { type: 'note', label: 'VĚTVENÍ:\nPodmínka op == "…" pustí\njen tu správnou větev,\nostatní se přeskočí.', x: -440, y: 520 },
-                    { type: 'decision', label: 'op == "soucin"', yesPort: 'right', noPort: 'bottom', x: 0, y: 640 },
-                    { type: 'process', label: 'vysledek = a * b', x: 560, y: 640 },
-                    { type: 'io', label: 'Výsledek: {vysledek}', ioType: 'output', x: 560, y: 820 },
-                    { type: 'end', label: 'Konec', x: 880, y: 820 },
-                    { type: 'decision', label: 'op == "podil"', yesPort: 'right', noPort: 'bottom', x: 0, y: 880 },
-                    { type: 'process', label: 'vysledek = a / b', x: 560, y: 880 },
-                    { type: 'io', label: 'Výsledek: {vysledek}', ioType: 'output', x: 560, y: 1060 },
-                    { type: 'end', label: 'Konec', x: 880, y: 1060 },
-                    { type: 'decision', label: 'op == "mocnina"', yesPort: 'right', noPort: 'bottom', x: 0, y: 1120 },
-                    { type: 'process', label: 'vysledek = a ** b', x: 560, y: 1120 },
-                    { type: 'io', label: 'Výsledek: {vysledek}', ioType: 'output', x: 560, y: 1300 },
-                    { type: 'end', label: 'Konec', x: 880, y: 1300 },
-                    { type: 'decision', label: 'op == "odmocnina"', yesPort: 'right', noPort: 'bottom', x: 0, y: 1360 },
-                    { type: 'note', label: 'ODMOCNINA:\n√(a² + b²) i √(a) jde přes\nMath.sqrt(a) — nepotřebuje b.', x: -440, y: 1360 },
-                    { type: 'process', label: 'vysledek = Math.sqrt(a)', x: 560, y: 1360 },
-                    { type: 'io', label: 'Výsledek: {vysledek}', ioType: 'output', x: 560, y: 1540 },
-                    { type: 'end', label: 'Konec', x: 880, y: 1540 },
-                    { type: 'end', label: 'Konec (neznámý operátor)', x: 0, y: 1660 }
+                    { type: 'io', label: 'Výsledek: {vysledek}', ioType: 'output', x: 560, y: 330 },
+                    { type: 'decision', label: 'op == "rozdil"', yesPort: 'right', noPort: 'bottom', x: 0, y: 440 },
+                    { type: 'process', label: 'vysledek = a - b', x: 560, y: 440 },
+                    { type: 'io', label: 'Výsledek: {vysledek}', ioType: 'output', x: 560, y: 610 },
+                    { type: 'note', label: 'VĚTVENÍ:\nPodmínka op == "…" pustí\njen tu správnou větev,\nostatní se přeskočí.', x: -440, y: 440 },
+                    { type: 'decision', label: 'op == "soucin"', yesPort: 'right', noPort: 'bottom', x: 0, y: 720 },
+                    { type: 'process', label: 'vysledek = a * b', x: 560, y: 720 },
+                    { type: 'io', label: 'Výsledek: {vysledek}', ioType: 'output', x: 560, y: 890 },
+                    { type: 'decision', label: 'op == "podil"', yesPort: 'right', noPort: 'bottom', x: 0, y: 1000 },
+                    { type: 'process', label: 'vysledek = a / b', x: 560, y: 1000 },
+                    { type: 'io', label: 'Výsledek: {vysledek}', ioType: 'output', x: 560, y: 1170 },
+                    { type: 'decision', label: 'op == "mocnina"', yesPort: 'right', noPort: 'bottom', x: 0, y: 1280 },
+                    { type: 'process', label: 'vysledek = a ** b', x: 560, y: 1280 },
+                    { type: 'io', label: 'Výsledek: {vysledek}', ioType: 'output', x: 560, y: 1450 },
+                    { type: 'decision', label: 'op == "odmocnina"', yesPort: 'right', noPort: 'bottom', x: 0, y: 1560 },
+                    { type: 'note', label: 'ODMOCNINA:\n√(a² + b²) i √(a) jde přes\nMath.sqrt(a) — nepotřebuje b.', x: -440, y: 1560 },
+                    { type: 'process', label: 'vysledek = Math.sqrt(a)', x: 560, y: 1560 },
+                    { type: 'io', label: 'Výsledek: {vysledek}', ioType: 'output', x: 560, y: 1730 },
+                    { type: 'note', label: 'SVOD:\nVšechny větve a i neznámý\noperátor končí v jednom\nkolečku KONEC.', x: 1090, y: 1960 },
+                    { type: 'end', label: 'Konec', x: 880, y: 1960 }
                 ],
                 arrows: [
                     [0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'], [2, 'bottom', 3, 'top'], [3, 'bottom', 5, 'top'],
-                    [5, 'right', 6, 'left'], [6, 'bottom', 7, 'top'], [7, 'right', 8, 'left'],
-                    [5, 'bottom', 9, 'top'],
-                    [9, 'right', 10, 'left'], [10, 'bottom', 11, 'top'], [11, 'right', 12, 'left'],
-                    [9, 'bottom', 14, 'top'],
-                    [14, 'right', 15, 'left'], [15, 'bottom', 16, 'top'], [16, 'right', 17, 'left'],
-                    [14, 'bottom', 18, 'top'],
-                    [18, 'right', 19, 'left'], [19, 'bottom', 20, 'top'], [20, 'right', 21, 'left'],
-                    [18, 'bottom', 22, 'top'],
-                    [22, 'right', 23, 'left'], [23, 'bottom', 24, 'top'], [24, 'right', 25, 'left'],
-                    [22, 'bottom', 26, 'top'],
-                    [26, 'right', 28, 'left'], [28, 'bottom', 29, 'top'], [29, 'right', 30, 'left'],
-                    [26, 'bottom', 31, 'top']
+                    [5, 'right', 6, 'left'], [6, 'bottom', 7, 'top'], [7, 'right', 26, 'top'],
+                    [5, 'bottom', 8, 'top'],
+                    [8, 'right', 9, 'left'], [9, 'bottom', 10, 'top'], [10, 'right', 26, 'top'],
+                    [8, 'bottom', 12, 'top'],
+                    [12, 'right', 13, 'left'], [13, 'bottom', 14, 'top'], [14, 'right', 26, 'top'],
+                    [12, 'bottom', 15, 'top'],
+                    [15, 'right', 16, 'left'], [16, 'bottom', 17, 'top'], [17, 'right', 26, 'top'],
+                    [15, 'bottom', 18, 'top'],
+                    [18, 'right', 19, 'left'], [19, 'bottom', 20, 'top'], [20, 'right', 26, 'top'],
+                    [18, 'bottom', 21, 'top'],
+                    [21, 'right', 23, 'left'], [23, 'bottom', 24, 'top'], [24, 'right', 26, 'top'],
+                    [21, 'bottom', 26, 'top']
                 ]
             },
             {
@@ -2187,27 +2182,24 @@
                     { type: 'note', label: 'TŘÍDĚNÍ:\nDo které popelnice materiál\npatří? Jeden směr = jedna\nVĚTEV podmínky.', x: -460, y: -330 },
                     { type: 'decision', label: 'material == "plast"', yesPort: 'right', noPort: 'bottom', x: 0, y: -110 },
                     { type: 'io', label: 'Plast → žlutý kontejner', ioType: 'output', x: 460, y: -110 },
-                    { type: 'end', label: 'Konec', x: 780, y: -110 },
                     { type: 'decision', label: 'material == "papir"', yesPort: 'right', noPort: 'bottom', x: 0, y: 130 },
                     { type: 'io', label: 'Papír → modrý kontejner', ioType: 'output', x: 460, y: 130 },
-                    { type: 'end', label: 'Konec', x: 780, y: 130 },
-                    { type: 'note', label: 'KASKÁDA PODMÍNEK:\nSrovnáváme postupně,\ndokud není materiál vhodný\n(nebo neznámý).', x: -460, y: 500 },
                     { type: 'decision', label: 'material == "sklo"', yesPort: 'right', noPort: 'bottom', x: 0, y: 370 },
                     { type: 'io', label: 'Sklo → zelený kontejner', ioType: 'output', x: 460, y: 370 },
-                    { type: 'end', label: 'Konec', x: 780, y: 370 },
+                    { type: 'note', label: 'KASKÁDA PODMÍNEK:\nSrovnáváme postupně,\ndokud není materiál vhodný\n(nebo neznámý).', x: -460, y: 500 },
                     { type: 'decision', label: 'material == "bio"', yesPort: 'right', noPort: 'bottom', x: 0, y: 610 },
                     { type: 'io', label: 'Bio → hnědý kontejner', ioType: 'output', x: 460, y: 610 },
-                    { type: 'end', label: 'Konec', x: 780, y: 610 },
-                    { type: 'io', label: 'Neznámý materiál: {material}', ioType: 'output', x: 0, y: 850 },
-                    { type: 'end', label: 'Konec', x: 0, y: 1010 }
+                    { type: 'io', label: 'Neznámý materiál: {material}', ioType: 'output', x: 460, y: 850 },
+                    { type: 'note', label: 'SVOD:\nVšechny materiály (i neznámý)\nskončí v jednom KONCI.', x: 980, y: 1060 },
+                    { type: 'end', label: 'Konec', x: 880, y: 1060 }
                 ],
                 arrows: [
                     [0, 'bottom', 1, 'top'], [1, 'bottom', 3, 'top'],
-                    [3, 'right', 4, 'left'], [4, 'right', 5, 'left'], [3, 'bottom', 6, 'top'],
-                    [6, 'right', 7, 'left'], [7, 'right', 8, 'left'], [6, 'bottom', 10, 'top'],
-                    [10, 'right', 11, 'left'], [11, 'right', 12, 'left'], [10, 'bottom', 13, 'top'],
-                    [13, 'right', 14, 'left'], [14, 'right', 15, 'left'], [13, 'bottom', 16, 'top'],
-                    [16, 'bottom', 17, 'top']
+                    [3, 'right', 4, 'left'], [4, 'right', 14, 'top'], [3, 'bottom', 5, 'top'],
+                    [5, 'right', 6, 'left'], [6, 'right', 14, 'top'], [5, 'bottom', 7, 'top'],
+                    [7, 'right', 8, 'left'], [8, 'right', 14, 'top'], [7, 'bottom', 10, 'top'],
+                    [10, 'right', 11, 'left'], [11, 'right', 14, 'top'], [10, 'bottom', 12, 'top'],
+                    [12, 'right', 14, 'top']
                 ]
             },
             {
@@ -2220,23 +2212,21 @@
                     { type: 'process', label: 'bmi = Math.round(vaha / (vyska * vyska) * 10) / 10', x: 0, y: 80 },
                     { type: 'decision', label: 'bmi < 18.5', yesPort: 'right', noPort: 'bottom', x: 0, y: 270 },
                     { type: 'io', label: 'Podváha (BMI {bmi})', ioType: 'output', x: 440, y: 270 },
-                    { type: 'end', label: 'Konec', x: 760, y: 270 },
                     { type: 'decision', label: 'bmi <= 25', yesPort: 'right', noPort: 'bottom', x: 0, y: 530 },
                     { type: 'io', label: 'Norma (BMI {bmi})', ioType: 'output', x: 440, y: 530 },
-                    { type: 'end', label: 'Konec', x: 760, y: 530 },
                     { type: 'note', label: 'ROZSAHY (orientačně):\npod 18,5 podváha · 18,5–25\nnorma · 25–30 nadváha ·\nnad 30 obezita.', x: -460, y: 560 },
                     { type: 'decision', label: 'bmi <= 30', yesPort: 'right', noPort: 'bottom', x: 0, y: 790 },
                     { type: 'io', label: 'Nadváha (BMI {bmi})', ioType: 'output', x: 440, y: 790 },
-                    { type: 'end', label: 'Konec', x: 760, y: 790 },
                     { type: 'io', label: 'Obezita (BMI {bmi})', ioType: 'output', x: 0, y: 1050 },
-                    { type: 'end', label: 'Konec', x: 0, y: 1210 }
+                    { type: 'note', label: 'SVOD:\nPodváha, norma, nadváha\ni obezita — vše končí\nv jednom KONCI.', x: 900, y: 1100 },
+                    { type: 'end', label: 'Konec', x: 780, y: 1100 }
                 ],
                 arrows: [
                     [0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'], [2, 'bottom', 4, 'top'],
-                    [4, 'bottom', 5, 'top'], [5, 'right', 6, 'left'], [6, 'right', 7, 'left'],
-                    [5, 'bottom', 8, 'top'], [8, 'right', 9, 'left'], [9, 'right', 10, 'left'],
-                    [8, 'bottom', 12, 'top'], [12, 'right', 13, 'left'], [13, 'right', 14, 'left'],
-                    [12, 'bottom', 15, 'top'], [15, 'bottom', 16, 'top']
+                    [4, 'bottom', 5, 'top'], [5, 'right', 6, 'left'], [6, 'right', 14, 'top'],
+                    [5, 'bottom', 7, 'top'], [7, 'right', 8, 'left'], [8, 'right', 14, 'top'],
+                    [7, 'bottom', 10, 'top'], [10, 'right', 11, 'left'], [11, 'right', 14, 'top'],
+                    [10, 'bottom', 12, 'top'], [12, 'right', 14, 'top']
                 ]
             },
             {
@@ -3823,13 +3813,15 @@
                 this.renderArrows();
             },
 
-            getPortPos(blockId, portName) {
+            getPortPos(blockId, portName, fanIdx = 0, fanCount = 1) {
                 const b = this.blocks.find(x => x.id === blockId);
                 const el = document.getElementById(blockId);
                 if (!b || !el) return null;
                 const w = el.offsetWidth > 0 ? el.offsetWidth : 200;
                 const h = el.offsetHeight > 0 ? el.offsetHeight : 80;
-                const map = { top: { x: b.x + w/2, y: b.y }, bottom: { x: b.x + w/2, y: b.y + h }, left: { x: b.x, y: b.y + h/2 }, right: { x: b.x + w, y: b.y + h/2 } };
+                let f = 0;
+                if (fanCount > 1) f = (fanIdx - (fanCount - 1) / 2) * 14;
+                const map = { top: { x: b.x + w/2 + f, y: b.y }, bottom: { x: b.x + w/2 + f, y: b.y + h }, left: { x: b.x, y: b.y + h/2 + f }, right: { x: b.x + w, y: b.y + h/2 + f } };
                 return map[portName] || map['bottom'];
             },
 
@@ -3892,9 +3884,18 @@
                 const existing = this.dom.arrowsSvg.querySelectorAll('.arrow-line, .arrow-hit');
                 existing.forEach(e => e.remove());
 
+                const into = {};
+                this.arrows.forEach(a => { const k = a.to + '|' + a.toPort; into[k] = (into[k] || 0) + 1; });
+                const used = {};
+
                 this.arrows.forEach(a => {
+                    const k = a.to + '|' + a.toPort;
+                    const fanCount = into[k];
+                    const fanIdx = used[k] || 0;
+                    used[k] = fanIdx + 1;
+
                     const from = this.getPortPos(a.from, a.fromPort);
-                    const to = this.getPortPos(a.to, a.toPort);
+                    const to = this.getPortPos(a.to, a.toPort, fanIdx, fanCount);
                     if (!from || !to) return;
 
                     const pathStr = this.getArrowPathStr(from, to, a.fromPort, a.toPort);

@@ -2,6 +2,15 @@
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
+## 2026-09-25 — Šedý text v modalech a menu zesvětlen o 20 % (nezakomitováno)
+
+- **`--text-dim` `#64748b` → `#8390a2`** (o 20 % světlejší směrem k bílé). Pokrývá menu
+  (odkazy, položky misí), modaly (O programu, nápověda, paleta, ukázky, export) i orientační
+  texty konzole/labelů — tmavý podklad, lepší čitelnost.
+- **Testy:** `flow_smoke_tests.js` → **210** (z 209): +1 (`--text-dim: #8390a2`, stará hodnota pryč).
+- **Ověření:** syntax OK · flow_tests 39 · flow_check 70 · flow_game 90 · flow_storage 55 ·
+  flow_ui 6 · flow_smoke 210 (celkem **471** kontrol, 0 FAIL).
+
 ## 2026-09-25 — Sklo průhlednější, nápověda zdůrazňuje Ctrl+K (nezakomitováno)
 
 - **Nápověda:** položka `Ctrl+K` přeformulována a zvýrazněna —

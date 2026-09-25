@@ -1,29 +1,31 @@
-# Plán přestavby: CodeFlowChart EDU → CodeFlowChart „Operátor déčku" (v2)
+# Plán přestavby: CodeFlowChart EDU → CodeFlowChart HEFAISTOS (v2.2)
 
-> **Verze plánu:** 2.1 (2026-09-24) · **Status:** obsah §16 čeká na revizi; implementace po schválení
+> **Verze plánu:** 2.2 (2026-09-24) · **Status:** integrováno se zadáním učebních oborů (H/E_J); implementace po schválení
 > **Rozsah:** analýza + návrh přestavby (kód hry se NEMĚNÍ, dokud plán neschválíš)
 > **Metodika:** REFLECT-AUDIT (evidence → hypotéza → návrh → schválení) + `vzdelavaci-metodiky.md` + TACHI best-practice pro revizi funkčnosti (evidence-driven testy, single-file SPA)
+> **V2.2:** požadavky 24. 9. 2026 pro učební obory H (8 misí) a podpůrnou cestu E/J (6 misí) byly
+> sloučeny do §0, §1–§3, §7–§16 (původní samostatný `code-flowchart-zadani-ucebni-obory.md` byl integrován).
 
 ---
 
 ## 0. Rozhodnutí ze zadání (schválená východiska)
 
 | Oblast | Volba |
-|---|---|
-| RVP cíl | **Gymnázium (RVP G „nová informatika") + SOŠ neprogramátorské obory** (informatika jako součást oboru / digitální kompetence) — minimum pro základní algoritmy; NE specializace ICT (18-20-M/01) |
-| Věk / tón | 15–19, **Gen Z / casual**: max ~15 slov na obrazovku, ikony, humor, žádné „firemní" texty |
-| Struktura | **Otevřené stupně (levely)** + volný režim; bez odeMýkací řetězce |
-| Počet úrovní | **Minimum RVP — 6 otevřených stupňů** (ne 27) + volný režim (ukázka jablek) |
-| Časový limit levelu | Žák po zaučení **vždy zvládne level ≤ 45 min** (levely 5–10 bloků, 2–3 testy) |
-| Hraní / režimy | **Otevřené levely**; **po 3 hodinách aktivní hry se aplikace sama resetuje** (s odpočtem a varováním) |
-| Learning mode | **Vyžaduje jméno žáka** (uloží se 1× na zařízení, povinné 1–30 znaků); certifikát s jménem, datem, časem, XP a hodností po každém stupni |
-| Data (tablet/mobil i PC) | Pokrok v `localStorage` = „cache prohlížeče do vymazání"; **červené tlačítko RESET na všech zařízeních** (potvrzené modálem) pro kompletní výmaz kdykoli |
-| Auto-reset 3 h | **Vymaže vše včetně jména** — po 03:00 čistý start, žák se znovu představí |
-| Samostatnost žáka | **Kompas 4 stupně** (Cíl → Háček → Vzor → Postup) + **Ladička** (sókratické otázky); vzor až po 2 pokusech |
-| Motivace | **Pouze pozitivní** — žádné penalizace (nápověda nic nestojí); jen XP bonusy za samostatnost a efektivitu |
-| Hodnocení | **XP + hodnost + hvězdy + certifikát (SVG) po každém stupni** — certifikát = odevzdávka; **bez odznaků** |
-| Simulace | **Oba režimy**: ruční „žák = procesor" (ANO/NE) **i** automatická kontrola (skrytý test vstupů) |
-| Vizuál | Vyladit cyberpunk: **zachovat identitu i efekty**, zlepšit kontrast, čitelnost, cílové plochy, `prefers-reduced-motion` |
+|---|---|---|
+| RVP cíl | **Pouze učební obory H (8 misí) + podpůrná cesta E/J (6 misí)** (RVP SOV H příloha 2b, E/J příloha 1b); **gymnázia a maturitní odborné obory NEJSOU cílem** |
+| Věk / tón | 15–19, přirozená čeština, lehký humor, **bez povinného generačního slangu** a zesměšňování chyb |
+| Struktura | **8 misí H (m01–m08) + 6 misí E/J + volné SPACE**; otevřené, každá mise = jedna vyučovací hodina |
+| Počet úrovní | **H: 8 misí; E/J: 6 navazujících misí (1–6, bez mezer, interní ID stabilní)** |
+| Časový limit levelu | Žák po zaučení **vždy zvládne level ≤ 45 min** (5–8 aktivních bloků, 2–3 testy) |
+| Hraní / režimy | **Otevřené mise**; pokrok mezi hodinami se zachovává (místní úložiště + JSON), žádný destruktivní auto-reset |
+| Learning mode | **Jméno dobrovolné** (`null` v exportu neblokuje); export JSON úplný, po splnění mise nabídnut |
+| Data (tablet/mobil i PC) | Pokrok v `localStorage` = „cache prohlížeče do vymazání"; **restart mise (potvrzený)** pouze pro aktuální misi/profil, třída zůstává |
+| Auto-reset 3 h | **Nahrazeno**: pokrok misí se uchovává pro příští hodinu (§8.3); nedestruktivní režim |
+| Samostatnost žáka | **Kompas 4 stupně** + **Ladička** (sókratické otázky); po neúspěšných pokusech **smí žák dostat názornou ukázku** — ÚKOL se neblokuje pravidlem „nikdy neprozradit řešení" (§4, §6) |
+| Motivace | **Pouze pozitivní** — žádné penalizace (nápověda nic nestojí); značky **Zprovozněno → Ověřeno → Upraveno** |
+| Hodnocení | **Certifikát fakultativní**, váže se na **doložené** dokončení (nenásobí se odměnami); značky dle §10 |
+| Simulace | **Jeden vykonávací model**: animovaný běh = krokování = automatické testy (stejné sémantiky); ruční „žák = procesor" zůstává výchozí pro krokování |
+| Vizuál | Estetika **servisní lodi HEFAISTOS** (vesmírná, omezené rušivé efekty; zvuk a zbytečné animace vypnutelné, `prefers-reduced-motion`) |
 | Platforma | **Tablet + PC** responzivní; porty přístupné bez hoveru |
 | Technika | **Jeden HTML soubor**, žádný build (GPL, SPA) |
 | Revize funkčnosti | **TACHI-style F0**: evidence-driven audit algoritmů/procesů + testovací sada (viz §12) |
@@ -32,119 +34,148 @@
 
 ## 1. Vize a herní smyčka
 
-### 1.1 Story (krátká, meme, sci-fi)
-> „Jsi **operátor CodeFlowChart déčku 7** — přístroj, který protlačuje data továrnou. Továrna stávkuje.
-> Napiš jí čistý algoritmus a dostaneš **certifikát směny**. Déčko se po 3 hodinách přepne do šumu — staň do té doby."
+### 1.1 Story (krátká, sci-fi, HEFAISTOS)
+> **Servisní loď HEFAISTOS** — po elektromagnetické bouři je nutné obnovit řídicí postupy
+> dílny, výroby a zásobování. Žák je **palubní technik / strojník**, průvodcem robot **ŠROUB**.
 
-- Story vrstva NIkdy nesmí zahltit — 1 motto ve spodním pruhu, hlášky v Ladičce/nápovědě, ne v úkolech.
+- Příběh uvádět nejvýše **několika krátkými větami**; nevyžadovat čtení dlouhého lore.
+- Přirozená čeština, **lehký humor**, bez povinného generačního slangu a zesměšňování chyb.
+- CNC a 3D tiskárna = **zjednodušené fiktivní simulace**, nikoli návody k obsluze reálného zařízení.
+- Po splnění mise se příslušné **zařízení na lodi viditelně obnoví**.
+- Příklad tónu: „Náhradní držák máme. Tedy… jeho obrázek. Tiskárna čeká na tvůj postup."
 
 ### 1.2 Core loop (adiktivní `one-more-try`, čistě pozitivní)
 
 ```
-CÍL (1 věta, ≤ 15 slov) → SESTAV diagram (5–10 bloků) → SPUSTIT / OVĚŘIT
-  ├─ PASS → XP + bonusy + CERTIFIKÁT ↓ + „DALŠÍ STUPEŇ →" (open)
-  └─ FAIL → „Test 2: čekal jsem 8, máš 5." → Ladička 🐞 / Kompas ? (zdarma) → SPUSTIT ZNOVU ▶
+CÍL (1 věta, ≤ 15 slov) → SESTAV diagram → SPUSTIT / KROKOVAT / OVĚŘIT
+  ├─ PASS → Značka „Zprovozněno" → „Ověřeno" → certifikát (fakultativně) → „DALŠÍ MISE →"
+  └─ FAIL → „Test 2: čekal jsem 20 g, máš 100 g." → Ladička 🐞 / Kompas ? (zdarma) → SPUSTIT ZNOVU ▶
 ```
 
 - FAIL je výzva k opakování, **nikdy trest**. Nápověda nikdy nestojí XP — jen nesbíráš bonus „samostatné řešení".
+- Po neúspěšných pokusech **smí žák dostat názornou ukázku**; pravidlo „nikdy neprozradit řešení" se neaplikuje jako tvrdá blokáda (§4).
 
 ### 1.3 Co se NEMAŽE (zadání „nic neubrat bez důvodu")
 
 | Funkce | Opatření |
-|---|---|
+|---|---|---|
 | Editor (bloky, tahání, šipky, snap 14 px, kolize) | beze změny |
-| simulace + token + krokování + breakpointy + rychlost | zachovat; vyladit (§7) |
+| simulace + token + krokování + breakpointy + rychlost | zachovat; sjednotit sémantiku s AUTO testy (§5, §9) |
 | Visual RAM + terminal/konzole | zachovat; RAM zvýrazňuje změny, protokol zkrácen (§7, §10) |
-| Undo/redo, marquee, kopírovat/vložit (i Word/PPT), export JSON/SVG, WIPE | zachovat → přesun do „Profi/Učitel" (§7.9) |
-| Audio (click/error/success/data-scan) | zachovat + level-up jingle, odznakový sting |
-| Cyber-spark, glitch, neon, glass | zachovat; glitch pod `prefers-reduced-motion` |
-| Výchozí hra „Sbírání jablek" | zachována ve **volném režimu (SPACE 1 = jablka demo)**; stupeň 4 byl na žádost zadavatele přepracován na „Kontrola kvality" (§16.4) |
-| 3 pracovní plochy | reinterpretace: MISE + SPACE 1 (jablka) + SPACE 2–5 (prázdné) (§7.9) |
+| Undo/redo, marquee, kopírovat/vložit (i Word/PPT), export JSON/SVG, WIPE | zachovat → do Profi/Učitel (§7.9) |
+| Audio (click/error/success/data-scan) | zachovat + vypínač zvuků (§3) |
+| Cyber-spark, glitch, neon, glass | zachovat v odlehčené podobě; rušivé efekty vypnutelné; glitch pod `prefers-reduced-motion` |
+| Výchozí hra „Sbírání jablek" | zachována ve **volném režimu (SPACE 1 = jablka demo)** |
+| Pracovní plochy | reinterpretace: MISE + SPACE 1 (jablka) + SPACE 2–5 (prázdné) (§7.9) |
+| Export JSON celého stavu | nová specifikace §8: úplný snapshot všech misí + všech SPACE |
 
 ---
 
 ## 2. Dvouvrstvá architektura (uvnitř jednoho HTML)
 
 **Vrstva 1 — Studio (`App`):** editor + simulace + linter + export (dnešní kód).
-**Vrstva 2 — Hra (`Game`):** learning mode, jméno, stupně, XP/hodnost/odznaky, certifikáty, Kompas, Ladička, auto-kontrola, session hodiny (3 h).
+**Vrstva 2 — Hra (`Game`):** learning mode, jméno (nepovinné), mise, značky/odměny, certifikáty, Kompas, Ladička, session hodiny.
+
+> **V2.2:** dvouvrstvá architektura zůstává; místo „stupňů" modelujeme **profily a mise** (§12):
+> `profileId` (`H` / `E_J`) × `missionId` (`m01`–`m08`). Přidává se centrální stav mise:
+> `openMission`, `openAssignment`, `initializeMission`, `restartMission`, `saveProgress`,
+> `exportProgress`, `importProgress` — oddělené operace, `openAssignment` nikdy nezapisuje
+> výchozí bloky ani neresetuje pokus (§7.9, §12).
 
 Datové klíče `blockflow_v2_player` / `blockflow_v2_progress` a `blockflow_v3_ws_*` (plochy) v `localStorage` (migrace z `v1_1` bezeztrátová). Žádný server, žádný tracking.
 
 ```
-Game        – stav hráče, jméno, XP, hodnost, odznaky, stav stupňů, session hodiny
-Data        – 6 stupňů (mission objects) + RVP štítky + jablka demo
-Checker     – auto-kontrola: evaluátor podmínek + tester vstupů/výstupů
-Compass     – 4-stupňové nápovědy (zdarma, čistě pozitivní)
-Laddicka    – sókratický debug asistent po FAIL
-Cert        – certifikát SVG (jméno, datum, čas, XP, hodnost)
-Session     – odpočet 3 h, varování, auto-reset, červené RESET
-StudioBridge– napojení na App (sim, konzole, export)
+Game          – stav hráče, jméno (nepovinné), značky/XP, hodnost, stav misí, session hodiny
+Data          – profily H / E_J + mise m01–m08 (mission objects, testy, scaffolding) + jablka demo
+MissionState  – openMission / openAssignment / initializeMission / restartMission / saveProgress / exportProgress / importProgress
+Checker       – auto-kontrola: evaluátor podmínek + tester událostí a výsledků (jeden engine jako simulace)
+Compass       – 4-stupňové nápovědy (zdarma, čistě pozitivní)
+Laddicka      – sókratický debug asistent po FAIL
+Cert          – certifikát SVG (jméno, datum, čas) — fakultativní, k doloženému dokončení
+Session       – sledování času na misi (≤ 45 min), nedestruktivní přepínání, bez auto-resetu
+StudioBridge  – napojení na App (sim, konzole, export)
 ```
 
 ---
 
-## 3. Nutné minimum RVP — 6 otevřených stupňů
+## 3. Nutné minimum RVP — profily H / E_J
 
-Všechny stupně jsou **otevřené** (žák si může hrát napřeskáčku). Každý stupeň je navržen na **≤ 45 min po zaučení**: 5–10 bloků, 2–3 testovací vektory, 1 řádek cíle, Kompas vždy po ruce.
+Mise jsou **otevřené** (žák může pracovat napřeskáčku, mise se nemusí odemykat řetězcem).
+Každá mise je navržena na **1 vyučovací hodinu (≤ 45 min po zaučení)**: 5–8 aktivních bloků,
+2–3 testovací vektory, 1 řádek cíle, Kompas vždy po ruce.
 
-| Stupeň | Název (Gen-Z) | Učivo | Bloky | Typ | Bloom | RVP štítek |
-|---|---|---|---|---|---|---|
-| **1** | „Průvodce skladem" | SEKvence, START/AKCE/KONEC, pořadí kroků | start, process, end, note | sestav | aplikace | zápis algoritmu diagramem |
-| **2** | „Pokladna" | Proměnná, VSTUP a VÝSTUP dat | start, io, process, end | sestav | aplikace | data, vstup/výstup |
-| **3** | „Vstupenka 15+" | Větvení PODMÍNKA (ANO/NE) + oprava | start, io, decision, process, end | sestav + oprav | aplikace→analýza | větvení, kontrola |
-| **4** | „Kontrola kvality" | Podmíněný cyklus SMYČKA + počítadla | start, io, process, decision, loop, note, end | sestav | aplikace→analýza | cyklus, větvení |
-| **5** | „Volání opraváře" | Podprogram VOLÁNÍ + dekompozice | start, process, call, end | cti + sestav | porozumění→aplikace | podprogram, dekompozice |
-| **6** | „Záchrana serveru" | Boss: kombinace všeho + oprava + výběr efektivnější varianty | všechny | oprav + vyber + tvorba | analýza→hodnocení→tvorba | ověření, oprava, výběr |
+| ID | Mise (HEFAISTOS) | Princip | H | E/J |
+|---|---|---|---|---|
+| **m01** | Probuď dílnu | Posloupnost, čtení a vysvětlení postupu | Ano | Ano |
+| **m02** | CNC odmítá pracovat | Větvení | Ano | Ano |
+| **m03** | Vytiskni náhradní držák | Vstup, výpočet, výstup | Ano | S oporou |
+| **m04** | Vyrob sadu spojek | Opakování podle počtu | Ano | Ano |
+| **m05** | Tři dobré kusy | Podmíněný cyklus a počítání | Ano | — (vynechat) |
+| **m06** | Skladový robot zabloudil | Ladění a výběr testu | Ano | Ano |
+| **m07** | Urychli výrobní linku | Porovnání a optimalizace | Ano | — (vynechat) |
+| **m08** | Vlastní servisní zakázka | Samostatná tvorba a předání | Ano | Menší rozsah |
 
-**Detail stupně (schéma + příklad — každý stupeň se plní stejně autorsky):**
+- V E/J se zobrazují **šest navazujících levelů 1–6 bez mezer**; interní ID zůstávají stabilní.
+- Profil se před žákem **neoznačuje jako horší**; přepnutí profilu nesmí přepsat práci jiného profilu.
+
+**Detail mise (schéma + příklad — každá mise se plní stejně autorsky):**
 
 ```js
 {
-  id: "s4_kvalita",
-  nazev: "Kontrola kvality",
-  cil: "Skenuj díly, dokud nemáš 2 dobré. Spočítej, kolik jsi jich prošel.",   // ≤ 15 slov
+  id: "m04_sady_spojek",
+  profileId: "H",                       // nebo "E_J"
+  nazev: "Vyrob sadu spojek",
+  cil: "Vyrob 4 spojky cyklem OPAKUJ.", // ≤ 15 slov
   typ: "sestav",
-  bloky: ["start","io","process","decision","loop","note","end"],
-  skaffold: { rozestavené: [start, ok=0/sken=0, smyčka ok<2, vstup stav, sken++, podmínka, ok++, výstup, konec, poznámka] }, // ZPD
-  testy: [ { vstupy: { stavy: ["vadne","ok","ok"] }, vystup: "Dobré díly: 2 z 3." }, ... ],  // 2–3 vektory
-  kompas: { cil:1v, hack:1v, vzor:1v, postup:≤1řádek+odkaz }, // zdarma
+  bloky: ["start","io","process","loop","end"],
+  skaffold: { /* rozestavené kartičky, nepropojené; v E/J částečně propojený základ */ },
+  testy: [ { vstupy: {...}, vystup: "4 spojky" }, ... ],  // 2–3 vektory; ověřují skutečné události
+  kompas: { cil:1v, hack:1v, vzor:1v, postup:≤1řádek+odkaz }, // zdarma; ukázka po neúspěchu povolena
   refReseni: {...},
   maxCasMin: 45,
   bloom: "aplikace",
-  xp: { zaklad: 200, bonus_noHint: 0.2, bonus_efektivni: 0.1, bonus_prvniPokus: 0.15 },
-  rvp: ["G: použije podmíněný cyklus a větvení", "G: ověří správnost krokováním", "SOŠ: vstup → výstup"]
+  opory: "E_J: výběry hodnot/operátorů, větší vizuální opora, méně textové syntaxe",
+  rvp: ["H: zápis algoritmu diagramem", "H: větvení a cykly", "E/J: vstup → výstup"]
 }
 ```
 
-> **Obsah stupňů:** kompletní specifikace všech 6 stupňů je v **§16** (zadání, scaffolding, testv vektory, Kompas, vzor, XP). Stupeň 4 (§16.4) je vzorový příklad podmíněného cyklu.
+> **Obsah misí:** kompletní specifikace m01–m08 vč. variant E/J je v **§16**. Stupeň s podmíněným
+> cyklem a počítadly odpovídá v novém členění mísi **m05 „Tři dobré kusy"** (viz §16.5).
 
 ---
 
-## 4. Vzorová specifikace stupně: „Kontrola kvality" (stupeň 4)
+## 4. Vzorová mise: „Vyrob sadu spojek" (m04)
 
-**Přepracováno na žádost zadavatele** (původní „Sběrač jablek 2.0" byl příliš podobný volnému demu s jablky a málo zajímavý). Nově jde o **podmíněný cyklus s počítadlem a zastavovací podmínkou**. Kompletní specifikace je v **§16.4**. Volný režim (SPACE 1) si ukázku jablek zachovává.
+Vzor je přepracovanou specifikací bývalého stupně „Kontrola kvality" — nyní v podobě m04 (opakování)
+a m05 (podmíněný cyklus s počítadly). Kompletní specifikace všech misí je v **§16**. Volný režim
+(SPACE 1) si ukázku jablek zachovává.
 
-- **Cíl:** „Skenuj díly, dokud nemáš 2 dobré. Spočítej, kolik jsi jich prošel."
-- **Povolené bloky:** start, io, process, decision, loop, note, end.
-- **Scaffolding:** START + AKCE `ok = 0`, `sken = 0` + SMYČKA `ok < 2` + VSTUP `stav` + AKCE `sken++` + PODMÍNKA `stav == "ok"` + AKCE `ok++` + VÝSTUP + KONEC + POZNÁMKA (nepropojené, rozhozené).
-- **Testy (auto-kontrola):**
+- **Cíl:** „Vyrob 4 spojky. Zkopírovaný příkaz nahraď cyklem OPAKUJ."
+- **Povolené bloky:** start, io, process, loop, note, end.
+- **Scaffolding:** START + AKCE + SMYČKA `OPAKUJ 4×` s jasně ohraničeným tělem + jedna výrobní operace uvnitř + VÝSTUP + KONEC + POZNÁMKA (nepropojené, rozhozené; v E/J částečně propojený základ).
+- **Testy (auto-kontrola — ověřuje skutečné provedení výrobních operací, ne jen text):**
   ```
-  Vektor A: stavy=[vadne, ok, ok]          → "Dobré díly: 2 z 3."
-  Vektor B: stavy=[ok, ok]                 → "Dobré díly: 2 z 2."
-  Vektor C: stavy=[vadne, vadne, ok, ok]   → "Dobré díly: 2 z 4."
+  H:   počet = 4  → vzniknou právě 4 spojky
+  H:   počet = 0  → 0 spojek (žádný průchod)
+  H:   počet = 6  → 6 spojek (malá změna) — a osvědčuje opakovatelnost
+  E/J: OPAKUJ 4×, počet přímo v kartičce
   ```
-- **Kompas (zdarma, 4 stupně, max 40 slov):** Cíl („Potřebuješ 2 dobré díly — smyčka se točí, dokud je nemáš.") → Háček („Kolikrát se smyčka opakuje? Záleží to na vstupech?") → Vzor („Smyčka ok<2 → vstup stav → sken++ → když stav==ok, ok++") → Postup („Skenuj každý díl, počítej dobré a skonči, až jich máš 2.").
-- **XP:** základ 200; **bonusové** (jen pozitivní): bez nápovědy +20 %, první pokus +15 %, efektivní (počítadlo místo ručního vypisování) +10 %. Nápověda nic nestojí.
+- **Kompas (zdarma, 4 stupně, max 40 slov):** Cíl („Potřebuješ 4 spojky — cyklus je dělá za tebe.") → Háček („Kolikrát by ses opakoval ručně?") → Vzor („Zkopírované příkazy nahraď jedním OPAKUJ 4×") → Postup („Vlož výrobní operaci do těla cyklu.").
+- **Motivace:** značky **Zprovozněno → Ověřeno → Upraveno**; žádné penalizace, nápověda nic nestojí, ukázka po neúspěchu povolena.
 
 ---
 
-## 5. Auto-kontrola (Checker) — jádro ověření (RVP „ověří správnost")
+## 5. Auto-kontrola (Checker) — jádro ověření
 
-1. **Evaluátor podmínek:** rozšířit `parseVariable` o vyhodnocení booleovských výrazů podmínek (`krok < 3`, `barva == pamatovana`). `=` vs `==` → Linter varuje (zůstává).
+1. **Evaluátor podmínek:** rozšířit `parseVariable` o vyhodnocení booleovských výrazů podmínek (`krok < 3`, `krytZavren == true`). `=` vs `==` → Linter varuje (zůstává).
 2. **Režim AUTO:** „OVĚŘIT" spustí diagram automaticky — podmínky se řeší samy, VSTUP z testovacího vektoru, VÝSTUP se zachytí.
-3. **Tester:** porovná zachycené výstupy s očekávanými per vektor; první neshoda → konkrétní zpráva („Test 2: čekal jsem …, máš …").
-4. **Slepé uličky / smyčky:** okamžitá červená značka na bloku.
+3. **Tester ověřuje skutečné události a výsledky zpracování**, nejen shodu textu: schod dosahuje konce, připojení nutných větví, provedení cyklu N×, platnost vstupů; první neshoda → konkrétní zpráva („Test 2: čekal jsem 20 g, máš 100 g.").
+4. **Jeden vykonávací model** pro animovaný běh, krokování i automatické testy (stejné sémantiky, poznámky nemění výsledek). Slepé uličky / smyčky: okamžitá červená značka na bloku + **limit běhu** chránící aplikaci.
 5. **Ruční „žák = procesor" zůstává výchozí** pro krokování (učební režim); OVĚŘIT je vždy k dispozici.
+6. **Více správných algoritmů:** hodnocení přijímá ekvivalentní řešení; případné omezení konstrukce je v zadání (např. „Použij opakování").
+7. **VOLÁNÍ do povinné cesty učebních oborů nezařazujeme**; symbolická simulace se neprezentuje jako skutečný podprogram (zůstává jen ve volných plochách).
+8. **Efektivita = vykonané operace na datech** (m07), nikoli počet bloků; poznámky nejsou operace.
+9. **Po editaci** se aktuální ověření zneplatní (značka „Upraveno"); historický dosažený pokrok zůstává odděleně.
 
 ---
 
@@ -152,18 +183,19 @@ Všechny stupně jsou **otevřené** (žák si může hrát napřeskáčku). Ka�
 
 ### 6.1 Kompas (4 stupně, zdarma)
 - „?" v misi; stupeň 1 vždy; další po (a) dalším FAILu nebo (b) 45 s bez pokroku.
-- Stupeň 4 zobrazí vzorové řešení — **jinak se vzor odemkne po 2 pokusech + kompasu ≥ 2** (poslední záchrana, učitel nezasahuje).
-- Nápovědy se mezi stupni „odbourávají" (scaffolding fading).
+- Stupeň 4 zobrazí vzorové/řešení nebo názornou ukázku — **po neúspěšných pokusech žák smí ukázku dostat**; tvrdé pravidlo „nikdy neprozradit řešení" se nepoužívá jako blokáda (§4).
+- Nápovědy se mezi misemi „odbourávají" (scaffolding fading). Nápovědy lze připravit předem podle typických chyb.
 
 ### 6.2 Ladička (po FAIL, sókratické otázky — Paul & Elder, vtipná)
 1. „Který blok podle tebe vyrobil špatný výstup?" → žák kliká na blok.
 2. „A co by ten blok měl udělat?"
 3. „Co by se stalo, kdyby se otevřel 2×?"
-- Po 2 špatných tipech zúží na 2 kandidáty — **nikdy neřekne řešení**. Žák sám objeví rozpor (elenchus).
+- Po 2 špatných tipech zúží na 2 kandidáty — **vede k samostatnému objevení rozporu**; po neúspěchu smí nabídnout názornou ukázku.
 
 ### 6.3 Pravidla
-- Vzorové řešení i nápovědy jsou zdarma; **XP bonusy jsou jediná motivace k samostatnosti** (pozitivní, žádný odečet).
-- Učitel zasahuje jen kosmeticky; záznamem je certifikát.
+- Vzorové řešení i nápovědy jsou zdarma; **značky a odměny jsou jediná motivace k samostatnosti** (pozitivní, žádný odečet).
+- Učitel zasahuje jen kosmeticky; záznamem je značka „Ověřeno" (a případně certifikát).
+- Metody dle `vzdelavaci-metodiky.md`: postupné ubírání podpory, Bloomova gradace (odhadni → spusť → vysvětli → oprav → uprav), naváděcí otázky (nejprve k chybě, poté místo, pak krok), učení z chyby (vstup, očekávaný vs skutečný výsledek), přenos a opakování, formativní hodnocení, krátké vzájemné ověření.
 
 ---
 
@@ -197,72 +229,89 @@ Všechny stupně jsou **otevřené** (žák si může hrát napřeskáčku). Ka�
 ### 7.8 Výstupní modál
 - Manuální „Zavřít (Enter)" + minimální držení.
 
-### 7.9 Režimy a pracovní plochy
+### 7.9 Režimy a pracovní plochy (mise + SPACE)
 - **Přepínač ploch v horní liště:** `MISE · SPACE 1 · SPACE 2 · SPACE 3 · SPACE 4 · SPACE 5`.
   Aktivní plocha je zvýrazněná; klik přepne plochu (každá má vlastní stav).
-- **MISE** (dříve „KAMPAŇ", interně `campaign`) — learning mode: 6 stupňů, jméno
-  povinné, XP/certifikáty, 3h hodiny. Každý level má **vlastní plochu** (`lvl1…lvl6`)
-  → návrat k misi zachová rozdělanou práci.
-- **Jméno:** modál se ptá **až při prvním kliknutí na level v menu** (ne při startu
-  ani při přepnutí na MISE); po zadání už se neptá (až do RESETu).
-- **SPACE 1** — **jablka demo** + volný editor (bez jména, bez hodin).
-- **SPACE 2–5** — prázdné plochy pro vlastní tvorbu (sloty `space2…space5`).
-- **Mise** zůstávají v hamburger menu (MISE) — přepínač režimů už v menu není.
-- **Vstup do mise:** klik na level → načte se **scaffolding** — moduly **NEpropojené**
-  a **rozhozené po ploše** (zamíchané pozice v řídké 2D mřížce + jitter, ne pod sebou),
-  aby pozice nenapovídaly řešení; spojení si žák vytváří sám + omezená paleta →
-  **level modal** s podrobným zadáním (Typ, Cíl, „Co máš udělat", povolené bloky,
-  ověření) + Kompas.
-- **Klíče ploch (v3):** `blockflow_v3_ws_<slot>`, aktivní `blockflow_v3_active_ws`.
-  Starší klíče se nenačítají (migrace = F4) — po změně scaffoldu se tak načte čistý stav.
-- **Export/import (JSON):** jediná dvojice `⭳ EXPORT` / `⭱ IMPORT` uloží/načte
-  **všechny plochy** (`{app:'blockflow-workspaces', active, workspaces:{slot:stav}}`);
-  při importu jednoho schématu (`blocks`/`arrows`) se načte do aktuální plochy.
-- **Cheat (jen pro vývoj/testování):** `Ctrl+Alt+C` s aktivním CapsLockem vyřeší
-  aktuální level krok za krokem ze vzorového řešení; po dokončení další stisk vyčistí.
+- **MISE** — learning mode: **profily H / E_J**, mise `m01…m08`, jméno **dobrovolné**,
+  značky Ověřeno, certifikát fakultativně. Přepnutí profilu **nepřepisuje práci** druhého profilu.
+- **Jméno:** volitelné; kdo nezadá, v exportu je `null` a export probíhá bez dotazu.
+- **SPACE 1** — **jablka demo** + volný editor (bez jména).
+- **SPACE 2–5** — prázdné plochy pro vlastní tvorbu (sloty `space2…space5`) + **dobrovolná dílna** s kartičkami (§11).
+- **Vstup do mise (klik na level):** vždy otevře **modál zadání** (název, příběh, cíl, fáze, nápověda, postupné odkrývání). **Kliknutí nesmí přemazat rozpracovanou práci**:
+  - *nová mise:* jednorázově se vytvoří výchozí sestava kartiček z neměnné definice;
+  - *rozpracovaná/dokončená:* načte se uložený stav beze změny; výchozí sestava se nevytváří znovu;
+  - *restart* je samostatná výslovná akce (§7.10).
+- **Změny v modalu** (otevření/zavření/přepnutí mise/obnovení stránky) **nikdy nemění bloky, propojení, vstupy, fázi, historii pomoci ani záznam dokončení**.
+- **Klíče ploch (v3):** `blockflow_v3_player`/`blockflow_v3_progress` + `blockflow_v3_ws_<slot>`; aktivní kontext `blockflow_v3_active_ws`. Migrace v1→v3 = F4. Po změně scaffoldu se načte čistý stav jen pro nově založené mise.
+- **Export/import (JSON):** jediná dvojice „Export JSON" / „Import JSON" v menu souborových operací (žádná výrazná dvojice tlačítek na ploše). **Export = úplný snapshot celé aplikace** — všechny mise, všechny SPACE, aktivní kontext, jméno (`null`), datum+čas (`savedAt` ISO 8601 + `savedTimeZone`), verze formátu, historie a platnost ověření (podrobnosti §8).
+- **Cheat (jen pro vývoj/testování):** `Ctrl+Alt+C` s aktivním CapsLockem krok za krokem ze vzorového řešení; další stisk vyčistí.
+
+### 7.10 Restart mise
+- Restart je **samostatná výslovná akce** pro aktuální misi a profil (ne přepnutí/zavření/obnovení).
+- Potvrzení: „Vrátit tuto misi na začátek? Rozpracované řešení této mise bude nahrazeno."
+- Zrušení nic nezmění; potvrzení obnoví **pouze danou misi/profil** (kartičky, propojení, fáze).
+- Historické dosažené dokončení zůstává; aktuální pokus se označí jako nový a musí se znovu ověřit.
+- **Celkové vymazání postupu** (pokud existuje) je jiná, samostatná akce — nezaměňovat s restartem levelu.
 
 ---
 
-## 8. Režimy, data a čas (learning mode / reset / 45 min / 3 h)
+## 8. Režimy, data, ukládání a čas (mise / 45 min / export JSON)
 
 ### 8.1 Režimy
-- **Learning mode (MISE, dříve KAMPAŇ)**: modál „Jak se jmenuješ, operátore?" se zobrazí **až při prvním kliknutí na level v menu** (ne při startu ani při přepnutí na MISE) — **jméno povinné** (1–30 znaků), uloží se na zařízení. Generuje se z něj certifikát. Po zadání už se neptá (až do RESETu).
-- **Volný režim (SPACE 1 – jablka)**: bez jména, čistý editor + ukázka jablek, žádné XP.
+- **Learning mode (MISE)**: profile H nebo E/J; jméno **dobrovolné** (1–30 znaků, uloží se na zařízení; kdo nezadá, pracuje s `null`). Z jména se generuje certifikát (fakultativně). Modál jména se nabídne před zahájením, vyžadování není.
+- **Volný režim (SPACE 1 – jablka + SPACE 2–5)**: bez jména, čistý editor + ukázka jablek, dobrovolná dílna s kartičkami (§11).
 
 ### 8.2 Persistence (tablet/mobil i PC)
-- Pokrok (jméno, XP, stupně, certifikáty v profilu) se ukládá do `localStorage` = **„cache prohlížeče do vymazání"** — přežije obnovení stránky.
-- **Červené tlačítko RESET** v menu (s potvrzovacím modálem): kompletní výmaz (jméno, XP, pokrok). Na tabletu/mobilu je v dialogu upozornění: „Data zůstávají v prohlížeči, dokud nesmažeš (RESET)."
+- Pokrok (profily, mise, značky, certifikáty, SPACE) se ukládá do `localStorage` = „cache prohlížeče do vymazání" — přežije obnovení stránky.
+- **Automatické ukládání:** po změnách s krátkým zpožděním + **vždy před přepnutím mise**; ukládá se **poslední skutečně editovaný diagram**, ne jen výchozí šablona. Pokud místní uložení selže, zobrazí se stručná informace a umožní se export.
+- **Restart mise** je lokalizovaný (§7.10); případné celkové vymazání je samostatná potvrzená akce.
 
-### 8.3 Auto-reset po 3 hodinách
-- Od prvního kliknutí (aktivní hra) běží **session hodiny** (menší odpočet v menu „SMĚNA 02:40/03:00").
-- **02:30** → toast: „Kontrola směny: za 30 min se déčko přepne do šumu. Stáhni si certifikáty."
-- **03:00** → auto-reset: vymaže pokrok a vrátí se na úvod (nová směna → znovu jméno v learning mode). **Certifikáty si žák stahuje průběžně**, takže odevzdávka není ohrožena.
+### 8.3 Čas a pokrok napříč hodinami
+- Mise je navržena na **1 vyučovací hodinu (≤ 45 min)**; aplikace neudržuje destruktivní 3h směnu.
+- **Pokrok se mezi hodinami zachovává** (localStorage + přenosný JSON), takže pomalý žák pokračuje příští hodinu; rychlý žák není nucen práci uměle prodlužovat.
+- Možný nenápadný údaj času/deníku, není-li rušivý; bez trestání a bez povinné denní série.
 
-### 8.4 Level = ≤ 45 min (po zaučení)
-- Návrhová konstanta: 5–10 bloků, 2–3 testy, 1 řádek cíle, Kompas vždy — vychází do 45 min i pro méně zkušené.
-- `maxCasMin: 45` v datech stupně; delší než 45 min → Kompas nabídne víc (pozitivní push, bez trestu).
+### 8.4 Export JSON (úplný snímek) a nabídka po splnění
+- **Obsah exportu:** všechny mise (stavy, bloky, propojení, vstupy, odpovědi, nápovědy, výsledky testů), **všechny SPACE vč. prázdných uživatelem upravených**, aktivní režim (`level`/`space`), profil, stabilní ID, fáze; odděleně historie a platnost ověření aktuálního řešení; jméno nebo `null`; `savedAt` + `savedTimeZone`; verze formátu a verze obsahu misí.
+- **Metadata:** `schemaVersion`, `savedAt` (jedna autoritativní ISO 8601 časová značka), `savedTimeZone`, `playerName`, `activeContext` (režim, ID plochy, profil/mise/fáze), `missions`, `spaces`. Navržený název: `hefaistos-H-postup-2026-09-24.json`.
+- **Nabídka po splnění** (výsledkový modal): „Mise splněna. Chceš si uložit postup pro příští hodinu?" → primární **Stáhnout JSON**, sekundární **Teď ne** (lze pokračovat). Stahování se nespouští automaticky.
+- **Opakovaný úspěšný test nesmí znovu otevírat nabídku ani násobit odměny** — nabídka se váže na přechod aktuálního pokusu do dokončeného stavu. Úspěšný dílčí test není automaticky splněním celé mise, pokud zbývá povinná úprava či ověření.
+- **Před dokončením:** nenápadné „Export JSON" v menu souborových operací (konec hodiny u rozpracované mise); žádné povinné vyplňování jména.
+- **Import:** nejprve validace v dočasném stavu (neplatný soubor nemění práci); při střetu s existující prací přehled + výslovné potvrzení nahrazení + možnost předběžného exportu. Po importu se obnoví celá práce i aktivní kontext (aktivní level → otevřít zadání; aktivní SPACE → otevřít právě tento SPACE). Import neresetuje `savedAt` na aktuální čas. Starší exporty editoru lze načíst jako diagram s upozorněním.
+- **Hodnotit výsledek a události,** nikoli jen přesnou shodu výstupního textu; z `completed` se neodvozuje prokázaná správnost — při odevzdání se testy znovu spustí.
+
+### 8.5 Mise = ≤ 45 min (po zaučení)
+- Návrhová konstanta: 5–8 aktivních bloků, 2–3 testy, 1 řádek cíle, Kompas vždy — vychází do 45 min i pro méně zkušené.
+- `maxCasMin: 45` v datech mise; delší než 45 min → Kompas nabídne víc (pozitivní push, bez trestu).
+- Struktura hodiny (učební plán, nikoli odpočet v aplikaci): 0–5 min příběh+zadání v modalu, 5–10 odhad/volba kartiček, 10–25 stavba/úprava, 25–35 spuštění/krokování/opravy, 35–40 malá změna zadání, 40–45 vysvětlení + uložení (při dokončení nabídka exportu).
 
 ---
 
-## 9. Certifikát (SVG — odevzdávka po každém stupni)
+## 9. Certifikát (SVG — fakultativní, k doloženému dokončení)
 
-- Automaticky po splnění libovolného stupně (výrazněji u boss/stupně 6).
-- **Obsah:** logo · „CERTIFIKÁT OPERÁTORA" · název stupně · **jméno žáka** (z learning mode) · **datum + čas** dokončení · **XP a hvězdy** · **hodnost** · razítko „CodeFlowChart EDU • RVP G + SOŠ" · GPL footer. **Bez odznaků.**
+- Po splnění **povinných částí mise a úspěšném ověření** se nabídne certifikát (výrazněji u m08).
+- **Obsah:** logo · „CERTIFIKÁT SERVISNÍHO TECHNIKA" · název mise · **jméno žáka** (pokud je zadáno) · **datum + čas** dokončení · značky Zprovozněno–Ověřeno · razítko „CodeFlowChart HEFAISTOS • obory H a E/J" · GPL footer. **Bez odznaků; certifikát potvrzuje absolvované mise, nikoli automaticky splnění celého RVP.**
+- **Motivace (§10):** značky **Zprovozněno → Ověřeno → Upraveno**; XP/hvězdy/hodnost (pokud zůstanou) se vážou na doložené dokončení; nápověda ani víc pokusů nesnižuje hodnocení.
 - Generátor = nový SVG builder (stávající export schémat zůstává).
-- Šířka ~A4 na šířku, stahuje se „1 mířová" SVG; na tabletu i PC.
+- Šířka ~A4 na šířku, stahuje se SVG; na tabletu i PC.
 
 ---
 
-## 10. Textová politika (Gen Z) + konverzní slovník
+## 10. Textová politika (HEFAISTOS) + konverzní slovník
+
+Tón služby HEFAISTOS: přirozená čeština, lehký humor, **bez povinného generačního slangu**,
+bez zesměšňování chyb; CNC a 3D tiskárna jsou zjednodušené fiktivní simulace.
 
 | Pravidlo | Formulace |
 |---|---|
-| Cíl mise | ≤ 15 slov, meme tón |
+| Cíl mise | ≤ 15 slov, „oprav díl", „zprovozni dílnu" |
 | Konzole | max 10 slov na řádek |
 | Kompas | ≤ 40 slov na misi |
-| Chyby | „Test 2: čekal jsem 8, máš 5." |
+| Chyby | „Test 2: čekal jsem 20 g, máš 100 g." |
+| Restart | „Vrátit tuto misi na začátek? Rozpracované řešení této mise bude nahrazeno." |
+| Export po splnění | „Mise splněna. Chceš si uložit postup pro příští hodinu?" |
 
-Konverze starých hlášek (jádro zachovat, zkrátit):
+Konverze starých hlášek (jádro zachovat, zkrátit, odlehčit od „déčka"/operátora):
 - „Inicializace CodeFlowChart Engine v1.1…" → „Systém: on."
 - „Alokuji paměťový rámec… / Zpracování vlákna… ÚSPĚCH" → „Volám funkci … → návrat ✓"
 - „Slepá ulička. Signál nemá kam pokračovat…" → „Zaseknuto: odtud nikam nevede šipka."
@@ -271,46 +320,49 @@ Konverze starých hlášek (jádro zachovat, zkrátit):
 
 ---
 
-## 11. Vztah k RVP G a SOŠ (neprogramátorské obory) (štítky → 6 stupňů)
+## 11. Vztah k RVP — obory H a E/J (mise m01–m08)
 
-| Dovednost | Stupeň | Štítek |
-|---|---|---|
-| Zápis algoritmu vývojovým diagramem | 1 | G ✓ / SOŠ ✓ |
-| Proměnné, vstup a výstup | 2 | G ✓ / SOŠ ✓ |
-| Větvení (podmínka) + kontrola | 3 | G ✓ |
-| Cykly (fixní i podmíněný) | 4 | G ✓ |
-| Podprogram, dekompozice | 5 | G ✓ |
-| Ověření, oprava, výběr, tvorba | 6 | G ✓ („vybere vhodný algoritmus a zdůvodní") |
-| Čtení a vysvětlení algoritmu | 5 (cti) | G ✓ |
-| Modelování a simulace toku | 1–6 (token, RAM) | G ✓ / SOŠ ✓ |
+Cílem jsou **učební obory H (strojírenství, elektro, stavební aj. — příloha 2b)** a
+**podpůrná cesta E/J (příloha 1b)**; výuková cesta je **návrhem realizace vybraných výstupů
+RVP, nikoli jejich garancí** (finalizaci vazby na ŠVP ověřuje učitel).
 
-> V PROFI: statická tabulka „stupeň ↔ RVP výstupy", žádný sběr dat o žákovi.
+| Dovednost | Mise | H | E/J |
+|---|---|---|---|
+| Zápis algoritmu vývojovým diagramem | m01 | ✓ | ✓ |
+| Posloupnost, čtení a vysvětlení postupu | m01 | ✓ | ✓ |
+| Větvení (podmínka) + kontrola | m02 | ✓ | ✓ |
+| Vstup, výpočet, výstup | m03 | ✓ | s oporou |
+| Opakování podle počtu (fixní cyklus) | m04 | ✓ | ✓ |
+| Podmíněný cyklus + počítadla | m05 | ✓ | — |
+| Ladění a výběr testu | m06 | ✓ | ✓ |
+| Porovnání a efektivita (operace, ne bloky) | m07 | ✓ | — |
+| Samostatná tvorba + předání | m08 | ✓ | menší rozsah |
+| Modelování a simulace toku | m01–m08 (token, RAM) | ✓ | ✓ |
+
+> V PROFI: statická tabulka „mise ↔ RVP výstupy", žádný sběr dat o žákovi.
 
 ### 11.1 RVP audit (2026-09-24) — pokrytí a mezery
 
-**Cíl:** RVP G (Informatika — algoritmizace a programování) + RVP SOŠ
-**neprogramátorských oborů** (informatika jako součást oboru / digitální
-kompetence). NE cílení na specializaci ICT (18-20-M/01) ani maturitní hloubku.
+**Cíl:** RVP SOV pro učební obory **H (příloha 2b — ICT v novém pojetí)** + **E/J (příloha 1b)**.
+NE cílí na gymnázia, maturitní odborné obory ani specializaci ICT (18-20-M/01).
 
-**Pokryto dobře (jádro RVP G):** algoritmus jako posloupnost kroků; vývojový
-diagram; proměnné + vstup/výstup; větvení; cykly (fixní `for` i podmíněný
-`while` s počítadlem); podprogram/dekompozice; čtení a vysvětlení cizího
-diagramu; ověření a oprava; vlastní tvorba (SPACE 2–5 + ukázky).
+**Pokryto dobře (jádro pro obory H/E_J):** algoritmus jako posloupnost kroků; vývojový
+diagram; proměnné + vstup/výstup; větvení; cykly (fixní `OPAKUJ` i podmíněný `OPAKUJ DOKUD` s počítadlem);
+čtení a vysvětlení cizího diagramu; ověření a oprava; samostatná tvorba (m08 + volné plochy).
 
 **Pokryto částečně / k doplnění:**
 
 | Oblast RVP | Stav | Doporučení |
 |---|---|---|
-| Logické hodnoty a složené podmínky (`&&`, `||`, `!`) | evaluátor umí, žák netrénuje | ukázka „Přestupný rok" / „Sudé a kladné" (F5+) |
+| Logické hodnoty a složené podmínky (`&&`, `||`, `!`) | evaluátor umí, v misích se cíleně netrénuje | jen jako volitelná rozšíření; nezatěžovat povinnou cestu |
 | Datové typy (číslo vs. text) | implicitně v úlohách | samostatná ukázka s textem/číslem |
-| Ladění (debug) | Ladička plánovaná | F3 = „testuje a ladí" (RVP) |
-| Formativní sebehodnocení | jen hvězdy/XP | volitelně reflexe v certifikátu (F8) |
-| Pole / seznamy, funkce s návratem | nepokryto | **mimo cíl** (neprogramátorské obory); jen volitelně pro nadstavbu |
+| Ladění (debug) | Ladička plánovaná | m06 = „testuje a ladí" (hlavní náplň) |
+| Formativní sebehodnocení | značky Zprovozněno/Ověřeno/Upraveno | reflexe volitelně v certifikátu (F8) |
+| Podprogram / funkce s návratem, pole/seznamy | nepokryto | **mimo povinnou cestu** (VOLÁNÍ nevykonává tělo); jen volně |
 
-**Závěr:** pro RVP G i SOŠ neprogramátorské obory je pokrytí **dostatečné**
-(jádro algoritmizace bez specializačního programování). Ukázky (`SAMPLES`)
-slouží jako „read + remix" příklady (Bloom: porozumění → aplikace), tvorba je
-na volných plochách (Bloom: tvorba).
+**Závěr:** pro obory H a E/J je pokrytí vybraných RVP výstupů **dostatečné**
+(jádro algoritmizace bez specializačního programování). Ukázky (`SAMPLES`) slouží jako
+„read + remix" (Bloom: porozumění → aplikace), m08 + volné plochy jako tvorba (Bloom: tvorba).
 
 ---
 
@@ -337,10 +389,13 @@ na volných plochách (Bloom: tvorba).
 
 ### 12.2 Testovací sada (plánovaná)
 - `syntax_check.js` (jako TACHI) — kontrola složených závorek/funkcí HTML.
-- `flow_tests.js` — simulace jádra: parser, tester vektorů jablek A/B/C, port scenáře, nekonečná smyčka, VÝSTUP `{var}`.
-- `flow_storage_tests.js` — persistence, RESET, auto-reset 3 h (simulace času), migrace v1→v2.
+- `flow_tests.js` — simulace jádra: parser, tester vektorů jablek A/B/C, port scenáře, nekonečná smyčka (detekce stavem), VÝSTUP `{var}`, literály v uvozovkách.
+- `flow_check_tests.js` — Checker: evaluátor podmínek, `runCheckVector` (události, slepá ulička, zacyklení, výstup/trace), `mapOutsideStrings` (literály vs proměnné).
+- `flow_storage_tests.js` — persistence, save/load ploch, migrace v1→v3, okrajové stavy.
+- `flow_game_tests.js` — herní vrstva: profily H / E_J, jméno (dobrovolné), značky, mise `m01–m08`, `completeLevel` + certifikát, persistence, restart mise, `SAMPLES`.
+- `flow_smoke_tests.js` — UI smoke: `App.init()` + HUD/mise/jméno/restart, menu ukázek + `loadSample`, `story` v modalu mise, `onLevelSuccess` (značky do menu), herní confirm modal.
 - `flow_ui_tests.js` — matrix rozlišení, tablet porty, reduced-motion.
-- Self-test všech 6 stupňů (každý stupeň projde svými vektory) + `finished.md` evidence.
+- Self-test mise m01–m08 pro oba profily (každá mise projde svými vektory; m04 nesmí projít pouhým vypsáním očekávané věty bez provedení operací) + `finished.md` evidence.
 
 ### 12.3 Výstup revize
 - `finished.md` (chronologický záznam oprav + ověření) — dle `MASTER-AGENTS.md` §14.
@@ -352,15 +407,15 @@ na volných plochách (Bloom: tvorba).
 | Fáze | Rozsah | Verifikace |
 |---|---|---|
 | **F0** | **Revize funkčnosti** (§12): bugfixy `{var}`, tichá chyba výrazu, XSS, typewriter, death-loop, `fitToScreen`, porty | testy §12.2; session PASS |
-| **F1** | `Game` + jméno (learning mode) + `Data` (6 stupňů) + režimy a plochy per level + level modal + scaffolding loader + XP/hodnost (pozitivní) | 3 umělé mise dají XP i certifikát; vstup do mise vykreslí scaffolding |
-| **F2** | `Checker` (evaluace + tester) — režim OVĚŘIT | vektory stupňů (i jablka A/B/C) projdou |
-| **F3** | Kompas (zdarma) + Ladička + vzorové řešení gating | scénář „žák úplně ztracen → sám projde" |
-| **F4** | `Session` (3 h odpočet, varování, auto-reset) + červené RESET + migrace v1→v2 | simulace času: reset při 03:00, RESET ručně |
-| **F5** | Stupně 1–3 obsahu (zadání, testy, kompas) | každý stupeň projde svými vektory |
-| **F6** | Stupně 4–6 + boss (auto-test + cti/vyber) | self-test všech 6 stupňů |
+| **F1** | `Game` + jméno (volitelné) + `Data` (profily H/E_J + mise m01–m08) + `MissionState` a režimy/plochy + modál zadání + scaffolding loader + značky (pozitivní) | vstup do mise vykreslí modál + scaffolding; otevření/zavření modalu nemění práci |
+| **F2** | `Checker` (evaluace + tester + sjednocený engine, litál v uvozovkách) — režim OVĚŘIT | vektory m01–m08 (i jablka A/B/C) projdou; m04 neprojde bez provedení cyklu |
+| **F3** | Kompas (zdarma) + Ladička + názorná ukázka po neúspěchu (ne tvrdá blokáda) | scénář „žák ztracen → po ukázce sám pokračuje a dokončí" |
+| **F4** | `MissionState` + restart mise (potvrzený) + auto-save + export/import JSON (úplný snímek) | akceptační scénáře §13 zadání (kliknutí nic nepřepíše, restart jen mise, JSON round-trip vč. SPACE) |
+| **F5** | Mise m01–m04 obsahu (zadání, testy, kompas; E/J varianty m03 s oporou) | každá mise projde svými vektory v obou profilech |
+| **F6** | Mise m05–m08 (H) + podpůrné varianty E/J (m06, m08 menší rozsah) | self-test všech misí obou profilů |
 | **F7** | UI tablet: porty, šipky ANO/NE, stopa kroků, minimapa, topbar režimy | 768 i 1280 px |
-| **F8** | Certifikát SVG (jméno, datum, čas, XP, hvězdy, hodnost) | design review + tisk |
-| **F9** | Polishing: motion/reduced-motion, kontrast, Gen-Z copy; `finished.md` | full walkthrough kampaně |
+| **F8** | Certifikát SVG (jméno fakultativně, datum, čas, značky) + poslední motivace určité odměny zabraň multiplikaci | design review + tisk; opakovaný test nedá druhou odměnu |
+| **F9** | Polishing: motion/reduced-motion, kontrast, HEFAISTOS copy; `finished.md` | full walkthrough m01–m08 pro H i E/J |
 
 Každá fáze končí **definovaným autotestem**, ne „to běží".
 
@@ -368,53 +423,58 @@ Každá fáze končí **definovaným autotestem**, ne „to běží".
 
 ## 14. Kritéria úspěchu (Definition of Done)
 
-1. Žák 15–19 **sám projde všech 6 stupňů** (bez zásahu učitele) — test: Kompas+Ladička stačí.
-2. Každý stupeň → **certifikát SVG** se jménem, datem, časem, XP, hodnost.
-3. Žák úroveň **≤ 45 min po zaučení**; stupně otevřené; **auto-reset po 3 h** funguje s varováním.
-4. **Pouze pozitivní motivace** — nápověda nic nestojí, XP se nikdy neodečítá.
-5. Nic ze dnešní funkčnosti nezmizelo (editor, simulace, exporty, undo/redo, jablka, 3 WS).
-6. Texty ≤ 15 slov; „nečíst, klikat."
-7. Plugin F0: testy green (syntax, jádro, úložiště, UI matrix, security).
+1. **H** zobrazuje **8 misí (m01–m08)**, **E/J** **6 navazujících misí (1–6, bez mezer)**; interní ID stabilní.
+2. Kliknutí na libovolný level **vždy otevře modal zadání**; otevření/zavření modalu, přepnutí mise, obnovení stránky ani změna profilu **nezničí práci** (žák přesune blok, změní hodnotu a propojení → po návratu vše zůstane).
+3. **Výchozí sestava se vytvoří jen při prvním vstupu** do dosud nezaložené mise nebo po restartu; i úmyslně vyprázdněná plocha zůstane prázdná.
+4. **Restart** je potvrzená akce jen pro aktuální misi/profil; zrušený restart nic nezmění.
+5. Po splnění mise se **nabídne stažení JSON** (volba „Teď ne" umožní pokračovat); opakovaný úspěšný test **nenásobí odměny ani nabídku**.
+6. **Export JSON je úplný snímek celé aplikace** (všechny mise + všechny SPACE + aktivní kontext + jméno/`null` + datum a čas `savedAt`); import validuje, nepoškozuje práci a nahrazuje jen s výslovným potvrzením.
+7. **Cyklová mise neprojde pouhým vypsáním očekávané věty** bez provedení výrobních operací; krokování a automatické ověření dávají pro stejné vstupy **stejné výsledky** (jeden engine).
+8. **Více správných algoritmů projde** (pokud respektují omezení v zadání); nápověda ani víc pokusů **nesnižuje hodnocení**.
+9. Žák mise **≤ 45 min po zaučení**; pokrok přežije obnovení i přepnutí profilu/plochy.
+10. Pouze pozitivní motivace; značky **Zprovozněno → Ověřeno → Upraveno** odpovídají skutečné činnosti.
+11. Nic ze dnešní funkčnosti nezmizelo (editor, simulace, exporty, undo/redo, jablka, SPACE).
+12. Texty ≤ 15 slov; „nečíst, klikat."
+13. Plugin F0: testy green (syntax, jádro, checker, úložiště, hra, smoke, UI matrix, security).
 
 ---
 
-## 15. Rozhodnuté volby (uzavřeno 2026-09-24)
+## 15. Rozhodnuté volby (uzavřeno 2026-09-24, doplněno V2.2)
 
-1. **RESET na PC:** červené RESET je **všude** (i na PC), vedle auto-resetu 3 h. ✓
-2. **Odznaky:** **ne** — jen XP + hvězdy + hodnost na certifikátu. ✓
-3. **Jméno:** 1× na zařízení (learning mode), používá se na všech certifikátech; **jen na certifikát**, ne do žádného reportu. ✓
-4. **Kompas:** nápověda nic nestojí, „bez nápovědy" je jen XP bonus (nikdy odečet). ✓
-5. **Auto-reset:** smazat **vše včetně jména** → po 03:00 čistý start. ✓
-6. **Obsah stupňů:** navrhnout **všech 6** (viz §16) k revizi. ✓
+1. **Restart mise:** restart je **potvrzená akce jen pro aktuální misi/profil**; historie dokončení zůstává, aktuální pokus se označí jako nový a znovu ověří. ✓
+2. **Odznaky:** **ne** — jen značky Zprovozněno/Ověřeno/Upraveno (+ volitelně XP/hvězdy/hodnost na certifikátu vázané na doložené dokončení). ✓
+3. **Jméno:** **dobrovolné** (1–30 znaků, 1× na zařízení); v exportu `null`, export nikdy neblokuje. ✓
+4. **Kompas:** nápověda nic nestojí, „bez nápovědy" je jen bonus (nikdy odečet); po neúspěchu smí přijít názorná ukázka. ✓
+5. **Auto-reset 3h:** **zrušeno** — pokrok misí se uchovává pro příští hodinu (localStorage + JSON); žádná destruktivní směna. ✓
+6. **Obsah misí:** ⑄ **m01–m08 (H) + 6 misí E/J** (viz §16), bez povinného VOLÁNÍ/podprogramu. ✓
+7. **Profil H vs E_J:** rozdílný obsah a opory (E_J: menší rozsah, výběry hodnot/operátorů, více vizuální opory); přepnutí profilu nepřepisuje práci. ✓
+8. **Export JSON:** jedna nenápadná položka v menu; po splnění nabídka stažení v modalu; **bez** výrazné dvojice tlačítek na ploše. ✓
 
 ---
 
-## 16. Kompletní obsah stupňů (k revizi)
+## 16. Kompletní obsah misí (m01–m08 + varianty E/J)
 
-> **Narativní témata (F1):** obsah §16.1–§16.6 níže je verze **`operator`** (původní
-> sklad, pro obory E). **Výchozí téma je `streamer`** (Gen Alfa); obě sdílejí stejný
-> algoritmus (typy bloků, porty, šipky, pořadí) — liší se jen texty. Přepíná se ikonou
-> v horním panelu (`NARRATIVES`, `toggleNarrative`), persistence `blockflow_v3_narrative`.
-> Názvy stupňů ve `streamer`: 1 První stream · 2 Donáty a subs · 3 Turnaj 15+ ·
-> 4 Moderace chatu · 5 Zavolej moda · 6 Záchrana streamu; hodnosti: Nováček · Ranked hráč ·
-> Speedrunner · Legenda serveru. Kompletní texty jsou v `NARRATIVES` v `code-flowchart.html`.
+> **Příběhové téma (V2.2):** jednotný příběh **HEFAISTOS** (servisní loď, robot ŠROUB) pro oba profily;
+> profily se liší **obsahem a oporami** (H vs E_J), nikoli jen texty. Původní duality `streamer`/`operator`
+> (NARRATIVES, toggleNarrative) se **ruší**; mění se jen prezentační texty, algoritmus úloh zůstává.
+> **Změna prezentace nesmí přepisovat uživatelskou práci** — přepnutí profilu načte stav bez přepisu.
 >
-> **Pole `story` (F1):** každý stupeň má v obou tématech `story` — větu „co budeš dělat"
-> (např. „Zapojuješ streamovací studio…", „Řídíš vstupenkový systém 15+…"). Zobrazuje se
-> v modalu mise pod „Co budeš dělat"; modal dále uvádí „Přesuň a propoj" (bloky na plátně
-> jsou rozházené). Texty modalu zvětšeny o 50 % (`.modal-box`).
+> **Pole `story`:** každá mise má `story` — větu „co budeš dělat" (např. „Probudíš dílnu…", „Potřebuješ
+> náhradní držák…"). Zobrazuje se v modalu zadání pod „Co budeš dělat"; modal dále uvádí, jaké kartičky
+> lze ponechat nepoužité. Texty modalu zvětšeny o 50 % (`.modal-box`).
 
-> Plná specifikace každého stupně stejným vzorem jako §4 — zadání, scaffolding, testovací vektory, Kompas, vzorové řešení (pseudodiagram) a XP. Syntaxe výrazů se finalizuje ve F2 podle evaluátoru (§5); zde je popisná/předpisová.
+> Plná specifikace každé mise stejným vzorem jako §4 — zadání, scaffolding, testovací vektory, Kompas,
+> vzorové řešení (pseudodiagram) a opory E/J. Syntaxe výrazů se finalizuje ve F2 podle evaluátoru (§5).
 
-### 16.x Společná konvence (pro všechny stupně)
+### 16.x Společná konvence (pro všechny mise)
 
-- **Typy bloků:** `start`, `process (AKCE)`, `io (VSTUP/VÝSTUP)`, `decision (PODMÍNKA)`, `loop (SMYČKA)`, `call (VOLÁNÍ)`, `note (POZNÁMKA)`, `end (KONEC)`.
+- **Typy bloků:** `start`, `process (AKCE)`, `io (VSTUP/VÝSTUP)`, `decision (PODMÍNKA)`, `loop (SMYČKA)`, `call (VOLÁNÍ)`, `note (POZNÁMKA)`, `end (KONEC)`. VOLÁNÍ jen ve volných plochách, ne v povinné cestě.
 - **Cíl:** vždy ≤ 15 slov; po zadání viditelný v topbaru.
-- **Testy:** 2–3 vektory; v AUTO režimu se VSTUP plní sekvenčně z vektoru, VÝSTUP se porovná s `očekávané`.
-- **Kompas:** 4 stupně, celkem ≤ 40 slov na misi (Cíl → Háček → Vzor → Postup). Vzor je blok „prohlédnout si hotové řešení".
-- **XP:** `xp.zaklad` za splnění; **bonusy** (jen pozitivní): `noHint +20%` (bez otevřené nápovědy), `prvniPokus +15%` (PASS na 1. pokus), `efektivni +10%` (demonstrovatelně nejkratší validní řešení — od stejného počtu bloků jako referenční).
-- **Hvězdy:** princip vyhodnocení z celkového XP na stupeň: 100–115 % → ★, >115–125 % → ★★, >125 % → ★★★.
-- **Hodnost** (kumulativní napříč kampaní, vlastní tovární řada „déčka" — bez vazby na jiné hry): 0–449 XP „Nováček u pásu" · 450–899 „Pásový operátor" · 900–1399 „Mistr toku" · 1400+ „Legenda déčka".
+- **Testy:** 2–3 vektory na misi; ověřují **skutečné události a výsledky zpracování**, ne jen přesný text.
+- **Kompas:** 4 stupně, celkem ≤ 40 slov (Cíl → Háček → Vzor → Postup); po neúspěchu smí místo vzoru přijít názorná ukázka.
+- **Motivace:** značky **Zprovozněno → Ověřeno → Upraveno**; volitelné XP/hvězdy/hodnost vázané na doložené dokončení; nápověda ani víc pokusů nesnižuje hodnocení.
+- **Opora E/J:** výběry hodnot/operátorů, větší vizuální opora, méně textové syntaxe; výchozí částečně propojený základ u větších diagramů.
+- **Restart:** vždy přes „Restart" tlačítko s potvrzením — nepřepisuje jiné mise; po restartu se znovu ověří aktuální řešení.
 
 ---
 

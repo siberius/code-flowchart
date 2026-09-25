@@ -2,6 +2,21 @@
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
+## 2026-09-25 — Sklo průhlednější, nápověda zdůrazňuje Ctrl+K (nezakomitováno)
+
+- **Nápověda:** položka `Ctrl+K` přeformulována a zvýrazněna —
+  „Zobrazí paletu zkratek — spustitelné příkazy a seznam všech klávesových zkratek"
+  (jantarově `#f59e0b`, aby vynikla mezi zkratkami).
+- **Ještě průhlednější sklo:**
+  - `#side-menu` gradient alfa 0.75/0.55 → **0.6/0.4**;
+  - `.modal-box` alfa **0.35 → 0.28** (+ saturate, + `-webkit-`);
+  - `#console-panel` (terminál) alfa **0.95 → 0.7**, blur 15 → 20 px (+ saturate, + `-webkit-`);
+  - `.sim-prompt` (vstup v terminálu) alfa **0.95 → 0.75**, blur 12 → 18 px (+ `-webkit-`).
+- **Testy:** `flow_smoke_tests.js` → **209** (z 208): +1 (modaly/terminál/prompt mají nové
+  nižší alfa), upraven alfa regex menu (0.4) a nápověda (paletu zkratek).
+- **Ověření:** syntax OK · flow_tests 39 · flow_check 70 · flow_game 90 · flow_storage 55 ·
+  flow_ui 6 · flow_smoke 209 (celkem **470** kontrol, 0 FAIL).
+
 ## 2026-09-25 — Menu dostalo poloprůhledné sklo (glassmorphism) (nezakomitováno)
 
 - **`#side-menu` je nyní skleněné, ne téměř plné:** pozadí = lineární gradient

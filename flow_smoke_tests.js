@@ -111,7 +111,8 @@ check('HUD skrytý (ne v MISE)', !App.dom.hud.classList.contains('show'));
 check('8 misí H v menu', App.dom.menuMissions.children.length === 8, 'got ' + App.dom.menuMissions.children.length);
 check('space1 má obsah (jablka)', App.blocks.length > 0, 'bloky=' + App.blocks.length);
 check('jmenný modal se při startu neotevřel', !App.dom.nameModal.classList.contains('show'));
-check('menu = semiprůhledné sklo (blur + saturate + nižší alfa)', /\-webkit-backdrop-filter\s*:\s*blur\(20px\)\s*saturate\(140%\)/.test(html) && /rgba\(13,\s*15,\s*20,\s*0\.55\)/.test(html) && /backdrop-filter\s*:\s*blur\(20px\)\s*saturate\(140%\)/.test(html), 'menu bez skla');
+check('menu = semiprůhledné sklo (blur + saturate + nižší alfa)', /\-webkit-backdrop-filter\s*:\s*blur\(20px\)\s*saturate\(140%\)/.test(html) && /rgba\(13,\s*15,\s*20,\s*0\.4\)/.test(html) && /rgba\(15,\s*18,\s*26,\s*0\.6\)/.test(html) && /backdrop-filter\s*:\s*blur\(20px\)\s*saturate\(140%\)/.test(html), 'menu bez skla');
+check('modaly, terminál i prompt průhlednější než dřív', /\.modal-box\s*\{[^}]*rgba\(30,\s*34,\s*48,\s*0\.28\)/.test(html) && /#console-panel\s*\{[^}]*rgba\(13,\s*15,\s*20,\s*0\.7\)[\s\S]*?backdrop-filter: blur\(20px\)/.test(html) && /\.sim-prompt\s*\{[^}]*rgba\(13,\s*15,\s*20,\s*0\.75\)/.test(html), 'sklo bez úprav');
 
 console.log('\n[jméno přes UI]');
 App.dom.nameInput.value = '  Evička  ';
@@ -583,7 +584,7 @@ check('autor má X', html.includes('https://x.com/ludeksusicky'));
 check('autor má LinkedIn', html.includes('https://www.linkedin.com/in/ludek-susicky/'));
 check('autor je SŠ a VŠ učitel Informatiky', html.includes('SŠ a VŠ učitel Informatiky'));
 check('nápověda má O aplikaci + 90 minut', html.includes('O aplikaci') && html.includes('90 minutách nečinnosti') && html.includes('MIT © 2026'));
-check('nápověda uvádí Ctrl+K i Alt+S', html.includes('Ctrl + K') && html.includes('Alt + S'));
+check('nápověda uvádí Ctrl+K (zobrazení palety zkratek) i Alt+S', html.includes('Ctrl + K') && html.includes('paletu zkratek') && html.includes('Alt + S'));
 check('patička plátna je MIT', /id="copyright-footer"[\s\S]{0,80}MIT © 2026/.test(html));
 check('SVG export = MIT', html.includes('MIT © 2026 Luděk Sušický | CodeFlowChart EDU'));
 check('mobil: O programu zůstává 33vh', /@media\s*\(hover:\s*none\),\s*\(pointer:\s*coarse\)\s*\{\s*#about-modal\s*\.modal-box\s*\{\s*max-height:\s*33vh/.test(html));

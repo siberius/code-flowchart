@@ -631,9 +631,28 @@
         /* Nápověda: o 30 % širší a centrovaná (mobil se posouvá) */
         #help-modal .modal-box { width: min(1040px, 94vw); }
 
-        /* O programu: na PC roztažený, na dotykovém zařízení zbývá užší (33vh) */
-        #about-modal .modal-box { max-height: 72vh; }
-        @media (hover: none), (pointer: coarse) { #about-modal .modal-box { max-height: 33vh; } }
+        /* O programu: na PC o 30 % širší (546 px) a vyšší, na dotykovém zařízení zbývá užší (420 px / 33vh) */
+        #about-modal .modal-box { max-height: 72vh; width: min(546px, 97vw); }
+        @media (hover: none), (pointer: coarse) { #about-modal .modal-box { max-height: 33vh; width: min(420px, 90vw); } }
+
+        /* Paleta (Ctrl+K): spustitelný seznam příkazů se zkratkami */
+        .palette-top { display: flex; gap: 8px; align-items: center; }
+        #palette-input {
+            flex: 1; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px; color: var(--text); padding: 10px 12px; font-size: 14px; outline: none;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        #palette-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.15); }
+        .palette-kbd { color: var(--accent2); font-size: 11px; font-weight: 700; white-space: nowrap; font-family: 'JetBrains Mono', monospace; }
+        #palette-list { max-height: 42vh; overflow-y: auto; margin: 4px -14px -14px; padding: 0 14px; }
+        .palette-row {
+            display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 10px; cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.06); margin-bottom: 6px; transition: background 0.15s, border-color 0.15s;
+        }
+        .palette-row:hover, .palette-row.active { background: rgba(0, 229, 255, 0.08); border-color: rgba(0, 229, 255, 0.35); }
+        .palette-row .pr-name { flex: 1; color: var(--text); font-size: 14px; }
+        .palette-row .pr-hint { color: var(--text-dim); font-size: 12px; }
+        .palette-foot { color: var(--text-dim); font-size: 11px; margin-top: 10px; }
         
         /* Vnitřní rolovací oblast pro nápovědu */
         .help-content-wrapper { overflow-y: auto; flex: 1; min-height: 0; padding-right: 14px; margin-right: -14px; }
@@ -859,9 +878,9 @@
     <div id="side-menu">
         <div class="menu-section-title">MISE</div>
         <div id="menu-missions"></div>
-        <div class="menu-section-title">UKÁZKY</div>
-        <div id="menu-samples"></div>
         <div class="menu-section-title">NÁSTROJE</div>
+        <div class="side-menu-link" onclick="App.openPalette()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Paleta (Ctrl+K)</div>
+        <div class="side-menu-link" onclick="App.openSamples()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.2 2.6c-1 1.5-2 3.4-2.4 5.2-1.7 0-4.9 1.6-6.1 4.2C3 15 3.8 19 6.7 21c3 2 6.5.6 8.9-1.4 2.2-1.9 3.6-4.7 3.6-7.6 2.7-.8 4.4-2.6 4.8-4.3"./><path d="M9.5 15.5 14.5 9"/></svg> Ukázky (Alt+S)</div>
         <div class="side-menu-link" onclick="App.openHelp()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> Nápověda</div>
         <div class="side-menu-link" onclick="App.openAbout()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg> O programu</div>
         <div class="side-menu-link" onclick="App.openAuthor()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> O autorovi</div>
@@ -1125,10 +1144,11 @@
             <h3 id="result-title" style="color: #10b981; text-shadow: 0 0 12px rgba(16,185,129,0.45);">Mise splněna!</h3>
             <div id="result-stars" style="font-size: 42px; letter-spacing: 6px; color: var(--accent3); margin: 6px 0 2px; text-shadow: 0 0 18px rgba(245,158,11,0.5);">★★★</div>
             <p id="result-body" style="color: var(--text); font-size: 14px; line-height: 1.7; margin-bottom: 4px;"></p>
-            <p id="result-offer-text" style="display:none; color: var(--text); font-size: 14px; line-height: 1.5; margin: 10px 0 6px;">Mise splněna. Chceš si uložit postup pro příští hodinu?</p>
-            <div class="btn-row">
-                <button id="result-save-btn" class="btn" onclick="App.downloadSnapshotNow()" style="display:none; flex: 1; padding: 10px; font-size: 13px; background: rgba(16,185,129,0.05); color: #10b981; border-color: #10b981; box-shadow: inset 0 0 15px rgba(16,185,129,0.2);"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>STÁHNOUT JSON</button>
-                <button class="btn" onclick="App.closeLevelResult()" style="flex: 1; padding: 10px; font-size: 13px; background: rgba(16,185,129,0.05); color: #10b981; border-color: #10b981; box-shadow: inset 0 0 15px rgba(16,185,129,0.2);"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>POKRAČOVAT</button>
+            <p id="result-offer-text" style="display:none; color: var(--text); font-size: 14px; line-height: 1.5; margin: 10px 0 6px;">Mise splněna. Stáhni si postup (JSON) nebo obrázek řešení (SVG).</p>
+            <div class="btn-row" style="flex-wrap: wrap;">
+                <button id="result-save-btn" class="btn" onclick="App.downloadSnapshotNow()" style="display:none; flex: 1; min-width: 130px; padding: 10px; font-size: 13px; background: rgba(16,185,129,0.05); color: #10b981; border-color: #10b981; box-shadow: inset 0 0 15px rgba(16,185,129,0.2);"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>STÁHNOUT JSON</button>
+                <button id="result-svg-btn" class="btn" onclick="App.downloadSolvedSvg()" style="flex: 1; min-width: 130px; padding: 10px; font-size: 13px; background: rgba(139,92,246,0.08); color: #a78bfa; border-color: #8b5cf6; box-shadow: inset 0 0 15px rgba(139,92,246,0.2);"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>SVG ŘEŠENÍ</button>
+                <button class="btn" onclick="App.continueAfterLevel()" style="flex: 1; min-width: 130px; padding: 10px; font-size: 13px; background: rgba(16,185,129,0.05); color: #10b981; border-color: #10b981; box-shadow: inset 0 0 15px rgba(16,185,129,0.2);"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>POKRAČOVAT</button>
             </div>
         </div>
     </div>
@@ -1186,6 +1206,8 @@
                         <div class="help-item"><strong>Delete / Backspace</strong><br>Smazání vybraného bloku nebo šipky</div>
                         <div class="help-item"><strong>Shift + tah myší</strong><br>Hromadný výběr bloků (Obdélník)</div>
                         <div class="help-item"><strong>Ctrl + S</strong><br>Rychlý export do SVG</div>
+                        <div class="help-item"><strong>Ctrl + K</strong><br>Paleta — spustitelné příkazy a seznam zkratek</div>
+                        <div class="help-item"><strong>Alt + S</strong><br>Výběr ukázky</div>
                         <div class="help-item"><strong>Mezerník + tah</strong><br>Rychlý posun plátna</div>
                         <div class="help-item"><strong>F</strong><br>Vystředit a zacentrovat všechny bloky</div>
                     </div>
@@ -1195,18 +1217,18 @@
                         <div class="help-item"><strong>MISE</strong> — 14 misí: 8 pro profil H plus 6 pro E/J, od sekvence přes cykly až po záchranu systému. Misi spustíš kliknutím v menu.</div>
                         <div class="help-item"><strong>Kompas</strong> — nápověda zdarma (Cíl → Háček → Vzor → Postup). Nápověda nic nestojí, XP se nikdy neodečítá.</div>
                         <div class="help-item"><strong>Hvězdy</strong> — ★ 100–115 %, ★★ &gt;115–125 %, ★★★ &gt;125 %.</div>
-                        <div class="help-item"><strong>Hodnost</strong> roste s celkovým XP; po splnění mise se ti nabídne stažení postupu (JSON) i volitelný certifikát.</div>
+                        <div class="help-item"><strong>Hodnost</strong> roste s celkovým XP; po splnění mise se ti nabídne stažení postupu (JSON), obrázek řešení (SVG) i volitelný certifikát.</div>
                     </div>
 
                     <div class="help-section">
                         <h4>Plochy a ukázky</h4>
                         <div class="help-item"><strong>MISE</strong> — úlohy; <strong>SPACE 1</strong> — demo „sbírání jablek"; <strong>SPACE 2–5</strong> — volné plochy pro vlastní tvorbu.</div>
-                        <div class="help-item"><strong>Ukázky</strong> v menu (Ahoj světe, Obsah kruhu, Součet 1..N, FizzBuzz) načtou hotový diagram do plochy — můžeš si je prohlédnout a upravit.</div>
+                        <div class="help-item"><strong>Ukázky</strong> (<strong>Alt+S</strong>) — Ahoj světe, Obsah kruhu, Součet 1..N, FizzBuzz: načtou hotový diagram do aktivní plochy, můžeš si je prohlédnout a upravit.</div>
                         <div class="help-item"><strong>IMPORT / EXPORT</strong> (JSON) uloží a načte celý postup — mise, plochy i jméno; <strong>SVG</strong> exportuje obrázek diagramu.</div>
                     </div>
 
                     <div class="help-section">
-                        <h4>Co si osvojíš (RVP G + SOŠ)</h4>
+                        <h4>Co si osvojíš (SOŠ — obory H a E/J)</h4>
                         <div class="help-item">Zápis algoritmu vývojovým diagramem, proměnné a datové typy, vstup/výstup, větvení, cykly (fixní i podmíněné), podprogramy a dekompozice, ověření a oprava řešení, vlastní tvorba.</div>
                     </div>
 
@@ -1229,11 +1251,36 @@
         </div>
     </div>
 
+    <!-- Paleta (Ctrl+K): spustitelné příkazy + seznam klávesových zkratek -->
+    <div id="palette-modal" class="modal-overlay" style="z-index: 640;">
+        <div class="modal-box" style="padding: 18px; border-color: rgba(0,229,255,0.35);">
+            <div class="palette-top">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                <input id="palette-input" placeholder="Hledat příkaz…" autocomplete="off" oninput="App.onPaletteInput(this.value)" onkeydown="App.onPaletteKey(event)">
+                <span class="palette-kbd">Ctrl+K</span>
+            </div>
+            <div id="palette-list"></div>
+            <div class="palette-foot">↑↓ vyber · Enter spustí · Esc zavře</div>
+        </div>
+    </div>
+
+    <!-- Výběr ukázky (Alt+S): hotové diagramy mimo hamburger menu -->
+    <div id="samples-modal" class="modal-overlay" style="z-index: 610;">
+        <div class="modal-box" style="border-color: rgba(139,92,246,0.4);">
+            <h3><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>Výběr ukázky</h3>
+            <div style="color: var(--text-dim); font-size: 13px; line-height: 1.5;">Hotové diagramy pro prohlédnutí a úpravu — načtou se do aktivní plochy.</div>
+            <div id="samples-list"></div>
+            <div class="btn-row">
+                <button class="btn btn-yes-large" onclick="App.closeSamples()" style="width: 100%; border-color: var(--accent3); color: var(--accent3); box-shadow: inset 0 0 15px rgba(245, 158, 11, 0.2); text-shadow: 0 0 8px rgba(245, 158, 11, 0.6);">ZAVŘÍT</button>
+            </div>
+        </div>
+    </div>
+
     <div id="about-modal" class="modal-overlay" style="z-index: 600;">
         <div class="modal-box">
             <h3><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>O programu</h3>
             <p style="color: var(--text-dim); line-height: 1.6; font-size: 14px; margin-bottom: 10px;">CodeFlowChart EDU je moderní, plně interaktivní výukový nástroj pro vizuální pochopení algoritmů, logických struktur a stavových proměnných. Spojuje návrh vývojových diagramů s krokovacím enginem a Visual RAM pamětí v reálném čase.</p>
-            <p style="color: var(--text-dim); line-height: 1.6; font-size: 14px; margin-bottom: 10px;">Obsahuje <strong style="color: var(--text);">14 misí</strong> (MISE — 8 pro profil H + 6 pro E/J) od sekvence přes větvení a cykly až po podprogramy, <strong style="color: var(--text);">hodnosti, hvězdy, značky a certifikát</strong>, volné plochy SPACE 1–5 a ukázkové diagramy. Pokrývá učivo <strong style="color: var(--text);">RVP G a SOŠ neprogramátorských oborů</strong>: zápis algoritmu, proměnné, vstup/výstup, větvení, cykly, podprogramy, ověření a tvorba.</p>
+            <p style="color: var(--text-dim); line-height: 1.6; font-size: 14px; margin-bottom: 10px;">Obsahuje <strong style="color: var(--text);">14 misí</strong> (MISE — 8 pro profil H + 6 pro E/J) od sekvence přes větvení a cykly až po podprogramy, <strong style="color: var(--text);">hodnosti, hvězdy, značky a certifikát</strong>, volné plochy SPACE 1–5 a ukázkové diagramy. Pokrývá učivo <strong style="color: var(--text);">SOŠ — učebních oborů H a E/J (RVP SOV, neprogramátorské obory)</strong>: zápis algoritmu, proměnné, vstup/výstup, větvení, cykly, podprogramy, ověření a tvorba.</p>
             <div style="background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.35); border-radius: 10px; padding: 12px 14px; margin-bottom: 10px;">
                 <div style="color: #10b981; font-weight: 800; letter-spacing: 1px; font-size: 13px; margin-bottom: 6px;">UKÁZKA SPA (SINGLE PAGE APPLICATION)</div>
                 <div style="color: var(--text); font-size: 14px; line-height: 1.6; margin-bottom: 8px;">Kompletní aplikace v jediném HTML souboru — offline, bez serveru a bez sbírání dat žáka.</div>
@@ -2282,7 +2329,11 @@
                 hudXp: document.getElementById('hud-xp'),
                 hudStars: document.getElementById('hud-stars'),
                 menuMissions: document.getElementById('menu-missions'),
-                menuSamples: document.getElementById('menu-samples'),
+                menuSamples: document.getElementById('samples-list'),
+                samplesModal: document.getElementById('samples-modal'),
+                paletteModal: document.getElementById('palette-modal'),
+                paletteInput: document.getElementById('palette-input'),
+                paletteList: document.getElementById('palette-list'),
                 nameModal: document.getElementById('name-modal'),
                 nameInput: document.getElementById('name-input'),
                 nameError: document.getElementById('name-error'),
@@ -2303,7 +2354,8 @@
                 resultStars: document.getElementById('result-stars'),
                 resultBody: document.getElementById('result-body'),
                 resultSaveBtn: document.getElementById('result-save-btn'),
-                resultOfferText: document.getElementById('result-offer-text')
+                resultOfferText: document.getElementById('result-offer-text'),
+                resultSvgBtn: document.getElementById('result-svg-btn')
             },
 
             toggleMenu(e) {
@@ -2756,6 +2808,14 @@
                 }
                 this.renderSamples();
             },
+            openSamples() {
+                this.closeMenu();
+                this.renderSamples();
+                if (this.dom.samplesModal) this.dom.samplesModal.classList.add('show');
+            },
+            closeSamples() {
+                if (this.dom.samplesModal) this.dom.samplesModal.classList.remove('show');
+            },
             renderSamples() {
                 const list = this.dom.menuSamples;
                 if (!list) return;
@@ -2764,7 +2824,7 @@
                     const row = document.createElement('div');
                     row.className = 'menu-mission';
                     row.innerHTML =
-                        '<div class="mm-top"><span>💡 ' + s.name + '</span></div>' +
+                        '<div class="mm-top"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fde047" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px; margin-right:6px;" aria-hidden="true"><path d="M13.2 2.6c-1 1.5-2 3.4-2.4 5.2-1.7 0-4.9 1.6-6.1 4.2C3 15 3.8 19 6.7 21c3 2 6.5.6 8.9-1.4 2.2-1.9 3.6-4.7 3.6-7.6 2.7-.8 4.4-2.6 4.8-4.3"/><path d="M9.5 15.5 14.5 9"/></svg>' + s.name + '</div>' +
                         '<div style="font-size:11px;opacity:0.55;">' + s.hint + '</div>';
                     row.addEventListener('click', () => this.loadSample(s.id));
                     list.appendChild(row);
@@ -2773,6 +2833,7 @@
             loadSample(id) {
                 const s = SAMPLES.find(x => x.id === id);
                 if (!s) return;
+                this.closeSamples();
                 this.closeMenu();
                 if (this.isSimulating) { this.toast('Nelze během běžící simulace.'); return; }
                 let slot = this.activeWorkspace;
@@ -2813,6 +2874,78 @@
                     const from = created[a[0]], to = created[a[2]];
                     if (from && to) this.addArrowSilent(from.id, a[1], to.id, a[3]);
                 });
+            },
+            // Paleta (Ctrl+K) — spustitelný seznam příkazů a klávesových zkratek (TACHI-style).
+            paletteCommands() {
+                const getMax = x => document.getElementById(x);
+                return [
+                    { label: 'MISE — úlohy', hint: 'aktivní kontext', shortcut: '', run: () => this.selectWorkspace('campaign') },
+                    { label: 'SPACE 1 — jablka', hint: 'demo plocha', shortcut: '', run: () => this.selectWorkspace('space1') },
+                    { label: 'SPACE 2 — prázdná', hint: 'volná plocha', shortcut: '', run: () => this.selectWorkspace('space2') },
+                    { label: 'SPACE 3 — prázdná', hint: 'volná plocha', shortcut: '', run: () => this.selectWorkspace('space3') },
+                    { label: 'SPACE 4 — prázdná', hint: 'volná plocha', shortcut: '', run: () => this.selectWorkspace('space4') },
+                    { label: 'SPACE 5 — prázdná', hint: 'volná plocha', shortcut: '', run: () => this.selectWorkspace('space5') },
+                    { label: 'Export diagramu', hint: 'aktuální plátno', shortcut: 'Ctrl+S', run: () => this.promptSvgExport() },
+                    { label: 'Export postupu', hint: 'celý snímek JSON', shortcut: '', run: () => this.promptJsonExport() },
+                    { label: 'Import postupu', hint: 'načíst JSON z PC', shortcut: '', run: () => { const inp = getMax('json-upload'); if (inp) inp.click(); } },
+                    { label: 'Vymazat plochu', hint: 'potvrzené', shortcut: '', run: () => this.promptClearCanvas() },
+                    { label: 'Nápověda', hint: 'syntaxe, zkratky, ukládání', shortcut: '', run: () => this.openHelp() },
+                    { label: 'O programu', hint: 'SPA, licence MIT', shortcut: '', run: () => this.openAbout() },
+                    { label: 'O autorovi', hint: 'kontakt', shortcut: '', run: () => this.openAuthor() },
+                    { label: 'RESET', hint: 'celkové vymazání (potvrzené)', shortcut: '', run: () => this.promptReset() }
+                ];
+            },
+            paletteIsOpen() { return !!(this.dom.paletteModal && this.dom.paletteModal.classList.contains('show')); },
+            openPalette() {
+                if (!this.dom.paletteModal) return;
+                this.closeMenu();
+                this.dom.paletteModal.classList.add('show');
+                this.renderPalette('');
+                if (this.dom.paletteInput) {
+                    this.dom.paletteInput.value = '';
+                    setTimeout(() => { const inp = this.dom.paletteInput; if (inp && inp.focus) inp.focus(); }, 40);
+                }
+            },
+            closePalette() { if (this.dom.paletteModal) this.dom.paletteModal.classList.remove('show'); },
+            renderPalette(filter) {
+                const list = this.dom.paletteList;
+                if (!list) return;
+                const q = String(filter || '').toLowerCase();
+                this.paletteItems = this.paletteCommands().filter(c =>
+                    !q || (c.label + ' ' + c.hint + ' ' + c.shortcut).toLowerCase().indexOf(q) !== -1);
+                this.paletteIndex = 0;
+                list.innerHTML = '';
+                this.paletteItems.forEach((c, i) => {
+                    const row = document.createElement('div');
+                    row.className = 'palette-row';
+                    row.innerHTML = '<span class="pr-name">' + c.label + '</span>' + (c.hint ? '<span class="pr-hint">' + c.hint + '</span>' : '') + (c.shortcut ? '<span class="palette-kbd">' + c.shortcut + '</span>' : '');
+                    row.addEventListener('click', () => this.paletteRunAt(i));
+                    list.appendChild(row);
+                });
+                this.paletteMark();
+            },
+            onPaletteInput(value) { this.renderPalette(value); },
+            onPaletteKey(e) {
+                if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); this.paletteMove(e.key === 'ArrowDown' ? 1 : -1); }
+                else if (e.key === 'Enter') { e.preventDefault(); this.paletteRun(); }
+            },
+            paletteMove(delta) {
+                const n = this.paletteItems ? this.paletteItems.length : 0;
+                if (n === 0) return;
+                this.paletteIndex = (this.paletteIndex + delta + n) % n;
+                this.paletteMark();
+            },
+            paletteMark() {
+                const list = this.dom.paletteList;
+                if (!list) return;
+                Array.prototype.forEach.call(list.children, (el, i) => el.classList.toggle('active', i === this.paletteIndex));
+            },
+            paletteRunAt(i) { this.paletteIndex = i; this.paletteRun(); },
+            paletteRun() {
+                const c = this.paletteItems && this.paletteItems[this.paletteIndex];
+                if (!c) return;
+                this.closePalette();
+                c.run();
             },
             enterCampaignLevel(id) {
                 const lvl = missionById(id);
@@ -2975,6 +3108,45 @@
             closeLevelResult() {
                 if (this.dom.levelResultModal) this.dom.levelResultModal.classList.remove('show');
             },
+            // POKRAČOVAT: zavře výsledkový modal a při úspěchu mise jde rovnou na další level
+            // aktuálního profilu (MISSIONS[profile]); u poslední mise se jen zavře.
+            continueAfterLevel() {
+                const id = this.activeWorkspace;
+                this.closeLevelResult();
+                if (this.modeOf(id) !== 'campaign' || !Game.isLevelDone(id)) return;
+                const list = MISSIONS[this.profile] || MISSIONS.H;
+                const idx = list.findIndex(m => m.id === id);
+                if (idx === -1 || idx === list.length - 1) {
+                    this.toast('Všechny mise tvého profilu jsou splněné. Můžeš je zopakovat pro víc hvězd.');
+                    return;
+                }
+                this.enterCampaignLevel(list[idx + 1].id);
+            },
+            solvedSvgFilename() {
+                return (((this.activeWorkspace && this.activeWorkspace !== 'campaign') ? this.activeWorkspace : 'reseni')) + '-reseni.svg';
+            },
+            // SVG s testováním: diagra aktualizovaný po úspěšném testu (OVĚŘENO + počet testů,
+            // mise, jméno žáka, datum) — hlavní důkaz zahájeného řešení (volba 1 + jméno).
+            buildSolvedSvg() {
+                if (this.blocks.length === 0) { this.toast('Plátno je prázdné.'); return null; }
+                const lvl = this.modeOf(this.activeWorkspace) === 'campaign' ? this.currentLevel() : null;
+                const tests = this.lastCheck ? (this.lastCheck.passed + '/' + this.lastCheck.total) : '—';
+                const name = (Game && Game.playerName) ? Game.playerName : '—';
+                const d = new Date();
+                const datum = d.toLocaleDateString('cs-CZ') + ' ' + d.toLocaleTimeString('cs-CZ', { hour: '2-digit', minute: '2-digit' });
+                const misto = lvl ? ('mise ' + lvl.id + ' — ' + lvl.name) : ('plocha ' + this.activeWorkspace);
+                let extra = 'OVĚŘENO · testy ' + tests + ' prošlo · ' + misto + ' · žák ' + name + ' · ' + datum;
+                return this.getSvgContent(false, null, null, false, extra);
+            },
+            downloadSolvedSvg() {
+                const svg = this.buildSolvedSvg();
+                if (!svg) return;
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml;charset=utf-8' }));
+                a.download = this.solvedSvgFilename();
+                a.click();
+                this.toast('SVG řešení exportováno: ' + a.download);
+            },
             onLevelSuccess() {
                 const lvl = this.currentLevel();
                 if (!lvl) return;
@@ -3010,6 +3182,8 @@
                 const first = !!res.firstTime;
                 if (this.dom.resultSaveBtn) this.dom.resultSaveBtn.style.display = first ? 'block' : 'none';
                 if (this.dom.resultOfferText) this.dom.resultOfferText.style.display = first ? 'block' : 'none';
+                // SVG řešení je k dispozici vždy po úspěšném dokončení (i při opakování).
+                if (this.dom.resultSvgBtn) this.dom.resultSvgBtn.style.display = 'block';
             },
 
             buildDefaultGameLoop() {
@@ -4001,6 +4175,14 @@
                         this.cheatSolveStep();
                     } else if (e.ctrlKey && e.key.toLowerCase() === 's') { 
                         e.preventDefault(); this.promptSvgExport(); 
+                    } else if (e.ctrlKey && e.key.toLowerCase() === 'k') {
+                        e.preventDefault(); this.openPalette();
+                    } else if (e.altKey && !e.ctrlKey && e.key.toLowerCase() === 's') {
+                        e.preventDefault(); this.openSamples();
+                    } else if (['Enter', 'ArrowDown', 'ArrowUp'].indexOf(e.key) !== -1 && this.paletteIsOpen()) {
+                        e.preventDefault();
+                        if (e.key === 'Enter') this.paletteRun();
+                        else this.paletteMove(e.key === 'ArrowDown' ? 1 : -1);
                     } else if (e.ctrlKey && e.key.toLowerCase() === 'z' && !e.shiftKey) { 
                         e.preventDefault(); this.undo(); 
                     } else if (e.ctrlKey && (e.key.toLowerCase() === 'y' || (e.key.toLowerCase() === 'z' && e.shiftKey))) { 
@@ -5026,7 +5208,7 @@
                 this.toast(`Exportováno jako ${filename} ✓`);
             },
 
-            getSvgContent(includeConsole = false, subsetBlocks = null, subsetArrows = null, transparentBg = false) {
+            getSvgContent(includeConsole = false, subsetBlocks = null, subsetArrows = null, transparentBg = false, extraFooter = null) {
                 const targetBlocks = subsetBlocks || this.blocks;
                 const targetArrows = subsetArrows || this.arrows;
 
@@ -5049,7 +5231,7 @@
                         logHeight = logs.length * 20 + 60;
                     }
                 }
-                const footerPadding = !subsetBlocks ? 40 : 0; 
+                const footerPadding = !subsetBlocks ? (extraFooter ? 74 : 40) : 0; 
                 const totalH = H + logHeight + footerPadding;
                 const bgFill = transparentBg ? 'transparent' : '#0d0f14';
 
@@ -5141,8 +5323,13 @@
                         statusText = "STAV: CHYBA BĚHU ✗";
                         statusColor = "#ef4444"; 
                     }
-                    svg += `<text x="20" y="${totalH - 15}" font-family="monospace" font-size="14" font-weight="bold" fill="${statusColor}">${statusText}</text>`;
-                    svg += `<text x="${W - 20}" y="${totalH - 15}" font-family="monospace" font-size="12" fill="rgba(255,255,255,0.3)" text-anchor="end">MIT © 2026 Luděk Sušický | CodeFlowChart EDU</text>`;
+                    const footY = totalH - 15;
+                    svg += `<text x="20" y="${footY}" font-family="monospace" font-size="14" font-weight="bold" fill="${statusColor}">${statusText}</text>`;
+                    if (extraFooter) {
+                        const safeFooter = String(extraFooter).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                        svg += `<text x="20" y="${footY - 30}" font-family="monospace" font-size="12" font-weight="bold" fill="#10b981">${safeFooter}</text>`;
+                    }
+                    svg += `<text x="${W - 20}" y="${footY}" font-family="monospace" font-size="12" fill="rgba(255,255,255,0.3)" text-anchor="end">MIT © 2026 Luděk Sušický | CodeFlowChart EDU</text>`;
                 }
 
                 svg += `</svg>`;

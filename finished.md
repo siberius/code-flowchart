@@ -2,6 +2,39 @@
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
+## 2026-09-25 — Ukázky do modalu (Alt+S), paleta příkazů (Ctrl+K), RVP bez G, About +30 % šířky, POKRAČOVAT → další level (nezakomitováno)
+
+- **Ukázky mimo hamburger menu:** sekce UKÁZKY se z `#side-menu` odstranila; nový samostatný
+  modal **Výběr ukázky** (`#samples-modal`, 4 ukázky s popisem, `loadSample` beze změny chování),
+  vyvolatelný **Alt+S** (`preventDefault`, nekoliduje se Ctrl+S/Ctrl+K/zoom/vstupem). Do menu
+  přidán odkaz „Ukázky (Alt+S)". `renderSamples` plní `#samples-list`, žárovka 💡 → SVG.
+- **Paleta (Ctrl+K, TACHI-style):** `#palette-modal` — hledací input (`onPaletteInput` filtruje),
+  seznam 14 spustitelných příkazů se zkratkami (MISE, SPACE 1–5, Export SVG/JSON, Import,
+  Vymazat plochu, Nápověda, O programu, O autorovi, RESET), ↑↓ + Enter (`paletteMove`/`paletteRun`/
+  `paletteRunAt`), Esc zavře; zkratka `Ctrl+K` + odkaz v menu a v nápovědě.
+- **RVP „G" je nekorektní → opraveno:** cíl jsou jen učební obory H + E/J (PLAN §0/§11),
+  gymnázia NEJSOU cílem. O programu: „RVP G a SOŠ…" → „SOŠ — učebních oborů H a E/J
+  (RVP SOV, neprogramátorské obory)". Nápověda: „Co si osvojíš (RVP G + SOŠ)" → „Co si osvojíš
+  (SOŠ — obory H a E/J)". Testy hlídají nepřítomnost „RVP G"/„gymnáz".
+- **O programu o 30 % širší na PC:** `#about-modal .modal-box` → `width: min(546px, 97vw)`;
+  dotyková zařízení zůstávají `min(420px, 90vw)` (33vh přetrvává).
+- **Výsledkový modal po úspěchu:**
+  - nové tlačítko **SVG ŘEŠENÍ** (`result-svg-btn`) — vždy viditelné (i při opakovaném testu),
+    stáhne `mXX-reseni.svg` přímo jedním klikem (žádný mezikrok); SVG = diagram + patička
+    **OVĚŘENO · testy X/Y prošlo · mise — název · žák jméno · datum** (`buildSolvedSvg` →
+    `getSvgContent(..., extraFooter)` rozšířen o 5. parametr a řádek v patičce);
+  - **POKRAČOVAT = přejít přímo na další level** (`continueAfterLevel`): zavře výsledkový modal
+    a otevře zadání další mise aktuálního profilu (`MISSIONS[profile]`); po poslední misi jen
+    zavře + toast. Žák nemusí nic stahovat, aby mohl pokračovat.
+  - STÁHNOUT JSON zůstává gated „první dokončení" (PLAN §8.4).
+- **Nápověda:** zkratky Ctrl+K a Alt+S, ukázky „Alt+S", u hodnosti zmínka o stažení SVG.
+- **Testy:** `flow_smoke_tests.js` → **173** (z 146): +27 (samples modal + Alt+S v keydown,
+  paleta ≥13 příkazů/filtr/spuštění, výsledkový modal: SVG tlačítko, soubor m02-reseni.svg,
+  OVĚŘENO + testy + jméno + datum, POKRAČOVAT m02→m03, poslední mise, RVP bez G, šířka 546px,
+  Ctrl+K/Alt+S v nápovědě).
+- **Ověření:** syntax OK · flow_tests 39 · flow_check 70 · flow_game 90 · flow_storage 55 ·
+  flow_ui 6 · flow_smoke 173 (celkem **433** kontrol, 0 FAIL).
+
 ## 2026-09-25 — Start SPACE 1 + expirace na PC (90 min) + O programu/autorovi/MIT (nezakomitováno)
 
 - **Start = explicitně SPACE 1:** `startupWorkspace()` — při startu se vždy načte SPACE 1;

@@ -1,5 +1,6 @@
 // F1 — smoke test UI: spustí App.init() a herní metody nad bohatým DOM mockem.
 // Doplňuje jednotkové testy Game (flow_game_tests.js) o ověření propojení s UI.
+// Od F1 (V2.2): slot plochy = id mise (m01..m08, e1..e6), profily H/E_J, jméno dobrovolné.
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
@@ -85,12 +86,13 @@ const sandbox = {
 const html = fs.readFileSync(FILE, 'utf8');
 const match = html.match(/<script\b[^>]*>([\s\S]*?)<\/script>/i);
 vm.createContext(sandbox);
-const code = match[1] + '\n;globalThis.__App = App; globalThis.__Game = Game; globalThis.__LEVELS = LEVELS;';
+const code = match[1] + '\n;globalThis.__App = App; globalThis.__Game = Game; globalThis.__MISSIONS = MISSIONS;';
 new vm.Script(code, { filename: 'code-flowchart.html:inline-script' }).runInContext(sandbox);
 
 const App = sandbox.__App;
 const Game = sandbox.__Game;
-const LEVELS = sandbox.__LEVELS;
+const MISSIONS = sandbox.__MISSIONS;
+const missionById = sandbox.missionById;
 
 let pass = 0, fail = 0;
 const check = (n, c, x = '') => { if (c) { pass++; console.log('  OK   ' + n); } else { fail++; console.error('  FAIL ' + n + (x ? ' -> ' + x : '')); } };
@@ -106,7 +108,7 @@ try {
 check('výchozí plocha = space1 (jablka demo)', App.activeWorkspace === 'space1', App.activeWorkspace);
 check('režim = space', App.modeOf(App.activeWorkspace) === 'space');
 check('HUD skrytý (ne v MISE)', !App.dom.hud.classList.contains('show'));
-check('6 mis v menu', App.dom.menuMissions.children.length === 6, 'got ' + App.dom.menuMissions.children.length);
+check('8 misí H v menu', App.dom.menuMissions.children.length === 8, 'got ' + App.dom.menuMissions.children.length);
 check('space1 má obsah (jablka)', App.blocks.length > 0, 'bloky=' + App.blocks.length);
 check('jmenný modal se při startu neotevřel', !App.dom.nameModal.classList.contains('show'));
 
@@ -117,56 +119,58 @@ check('jméno uloženo a ořezáno', Game.playerName === 'Evička');
 check('modal zavřen', !App.dom.nameModal.classList.contains('show'));
 check('HUD ukazuje jméno', App.dom.hudName.textContent === 'Evička');
 
-console.log('\n[prázdné jméno odmítnuto]');
-Game.playerName = '';
-App.dom.nameInput.value = '';
-App.submitName();
-check('chybová zpráva', App.dom.nameError.textContent.length > 0);
-check('zůstal bez jména', Game.playerName === '');
-
 console.log('\n[mise → XP/HUD]');
-Game.playerName = 'Evička';
-Game.completeLevel(2, { noHint: true, firstTry: true, efficient: true });
+Game.completeLevel('m02', { noHint: true, firstTry: true, efficient: true });
 App.updateGameUI();
 check('HUD XP = 174', App.dom.hudXp.textContent === '174 XP', App.dom.hudXp.textContent);
 check('HUD hvězdy = ★3', App.dom.hudStars.textContent === '★3', App.dom.hudStars.textContent);
-check('HUD hodnost', App.dom.hudRank.textContent === 'Nováček');
+check('HUD hodnost', App.dom.hudRank.textContent === 'Nováček u pásu', App.dom.hudRank.textContent);
 
-console.log('\n[narativní téma přes UI]');
-App.applyNarrative('streamer');
-check('ikona streamer', App.dom.btnNarrative.textContent === '🎮');
-check('HUD role = STREAMER', App.dom.hudRole.textContent === 'STREAMER');
-App.toggleNarrative();
-check('přepnuto na operátor', App.narrative === 'operator');
-check('ikona operátor', App.dom.btnNarrative.textContent === '🏭');
-check('HUD role = OPERÁTOR', App.dom.hudRole.textContent === 'OPERÁTOR');
-check('data: level 4 = Kontrola kvality', LEVELS.find(l => l.id === 4).name === 'Kontrola kvality');
-App.toggleNarrative();
-check('zpět streamer', App.narrative === 'streamer');
-check('HUD role zpět', App.dom.hudRole.textContent === 'STREAMER');
-check('data: level 4 = Moderace chatu', LEVELS.find(l => l.id === 4).name === 'Moderace chatu');
+console.log('\n[profily H / E_J přes UI]');
+App.setProfile('H');
+check('ikona H', App.dom.btnProfile.textContent === '⚙');
+check('HUD role = HEFAISTOS H', App.dom.hudRole.textContent === 'HEFAISTOS H');
+App.toggleProfile();
+check('přepnuto na E_J', App.profile === 'E_J');
+check('ikona E/J', App.dom.btnProfile.textContent === '🛠');
+check('HUD role = HEFAISTOS E/J', App.dom.hudRole.textContent === 'HEFAISTOS E/J');
+check('menu 6 misí E/J', App.dom.menuMissions.children.length === 6, 'got ' + App.dom.menuMissions.children.length);
+check('profil persistován', sandbox.localStorage.getItem('blockflow_v3_profile') === 'E_J');
+App.toggleProfile();
+check('zpět na H (8 misí)', App.profile === 'H' && App.dom.menuMissions.children.length === 8);
+
+console.log('\n[prázdné jméno = dobrovolné, pokračuje bez jména]');
+App.openNameModal();
+App.dom.nameInput.value = '   ';
+Game.playerName = '';
+App.submitName();
+check('bez chybové zprávy', App.dom.nameError.textContent === '');
+check('modal zavřen', !App.dom.nameModal.classList.contains('show'));
+check('jméno = null (dobrovolné)', Game.playerName === null, String(Game.playerName));
+check('HUD ukazuje pomlčku', App.dom.hudName.textContent === '—');
 
 console.log('\n[modal mise — příběh a přesun bloků]');
-App.enterCampaignLevel(1);
+Game.playerName = 'Evička';
+App.enterCampaignLevel('m01');
 check('modal mise otevřen', App.dom.levelModal.classList.contains('show'));
-check('modal obsahuje příběh', App.dom.levelBody.innerHTML.includes('streamovací studio'), App.dom.levelBody.innerHTML.slice(0, 120));
+check('modal obsahuje příběh', App.dom.levelBody.innerHTML.includes('ŠROUB'), App.dom.levelBody.innerHTML.slice(0, 120));
 check('modal vyzývá k přesunu bloků', App.dom.levelBody.innerHTML.includes('Přesuň') && App.dom.levelBody.innerHTML.includes('propoj'));
-check('modal neslibuje neexistující AUTO-kontrolu', !App.dom.levelBody.innerHTML.includes('AUTO-kontrola') && App.dom.levelBody.innerHTML.includes('Spusť program'));
+check('modal popisuje ověření bez AUTO-kontroly', !App.dom.levelBody.innerHTML.includes('AUTO-kontrola') && App.dom.levelBody.innerHTML.includes('Spusť program'));
 App.closeLevelModal();
 
 console.log('\n[dokončení mise → hvězdy do menu]');
-Game.playerName = 'Evička';
 Game.levels = {};
 Game.xp = 0;
-App.activeWorkspace = 'lvl1';
-App.activeLevel = 1;
+App.activeWorkspace = 'm01';
+App.activeLevel = 'm01';
 App.levelHintUsed = false;
 App.levelFailed = false;
 App.blocks = [];
 App.onLevelSuccess();
-check('mise 1 dokončena', Game.isLevelDone(1));
-check('hvězdy = 3', Game.levels[1].stars === 3, 'got ' + (Game.levels[1] && Game.levels[1].stars));
-check('menu ukazuje ★★★ u mise 1', App.dom.menuMissions.children[0].innerHTML.includes('★★★'));
+check('mise m01 dokončena', Game.isLevelDone('m01'));
+check('hvězdy = 3', Game.levels.m01.stars === 3, 'got ' + (Game.levels.m01 && Game.levels.m01.stars));
+check('menu ukazuje ★★★ u mise m01', App.dom.menuMissions.children[0].innerHTML.includes('★★★'));
+check('menu ukazuje značku Ověřeno', App.dom.menuMissions.children[0].innerHTML.includes('Ověřeno'));
 check('HUD hvězdy = ★3', App.dom.hudStars.textContent === '★3', App.dom.hudStars.textContent);
 check('výsledkový modal otevřen', App.dom.levelResultModal.classList.contains('show'));
 App.closeLevelResult();
@@ -179,7 +183,7 @@ check('modeOf(space1) = space', App.modeOf('space1') === 'space');
 check('SPACE 1 má jablka (bloky > 0)', App.blocks.length > 0, 'bloky=' + App.blocks.length);
 check('HUD skrytý v SPACE', !App.dom.hud.classList.contains('show'));
 App.selectWorkspace('space2');
-check('space2 prázdná (jen Start)', App.blocks.length === 1, 'bloky=' + App.blocks.length);
+check('space2 prázdná (jen Start)', App.blocks.length === 1 && App.blocks[0].type === 'start', 'bloky=' + App.blocks.length);
 App.selectWorkspace('space3');
 check('plocha space3', App.activeWorkspace === 'space3');
 App.selectWorkspace('space4');
@@ -188,27 +192,28 @@ App.selectWorkspace('space5');
 check('plocha space5', App.activeWorkspace === 'space5');
 check('aktivní plocha persistována', sandbox.localStorage.getItem('blockflow_v3_active_ws') === 'space5');
 App.selectWorkspace('campaign');
-check('zpět do KAMPAŇě na poslední level', App.activeWorkspace === 'lvl1', App.activeWorkspace);
+check('zpět do KAMPAŇě na poslední misi', App.activeWorkspace === 'm01', App.activeWorkspace);
 check('HUD zpět viditelný', App.dom.hud.classList.contains('show'));
 
 console.log('\n[registr ploch]');
 const slots = App.workspaceSlots();
-check('obsahuje space1-5 i lvl1-6',
-    ['space1', 'space2', 'space3', 'space4', 'space5', 'lvl1', 'lvl6'].every(s => slots.indexOf(s) !== -1));
-check('celkem 11 ploch (5 + 6)', slots.length === 11, 'got ' + slots.length);
+check('obsahuje space1-5 i m01/m08/e1/e6',
+    ['space1', 'space2', 'space3', 'space4', 'space5', 'm01', 'm08', 'e1', 'e6'].every(s => slots.indexOf(s) !== -1));
+check('celkem 19 ploch (5 × SPACE + 14 misí)', slots.length === 19, 'got ' + slots.length);
 
 console.log('\n[vstup do mise → level modal]');
-App.enterCampaignLevel(3);
-check('aktivní plocha = lvl3', App.activeWorkspace === 'lvl3');
+Game.playerName = 'Evička';
+App.enterCampaignLevel('m03');
+check('aktivní plocha = m03', App.activeWorkspace === 'm03');
 check('level modal otevřen', App.dom.levelModal.classList.contains('show'));
-check('titulek = 3. Turnaj 15+', App.dom.levelTitle.textContent === '3. Turnaj 15+', App.dom.levelTitle.textContent);
-check('tělo obsahuje cíl', String(App.dom.levelBody.innerHTML).indexOf('Načti věk') !== -1);
+check('titulek = m03. Vytiskni náhradní držák', App.dom.levelTitle.textContent === 'm03. Vytiskni náhradní držák', App.dom.levelTitle.textContent);
+check('tělo obsahuje cíl', String(App.dom.levelBody.innerHTML).indexOf('spotřebu materiálu') !== -1);
 check('kompas skrytý', App.dom.levelKompas.style.display === 'none');
 App.toggleLevelKompas();
 check('kompas zobrazen', App.dom.levelKompas.style.display === 'block');
 App.closeLevelModal();
 check('level modal zavřen', !App.dom.levelModal.classList.contains('show'));
-check('scaffold levelu 3 (bloky > 0)', App.blocks.length > 0, 'bloky=' + App.blocks.length);
+check('scaffold m03 (bloky > 0)', App.blocks.length > 0, 'bloky=' + App.blocks.length);
 
 console.log('\n[RESET]');
 App.doReset();
@@ -216,19 +221,32 @@ check('jméno smazáno', Game.playerName === '');
 check('XP smazáno', Game.xp === 0);
 check('jmenný modal se neotevřel (ptá se až u levelu)', !App.dom.nameModal.classList.contains('show'));
 
-console.log('\n[jméno se ptá až při kliknutí na level]');
-App.enterCampaignLevel(1);
+console.log('\n[jméno se ptá až při kliknutí na level — zadání i přeskočení]');
+App.enterCampaignLevel('m01');
 check('klik na level otevřel jmenný modal', App.dom.nameModal.classList.contains('show'));
-check('čeká na level 1', App.pendingLevel === 1);
+check('čeká na misi m01', App.pendingLevel === 'm01');
 App.dom.nameInput.value = 'Operátor';
 App.submitName();
 check('jméno uloženo', Game.playerName === 'Operátor');
-check('rovnou vstoupil do levelu 1', App.activeWorkspace === 'lvl1', App.activeWorkspace);
+check('rovnou vstoupil do mise m01', App.activeWorkspace === 'm01', App.activeWorkspace);
 check('level modal otevřen', App.dom.levelModal.classList.contains('show'));
+App.closeLevelModal();
+
+console.log('\n[bez jména — Zatím ne → pokračuje do mise]');
+App.doReset();
+App.enterCampaignLevel('m02');
+check('jmenný modal znovu otevřen', App.dom.nameModal.classList.contains('show'));
+App.submitName(true);
+check('bez jména (null)', Game.playerName === null, String(Game.playerName));
+check('nameSkipped = true', App.nameSkipped === true);
+check('rovnou vstoupil do mise m02', App.activeWorkspace === 'm02', App.activeWorkspace);
+check('level modal otevřen', App.dom.levelModal.classList.contains('show'));
+App.closeLevelModal();
+check('přepnutí do mise se už jména neptá', (App.enterCampaignLevel('m03'), !App.dom.nameModal.classList.contains('show') && App.activeWorkspace === 'm03'));
 
 console.log('\n[cheat Ctrl+Alt+C — krok za krokem]');
-App.switchWorkspace('lvl4');
-const sol = LEVELS.find(l => l.id === 4).solution;
+App.switchWorkspace('m04');
+const sol = missionById('m04').solution;
 const total = sol.blocks.length + sol.arrows.length;
 App.cheatStep = 0;
 for (let i = 1; i <= total; i++) {
@@ -288,13 +306,13 @@ check('zrušení confirm neprovede callback', confirmed === true);
 console.log('\n[dokončení = správná mise, ne stale activeLevel]');
 Game.levels = {};
 Game.xp = 0;
-App.switchWorkspace('lvl3');
-App.activeLevel = 1;
+App.switchWorkspace('m03');
+App.activeLevel = 'm01';
 App.levelHintUsed = false;
 App.levelFailed = false;
 App.onLevelSuccess();
-check('dokončena mise 3 (podle plochy)', Game.isLevelDone(3), 'levels=' + JSON.stringify(Object.keys(Game.levels)));
-check('mise 1 dokončena nebyla', !Game.isLevelDone(1));
+check('dokončena mise m03 (podle plochy)', Game.isLevelDone('m03'), 'levels=' + JSON.stringify(Object.keys(Game.levels)));
+check('mise m01 dokončena nebyla', !Game.isLevelDone('m01'));
 App.closeLevelResult();
 
 console.log(`\nVýsledek: ${pass} OK, ${fail} FAIL`);

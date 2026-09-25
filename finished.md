@@ -2,6 +2,33 @@
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
+## 2026-09-25 — F1: datový model m01–m08 + profily H/E_J, sloty misí, značky (nezakomitováno)
+
+- **Migrace úplně dokončena:** zrušeny bloky `SCAFFOLDS`, `SOLUTIONS`, `NARRATIVES`
+  a `DEFAULT_NARRATIVE` (−25 305 znaků); scaffolding, vzorová řešení i testy žijí
+  inline v `MISSIONS` (`H: m01–m08`, `E_J: e1–e6`) s helperem `missionById`.
+  Slot plochy = **id mise** (`CAMPAIGN_SLOTS`); `modeOf`/`currentLevel`/cheat/sber
+  exportu přes stojné sloty. Zbývající odkaz `LEVELS` v kódu odstraněn.
+- **Profily H/E_J místo NARRATIVES toggle:** `App.profile`, `setProfile`/`toggleProfile`
+  (klíč `blockflow_v3_profile`, HUD role HEFAISTOS H/E_J, ikony ⚙/🛠). Přepnutí mění
+  jen prezentaci menu, nikdy nepřepisuje práci a neoznačuje profil jako horší.
+- **Jméno dobrovolné:** prázdné jméno → `null` (`isValidName` 0–30 znaků, `setPlayerName('')`),
+  v exportu neblokuje; tlačítko „Zatím ne — bez jména“ (`submitName(true)` → `nameSkipped`).
+- **Značky** Zprovozněno → Ověřeno → Upraveno (`Game.TAGS`, `setTag` jednosměrně):
+  spuštění na KONEC → Zprovozněno, AUTO-kontrola → Ověřeno, úprava ověřené mise
+  → Upraveno (`noteCampaignEdit` v addBlock/šipka/saveEdit/rotatePorts/toggleIOType/delete).
+- **Oprava chyby:** `Game.completeLevel` přepisoval záznam úrovně a mazal zpětnou
+  značku (`tag`) — nyní zachovává `...prev`.
+- **Korekce dat misí:** m02 doplněno „požádat o zavření krytu“ + vektory dle trace;
+  m06/e5 `krok <= n` → `krok < n` (shoda řešení s očekávaným výstupem `Doručeno: n`);
+  m07 vektory = plný trace (načtení plánu jednou + `krok++`×n).
+- **Testy přepsány na nový model:** `flow_check_tests.js` (MISSIONS, mix H+E_J, mise
+  m08/e6 bez řešení/testů), `flow_game_tests.js` (8+6 misí, profily E_J persistence,
+  jméno dobrovolné, značky), `flow_smoke_tests.js` (init, 19 ploch = 5×SPACE + 14 misí,
+  profil přepnutí, přeskočení jména, cheat na m04), sdílený util exportuje `MISSIONS`.
+- **Ověření:** syntax OK · flow_tests 26 · flow_check 70 · flow_game 90 · flow_storage 10 ·
+  flow_ui 6 · flow_smoke 93 (celkem **295** kontrol, 0 FAIL).
+
 ## 2026-09-25 — F2: Checker v2 — skutečné události, jeden engine (nezakomitováno)
 
 - **Checker (`App.runCheckVector`):** přidáno sledování **skutečných událostí běhu** —

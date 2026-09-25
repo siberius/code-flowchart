@@ -77,14 +77,14 @@ Pro vzdělávací obsah navíc: `md-skills/vzdelavaci-metodiky.md` (RVP/ŠVP, CZ
   - `node flow_check_tests.js` (F2) — Checker: evaluátor podmínek, `runCheckVector` (události/`counts`/`requireLoop`/`maxOps`, vyčerpání zásoby vstupů, povinné dosažení KONCE, poznámka v toku), mapování literálů/var.
   - `node flow_storage_tests.js` — persistence (save/load workspace), migrace v1→v3, okrajové stavy.
   - `node flow_ui_tests.js` — viewport, responzivní breakpoint, tablet porty bez hoveru.
-  - `node flow_game_tests.js` (F1) — herní vrstva: `LEVELS` data (m1–m8/profily), jméno, XP bonusy,
-    značky, `completeLevel` + certifikát, persistence, restart mise, `SAMPLES`.
+  - `node flow_game_tests.js` (F1) — herní vrstva: `MISSIONS` data (8× H m01–m08 + 6× E_J e1–e6), jméno (dobrovolné), XP bonusy,
+    značky Zprovozněno→Ověřeno→Upraveno, `completeLevel` + certifikát, profily, persistence, restart mise, `SAMPLES`.
   - `node flow_smoke_tests.js` (F1) — UI smoke: `App.init()` + HUD/mise/jméno/restart
-    nad bohatým DOM mockem, menu ukázek + `loadSample`, `story` v modalu mise,
-    `onLevelSuccess` (značky do menu), herní confirm modal.
-  - Sdílený `flow_test_utils.js` (načtení `App` + `Game` + `LEVELS` + `SAMPLES` z inline `<script>` v Node).
+    nad bohatým DOM mockem, 19 ploch (5× SPACE + 14 misí = sloty m01..e6), menu ukázek + `loadSample`,
+    story v modalu mise, volitelné jméno (přeskočit), `onLevelSuccess` (značky do menu), herní confirm modal.
+  - Sdílený `flow_test_utils.js` (načtení `App` + `Game` + `MISSIONS` + `SAMPLES` z inline `<script>` v Node).
   - **Dev cheat:** `Ctrl+Alt+C` s aktivním CapsLockem v MISE vyřeší aktuální
-    level krok za krokem ze vzorového řešení (`SOLUTIONS`); jen pro testování.
+    level krok za krokem ze vzorového řešení (per-mise `solution` v `MISSIONS`); jen pro testování.
   - Plánováno (F7/F9): plný browser matrix 1440/1024/390/320 px, `prefers-reduced-motion`,
     self-test misí m01–m08 pro oba profily (až vzniknou).
 - Po každé změně ověřit přiměřeně riziku (MASTER „Git, verification and completion");

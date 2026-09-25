@@ -110,11 +110,14 @@
         /* BOČNÍ MENU - Drawer */
         #side-menu {
             position: fixed; top: 56px; left: -300px; width: 260px; height: fit-content;
-            background: rgba(13, 15, 20, 0.9); backdrop-filter: blur(20px);
+            background: linear-gradient(135deg, rgba(15, 18, 26, 0.75), rgba(13, 15, 20, 0.55));
+            -webkit-backdrop-filter: blur(20px) saturate(140%);
+            backdrop-filter: blur(20px) saturate(140%);
             border-right: 1px solid rgba(255, 255, 255, 0.05);
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             border-bottom-right-radius: 16px;
-            box-shadow: 15px 15px 30px rgba(0,0,0,0.8); z-index: 95;
+            box-shadow: 15px 15px 30px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06);
+            z-index: 95;
             display: flex; flex-direction: column; padding: 20px 0;
             transition: left 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
@@ -216,7 +219,7 @@
         }
         .ws-arrow:hover { color: var(--text); border-color: var(--accent); background: rgba(0,229,255,0.08); }
         .ws-arrow:disabled { opacity: 0.25; cursor: default; }
-        #ws-film { position: relative; width: 186px; height: 36px; overflow: hidden; }
+        #ws-film { position: relative; width: 96px; height: 36px; overflow: hidden; }
         .ws-film-mask {
             position: absolute; top: 0; bottom: 0; width: 10px; pointer-events: none; z-index: 2;
         }
@@ -224,21 +227,20 @@
             display: flex; height: 100%; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .ws-cell {
-            width: 62px; flex: 0 0 62px; height: 36px; padding: 0; border: 0; background: transparent;
-            color: #94a3b8; font-size: 11px; cursor: pointer; white-space: nowrap;
-            font-family: 'JetBrains Mono', monospace; font-weight: 700; letter-spacing: 1px;
-            display: flex; align-items: center; justify-content: center; gap: 4px;
+            width: 68px; flex: 0 0 68px; height: 36px; padding: 0; border: 0; background: transparent;
+            color: #94a3b8; font-size: 12px; cursor: pointer; white-space: nowrap;
+            font-family: 'JetBrains Mono', monospace; font-weight: 700; letter-spacing: 2px;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
             transition: color 0.2s, opacity 0.2s;
         }
         .ws-cell:hover { color: var(--text); }
-        .ws-cell.active { color: var(--accent); }
-        .ws-cell.active .ws-cell-dot { background: var(--accent); box-shadow: 0 0 8px rgba(0,229,255,0.8); }
-        .ws-cell-dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(148,163,184,0.5); }
+        .ws-cell:not(.active) { opacity: 0.35; }
+        .ws-cell.active { color: var(--accent); text-shadow: 0 0 10px rgba(0,229,255,0.7); opacity: 1; }
         .ws-cell-frame {
             position: absolute; inset: 0; pointer-events: none; border: 1px solid rgba(255,255,255,0.12);
             clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
         }
-        @media (max-width: 900px) { #ws-film { width: 150px; } .ws-cell { width: 50px; flex-basis: 50px; font-size: 10px; } }
+        @media (max-width: 900px) { #ws-film { width: 70px; } .ws-cell { width: 50px; flex-basis: 50px; font-size: 11px; letter-spacing: 1.2px; } }
 
         #main {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -524,14 +526,20 @@
             position: fixed; bottom: 0; left: 0; right: 0; height: 300px;
             background: rgba(13, 15, 20, 0.95); backdrop-filter: blur(15px);
             border-top: 1px solid var(--border); border-radius: 16px 16px 0 0;
-            transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateY(calc(100% - 46px)); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 200; display: flex; flex-direction: column; box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
         }
         #console-panel.open { transform: translateY(0); }
         .console-header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 12px 20px; border-bottom: 1px solid var(--border); font-weight: 700; color: var(--text-dim);
+            height: 46px; flex-shrink: 0; display: flex; justify-content: space-between; align-items: center;
+            padding: 0 20px; border-bottom: 1px solid var(--border); font-weight: 700; color: var(--text-dim);
+            cursor: pointer; user-select: none;
         }
+        .console-header .tit { color: var(--text-dim); }
+        .console-header .tit b { color: var(--accent); }
+        .console-dock-hint { color: #64748b; font-size: 11px; margin-left: 12px; letter-spacing: 1px; }
+        .console-dock-hint .caret { display: inline-block; color: var(--accent); transition: transform 0.3s; }
+        #console-panel.open .console-dock-hint .caret { transform: rotate(180deg); }
         .close-console { cursor: pointer; color: var(--text); font-size: 20px; transition: color 0.2s; }
         .close-console:hover { color: #ef4444; }
         
@@ -878,12 +886,12 @@
                 <div class="ws-film-mask" style="left:0;background:linear-gradient(to right, var(--bg), transparent);"></div>
                 <div class="ws-film-mask" style="right:0;background:linear-gradient(to left, var(--bg), transparent);"></div>
                 <div id="ws-track">
-                    <button class="ws-cell" data-ws="campaign" onclick="App.selectWorkspace('campaign')" title="Mise — úlohy, jméno, XP">MISE<span class="ws-cell-dot"></span></button>
-                    <button class="ws-cell" data-ws="space1" onclick="App.selectWorkspace('space1')" title="Plocha 1 — jablka demo">SPACE 1<span class="ws-cell-dot"></span></button>
-                    <button class="ws-cell" data-ws="space2" onclick="App.selectWorkspace('space2')" title="Prázdná plocha 2">SPACE 2<span class="ws-cell-dot"></span></button>
-                    <button class="ws-cell" data-ws="space3" onclick="App.selectWorkspace('space3')" title="Prázdná plocha 3">SPACE 3<span class="ws-cell-dot"></span></button>
-                    <button class="ws-cell" data-ws="space4" onclick="App.selectWorkspace('space4')" title="Prázdná plocha 4">SPACE 4<span class="ws-cell-dot"></span></button>
-                    <button class="ws-cell" data-ws="space5" onclick="App.selectWorkspace('space5')" title="Prázdná plocha 5">SPACE 5<span class="ws-cell-dot"></span></button>
+                    <button class="ws-cell" data-ws="campaign" onclick="App.selectWorkspace('campaign')" title="Mise — úlohy, jméno, XP">MISE</button>
+                    <button class="ws-cell" data-ws="space1" onclick="App.selectWorkspace('space1')" title="Plocha 1 — jablka demo">SPACE 1</button>
+                    <button class="ws-cell" data-ws="space2" onclick="App.selectWorkspace('space2')" title="Prázdná plocha 2">SPACE 2</button>
+                    <button class="ws-cell" data-ws="space3" onclick="App.selectWorkspace('space3')" title="Prázdná plocha 3">SPACE 3</button>
+                    <button class="ws-cell" data-ws="space4" onclick="App.selectWorkspace('space4')" title="Prázdná plocha 4">SPACE 4</button>
+                    <button class="ws-cell" data-ws="space5" onclick="App.selectWorkspace('space5')" title="Prázdná plocha 5">SPACE 5</button>
                 </div>
                 <div class="ws-cell-frame"></div>
             </div>
@@ -983,10 +991,11 @@
     </div>
 
     <div id="console-panel">
-        <div class="console-header">
-            <div style="display: flex; gap: 16px; align-items: center;">
-                <span>Terminal // CodeFlowChart Execution Engine v1.1</span>
-                <div class="sim-controls">
+        <div class="console-header" onclick="App.toggleConsolePanel(event)">
+            <div style="display: flex; gap: 16px; align-items: center; min-width: 0;">
+                <span class="tit"><b>Terminal</b> // CodeFlowChart Execution Engine v1.1</span>
+                <span class="console-dock-hint"><span class="caret">▼</span> konzole</span>
+                <div class="sim-controls" onclick="event.stopPropagation()">
                     <select id="sim-speed-select" onchange="App.setSpeed(this.value)" title="Rychlost simulace">
                         <option value="1">Rychlost 1x</option>
                         <option value="2">Rychlost 2x</option>
@@ -995,7 +1004,7 @@
                     <button id="btn-next-step" onclick="App.nextStep()" style="display:none;">Další krok ⏭</button>
                 </div>
             </div>
-            <span class="close-console" onclick="App.stopSimulation(true)">✖</span>
+            <span class="close-console" onclick="event.stopPropagation(); App.stopSimulation(true)">✖</span>
         </div>
         <div class="console-layout">
             <div class="console-left">
@@ -2516,6 +2525,12 @@
                 this.setupPointerEvents();
                 this.setupKeyboard();
                 document.addEventListener('click', (e) => this.onModalBackdropClick(e));
+                // Na plochu mimo otevřený terminál → terminál se zasune dolů na lištu.
+                if (this.dom.canvasWrap) {
+                    this.dom.canvasWrap.addEventListener('pointerdown', () => {
+                        if (!this.isSimulating) this.dockConsole();
+                    });
+                }
                 if (this.dom.nameInput) {
                     this.dom.nameInput.addEventListener('keydown', (e) => {
                         if (e.key === 'Enter') this.submitName();
@@ -2639,6 +2654,13 @@
             currentLevel() {
                 if (!this.isCampaign()) return null;
                 return missionById(this.activeWorkspace) || null;
+            },
+            // Pořadové číslo mise pro prezentaci (1., 2., …) — id zůstává jen interní.
+            missionNum(id) {
+                const inH = (MISSIONS.H || []).findIndex(m => m.id === id);
+                if (inH !== -1) return inH + 1;
+                const inE = (MISSIONS.E_J || []).findIndex(m => m.id === id);
+                return inE !== -1 ? inE + 1 : 0;
             },
             // Editace rozpracované ověřené mise -> značka Upraveno (nikdy nesmaže Ověřeno).
             noteCampaignEdit() {
@@ -2794,8 +2816,10 @@
                 let idx = WS_ORDER.indexOf(this.activeWorkspace);
                 if (idx === -1 && this.modeOf(this.activeWorkspace) === 'campaign') idx = 0;
                 if (idx < 0) idx = 0;
-                const w = (cells[0] && cells[0].getBoundingClientRect().width) || 62;
-                track.style.transform = 'translateX(' + ((1 - idx) * w) + 'px)';
+                const film = document.getElementById('ws-film');
+                const w = (cells[0] && cells[0].getBoundingClientRect().width) || 68;
+                const W = (film && film.getBoundingClientRect().width) || w;
+                track.style.transform = 'translateX(' + (((W - w) / 2) - idx * w) + 'px)';
                 cells.forEach((c, i) => c.classList.toggle('active', i === idx));
                 const prev = document.getElementById('ws-prev');
                 const next = document.getElementById('ws-next');
@@ -2858,7 +2882,7 @@
                         const row = document.createElement('div');
                         row.className = 'menu-mission' + (done ? ' done' : '') + (cur ? ' current' : '');
                         row.innerHTML =
-                            '<div class="mm-top"><span>' + lvl.id + '. ' + lvl.name + '</span>' +
+                            '<div class="mm-top"><span>' + this.missionNum(lvl.id) + '. ' + lvl.name + '</span>' +
                             '<span class="mm-stars">' + stars + '</span></div>' +
                             (tag ? '<div class="mm-tag">' + tag + '</div>' : '');
                         row.addEventListener('click', () => this.enterCampaignLevel(lvl.id));
@@ -3043,7 +3067,7 @@
             },
             openLevelModal(lvl) {
                 if (!this.dom.levelModal) return;
-                if (this.dom.levelTitle) this.dom.levelTitle.textContent = lvl.id + '. ' + lvl.name;
+                if (this.dom.levelTitle) this.dom.levelTitle.textContent = this.missionNum(lvl.id) + '. ' + lvl.name;
                 const typeLabel = { 'sestav': 'Sestav', 'sestav+oprav': 'Sestav a oprav', 'oprav+ladění': 'Oprav a otestuj', 'vyber+oprav+zdůvodni': 'Vyber, oprav, zdůvodni', 'tvorba+cti': 'Navrhni a otestuj' }[lvl.type] || 'Mise';
                 const blockNames = { start: 'START', process: 'AKCE', io: 'VSTUP/VÝSTUP', decision: 'PODMÍNKA', loop: 'SMYČKA', call: 'VOLÁNÍ', note: 'POZNÁMKA', end: 'KONEC' };
                 const blocks = (lvl.blocks || []).map(b => blockNames[b] || b).join(' · ');
@@ -3216,7 +3240,7 @@
                 const name = (Game && Game.playerName) ? Game.playerName : '—';
                 const d = new Date();
                 const datum = d.toLocaleDateString('cs-CZ') + ' ' + d.toLocaleTimeString('cs-CZ', { hour: '2-digit', minute: '2-digit' });
-                const misto = lvl ? ('mise ' + lvl.id + ' — ' + lvl.name) : ('plocha ' + this.activeWorkspace);
+                const misto = lvl ? ('mise ' + this.missionNum(lvl.id) + '. ' + lvl.name) : ('plocha ' + this.activeWorkspace);
                 let extra = 'OVĚŘENO · testy ' + tests + ' prošlo · ' + misto + ' · žák ' + name + ' · ' + datum;
                 return this.getSvgContent(false, null, null, false, extra);
             },
@@ -4821,6 +4845,18 @@
             toggleSimulation(stepMode = false) {
                 if (this.isSimulating) this.stopSimulation(true);
                 else this.startSimulation(stepMode);
+            },
+
+            toggleConsolePanel(e) {
+                if (e && e.target && e.target.closest && e.target.closest('select,button,.close-console,.sim-controls')) return;
+                const p = this.dom.consolePanel;
+                if (!p) return;
+                if (p.classList.contains('open')) p.classList.remove('open');
+                else p.classList.add('open');
+            },
+            dockConsole() {
+                const p = this.dom.consolePanel;
+                if (p && p.classList.contains('open')) p.classList.remove('open');
             },
 
             resolveDecisionFn: null,

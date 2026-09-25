@@ -2,6 +2,51 @@
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
+## 2026-09-25 — Menu dostalo poloprůhledné sklo (glassmorphism) (nezakomitováno)
+
+- **`#side-menu` je nyní skleněné, ne téměř plné:** pozadí = lineární gradient
+  `rgba(15,18,26,0.75) → rgba(13,15,20,0.55)` místo plných `rgba(13,15,20,0.9)`;
+  `backdrop-filter: blur(20px) saturate(140%)` (+ `-webkit-` pro Safari);
+  vnitřní horní linka `inset 0 1px 0 rgba(255,255,255,0.06)` pro skleněný lesk,
+  měkčí stín. Položky a sekce zůstaly průhledné (jen hover/current mají slabou akcentní fólii).
+- **Testy:** `flow_smoke_tests.js` → **208** (z 207): +1 (menu obsahuje blur+saturate
+  i nižší alfu 0.55, bez `-webkit-` a saturate test selže).
+- **Ověření:** syntax OK · flow_tests 39 · flow_check 70 · flow_game 90 · flow_storage 55 ·
+  flow_ui 6 · flow_smoke 208 (celkem **468** kontrol, 0 FAIL).
+
+## 2026-09-25 — Mise prezentované jako „1. název"…, puntík v textu ploch odstraněn (nezakomitováno)
+
+- **Mise se už nejmenují „m01. Název" apod. — jen „1. název", „2. název", …**
+  `App.missionNum(id)` vrací pořadové číslo mise v jejím vlastním profilu (H: m01→1…m08→8,
+  E_J: e1→1…e6→6; neznámé id → 0). Použito v menu misí, titulku zadání mise a patičce SVG
+  („mise 2. Vytiskni náhradní držák"). Interní id zůstává pro uložiště/export (stabilní klíče).
+- **V textu ploch (MISE/SPACE 1–5) odstraněn nadbytečný puntík** — `ws-cell-dot`
+  („perforace filmu") vyhozena z buněk pásu i z CSS; text je čistě „SPACE 1".
+- **Testy:** `flow_smoke_tests.js` → **207** (z 205): +2 (titulek = „3. Vytiskni náhradní držák",
+  `missionNum` m01→1/m02→2/e1→1/e6→6/m99→0, SVG obsahuje „mise 2. ", žádný `ws-cell-dot`
+  a žádné `<span` za „SPACE 1").
+- **Ověření:** syntax OK · flow_tests 39 · flow_check 70 · flow_game 90 · flow_storage 55 ·
+  flow_ui 6 · flow_smoke 207 (celkem **467** kontrol, 0 FAIL).
+
+## 2026-09-25 — Terminál = dokovací lišta (zasouvací dolů + samovysouvací) (nezakomitováno)
+
+- **Sbalený terminál nechává viditelnou „lištu" 46 px** (`#console-panel` kolaps
+  `translateY(calc(100% - 46px))` místo `translateY(100%)`): hlavička s názvem a šipkou
+  ▼ (při otevření se otočí) zůstává ukotvená dole jako dok.
+- **Klik na lištu = přepínač** (`App.toggleConsolePanel`): rozbalí/sbalí; klik na ovládací
+  prvky (select rychlosti, „Další krok", obrázek ✖) se ignoruje (`stopPropagation`), ✖ dál
+  zastavuje simulaci.
+- **Klik na plochu mimo otevřený terminál → terminál se zasune dolů na lištu**:
+  `pointerdown` na `#canvas-wrap` volá `App.dockConsole()` (jen když neběží simulace,
+  při živém běhu zůstává stopa viditelná).
+- **Spuštění simulace terminál vždy vysune** s trace + Visual RAM (`consolePanel.classList.add('open')`
+  v `startSimulation` — terminál „s proměnnými").
+- **Testy:** `flow_smoke_tests.js` → **205** (z 196): +9 (collapsed 46px v CSS, klikatelný
+  přepínač, stopPropagation, pointerdown→dockConsole, spuštění otevírá, toggle vysune,
+  dock zasune, select nepřepne).
+- **Ověření:** syntax OK · flow_tests 39 · flow_check 70 · flow_game 90 · flow_storage 55 ·
+  flow_ui 6 · flow_smoke 205 (celkem **465** kontrol, 0 FAIL).
+
 ## 2026-09-25 — O programu +20 % šířky, modaly zavíratelné Esc/klikem mimo, plochy = filmový pás v topbaru (nezakomitováno)
 
 - **O programu na PC o 20 % širší:** `#about-modal .modal-box` → `width: min(655px, 97vw)`

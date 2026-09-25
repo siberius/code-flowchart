@@ -2,6 +2,34 @@
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
+## 2026-09-25 — Start SPACE 1 + expirace na PC (90 min) + O programu/autorovi/MIT (nezakomitováno)
+
+- **Start = explicitně SPACE 1:** `startupWorkspace()` — při startu se vždy načte SPACE 1;
+  pokud je jako aktivní kontext uložený rozehraný level (MISE `m01..e6`), načte se příslušný
+  level. Uložená plocha SPACE 2–5 se na novém startu ignoruje (resetuje na SPACE 1) a klíč
+  aktivní plochy se přepíše na `space1`.
+- **Expirace dat na PC (90 min):** `maybeExpirePcData(now)` — na nedotykovém zařízení
+  (`isTouchDevice`: `navigator.maxTouchPoints` / `matchMedia('(pointer: coarse)')`) se při
+  startu, když `blockflow_v3_last_active` je starší než `PC_SESSION_MS` (90 min), všechny
+  uložené hodnoty vymažou (`clearAllAppData` — workspace klíče + hráč/profil/exporace) a hra
+  začne znova; `noteLastActive()` se obnovuje i v autosave intervalu (3 s). Na mobilu/tabletu
+  se **nikdy** automaticky nemažou — jen ručně červeným RESET.
+- **O programu:** modal na PC roztažený (`max-height: 72vh`), na dotykových zařízeních zůstává
+  kompaktní 33vh (`@media (hover: none), (pointer: coarse)`); odstraněno verzování
+  („Verze jádra 1.5 / Codename CyberCanvas"); nově zvýrazněný blok **SPA (Single Page
+  Application) — v jediném HTML souboru, MIT © 2026 Luděk Sušický**.
+- **O autorovi:** bio „SŠ a VŠ učitel Informatiky — AI ve vzdělávání a vibecoding", pracovní
+  odkazy barevně odlišené: Email (`mailto:` spustí poštovního klienta), X (@ludeksusicky),
+  LinkedIn; licence MIT.
+- **Licence v celé aplikaci sjednocena na MIT** (patička plátna, SVG export, O autorovi).
+- **Nápověda:** nová sekce „Uložení a soukromí" (PC 90 min / mobil RESET, EXPORT/IMPORT)
+  a „O aplikaci" (SPA, MIT).
+- **Testy:** `flow_smoke_tests.js` +15 (start SPACE 1 vs obnova m02, expirace PC 90 min /
+  mobil nikdy / čerstvé last_active, O programu bez verzování + SPA/MIT, autor mailto/X/LinkedIn,
+  nápověda Uložení, patička i SVG = MIT, mobil 33vh).
+- **Ověření:** syntax OK · flow_tests 39 · flow_check 70 · flow_game 90 · flow_storage 55 ·
+  flow_ui 6 · flow_smoke 146 (celkem **406** kontrol, 0 FAIL).
+
 ## 2026-09-25 — UX balíček: ikonová tlačítka (SVG), jméno pro vstup do MISE, validace vstupu číslo/text (nezakomitováno)
 
 - **Toolbar bez emoji/textu:** undo/redo = oblouková šipka v kroužku, IMPORT = šipka do
@@ -28,8 +56,8 @@ Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS
   Nadpis nápovědy jen „Nápověda"; odstraněna help sekce „Témata (Streamer / Operátor)"
   a v O programu „dvě přepínatelná narativní témata" (PLAN §16); „6 herních stupňů" →
   „14 misí (8 H + 6 E/J)".
-- **Start hry = SPACE 1:** `APPLES_SLOT = 'space1'` zůstává výchozí plochou; na pozdějších
-  návštěvách se obnovuje aktivní kontext (PLAN §15) — potvrzeno typovým testem.
+- **Start hry = SPACE 1:** `APPLES_SLOT = 'space1'` je výchozí plochou; konkrétní chování
+  startu (výjimka rozehraný level + 90min expirace na PC) viz záznam výše.
 - **Testy:** `flow_tests.js` +13 (deklarace typu vstupu, `[CHYBA TYPU]` pro `++`/`+=`,
   `toNumber`), `flow_smoke_tests.js` +20 (gating MISE přes `pendingCampaign`, SVG ikony
   podle zdroje HTML, absence starých emoji, validace vstupu číslo/text).

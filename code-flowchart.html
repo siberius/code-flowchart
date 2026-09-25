@@ -631,8 +631,9 @@
         /* Nápověda: o 30 % širší a centrovaná (mobil se posouvá) */
         #help-modal .modal-box { width: min(1040px, 94vw); }
 
-        /* O programu: optimálně na třetinu obrazovky, výše se posouvá */
-        #about-modal .modal-box { max-height: 33vh; }
+        /* O programu: na PC roztažený, na dotykovém zařízení zbývá užší (33vh) */
+        #about-modal .modal-box { max-height: 72vh; }
+        @media (hover: none), (pointer: coarse) { #about-modal .modal-box { max-height: 33vh; } }
         
         /* Vnitřní rolovací oblast pro nápovědu */
         .help-content-wrapper { overflow-y: auto; flex: 1; min-height: 0; padding-right: 14px; margin-right: -14px; }
@@ -888,7 +889,7 @@
             </div>
             <!-- Ochranná známka plátna -->
             <div id="copyright-footer">
-                GPLv3 © 2026 Luděk Sušický
+                MIT © 2026 Luděk Sušický
             </div>
         </div>
     </div>
@@ -1208,6 +1209,18 @@
                         <h4>Co si osvojíš (RVP G + SOŠ)</h4>
                         <div class="help-item">Zápis algoritmu vývojovým diagramem, proměnné a datové typy, vstup/výstup, větvení, cykly (fixní i podmíněné), podprogramy a dekompozice, ověření a oprava řešení, vlastní tvorba.</div>
                     </div>
+
+                    <div class="help-section">
+                        <h4>Uložení a soukromí</h4>
+                        <div class="help-item">Vše se ukládá jen ve tvém prohlížeči (<span class="help-code">localStorage</span>), nic se neodesílá na server. <strong>Na PC</strong> se hodnoty po <strong>90 minutách nečinnosti</strong> automaticky vymažou; <strong>na mobilu a tabletu</strong> zůstávají, dokud je nesmažeš ručně červeným <strong>RESET</strong> v menu.</div>
+                        <div class="help-item">Celý postup si kdykoliv uložíš <strong>EXPORT</strong> (JSON) a načteš zpět <strong>IMPORT</strong>.</div>
+                    </div>
+
+                    <div class="help-section">
+                        <h4>O aplikaci</h4>
+                        <div class="help-item">Aplikace je ukázkou <strong>SPA (Single Page Application)</strong> — kompletně v jediném HTML souboru, offline a bez telemetrie.</div>
+                        <div class="help-item"><strong>Licence:</strong> MIT © 2026 Luděk Sušický.</div>
+                    </div>
                 </div>
             </div>
             <div class="btn-row" style="margin-top: 10px; flex-shrink: 0;">
@@ -1221,8 +1234,11 @@
             <h3><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>O programu</h3>
             <p style="color: var(--text-dim); line-height: 1.6; font-size: 14px; margin-bottom: 10px;">CodeFlowChart EDU je moderní, plně interaktivní výukový nástroj pro vizuální pochopení algoritmů, logických struktur a stavových proměnných. Spojuje návrh vývojových diagramů s krokovacím enginem a Visual RAM pamětí v reálném čase.</p>
             <p style="color: var(--text-dim); line-height: 1.6; font-size: 14px; margin-bottom: 10px;">Obsahuje <strong style="color: var(--text);">14 misí</strong> (MISE — 8 pro profil H + 6 pro E/J) od sekvence přes větvení a cykly až po podprogramy, <strong style="color: var(--text);">hodnosti, hvězdy, značky a certifikát</strong>, volné plochy SPACE 1–5 a ukázkové diagramy. Pokrývá učivo <strong style="color: var(--text);">RVP G a SOŠ neprogramátorských oborů</strong>: zápis algoritmu, proměnné, vstup/výstup, větvení, cykly, podprogramy, ověření a tvorba.</p>
-            <p style="color: var(--text-dim); line-height: 1.6; font-size: 14px;">Aplikace je ukázkou pokročilé <strong style="color: var(--text);">SPA (Single Page Application)</strong> architektury — kompletně v jediném HTML souboru, offline, bez serveru a bez telemetrie.</p>
-            <p style="color: var(--accent2); font-family: 'JetBrains Mono', monospace; font-size: 12px; margin-top: 15px;">Verze jádra: 1.5<br>Codename: CyberCanvas</p>
+            <div style="background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.35); border-radius: 10px; padding: 12px 14px; margin-bottom: 10px;">
+                <div style="color: #10b981; font-weight: 800; letter-spacing: 1px; font-size: 13px; margin-bottom: 6px;">UKÁZKA SPA (SINGLE PAGE APPLICATION)</div>
+                <div style="color: var(--text); font-size: 14px; line-height: 1.6; margin-bottom: 8px;">Kompletní aplikace v jediném HTML souboru — offline, bez serveru a bez sbírání dat žáka.</div>
+                <div style="color: var(--accent2); font-size: 13px; font-weight: 700;">Licence: <span style="color: var(--text); font-weight: 600;">MIT © 2026 Luděk Sušický</span></div>
+            </div>
             <div class="btn-row" style="margin-top: 20px;">
                 <button class="btn btn-yes-large" onclick="App.closeAbout()" style="width: 100%; border-color: var(--accent3); color: var(--accent3); box-shadow: inset 0 0 15px rgba(245, 158, 11, 0.2); text-shadow: 0 0 8px rgba(245, 158, 11, 0.6);">ZAVŘÍT</button>
             </div>
@@ -1233,18 +1249,19 @@
         <div class="modal-box" style="border-color: rgba(245, 158, 11, 0.3);">
             <h3 style="color: var(--accent3); text-shadow: 0 0 10px rgba(245, 158, 11, 0.4);"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>O autorovi</h3>
             <h4 style="font-size: 18px; margin-bottom: 5px;">Luděk Sušický</h4>
-            
-            <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 15px; line-height: 1.5;">
-                SŠ a VŠ učitel Informatiky zabývající se AI ve vzdělávání a vibecodingu.
-                <br><br>
-                <span style="color: var(--text);">Email:</span> <a href="mailto:ludek.susicky@gmail.com" style="color: var(--accent); text-decoration: none;">ludek.susicky@gmail.com</a><br>
-                <span style="color: var(--text);">X:</span> <a href="https://x.com/ludeksusicky" target="_blank" style="color: var(--accent); text-decoration: none;">@ludeksusicky</a><br>
-                <span style="color: var(--text);">LinkedIn:</span> <a href="https://www.linkedin.com/in/ludek-susicky/" target="_blank" style="color: var(--accent); text-decoration: none;">ludek-susicky</a>
+            <p style="color: var(--accent3); font-size: 14px; margin-bottom: 15px; line-height: 1.6; font-weight: 700;">
+                SŠ a VŠ učitel Informatiky — AI ve vzdělávání a vibecoding.
             </p>
+            <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 10px; padding: 14px; margin-bottom: 15px; font-size: 14px; line-height: 1.8;">
+                <div><span style="color: #10b981; font-weight: 800;">Email</span><br><a href="mailto:ludek.susicky@gmail.com" style="color: var(--accent); text-decoration: none;">ludek.susicky@gmail.com</a></div>
+                <div style="margin-top: 8px;"><span style="color: #10b981; font-weight: 800;">X (Twitter)</span><br><a href="https://x.com/ludeksusicky" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: none;">@ludeksusicky</a></div>
+                <div style="margin-top: 8px;"><span style="color: #10b981; font-weight: 800;">LinkedIn</span><br><a href="https://www.linkedin.com/in/ludek-susicky/" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: none;">linkedin.com/in/ludek-susicky</a></div>
+            </div>
 
             <div style="background: rgba(0,0,0,0.4); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); font-family: 'JetBrains Mono', monospace; font-size: 12px;">
-                <div style="color: var(--accent);">Licence: <span style="color: var(--text);">GPLv3</span></div>
+                <div style="color: var(--accent);">Licence: <span style="color: var(--text);">MIT</span></div>
                 <div style="color: var(--accent); margin-top: 6px;">Rok vydání: <span style="color: var(--text);">2026</span></div>
+                <div style="color: var(--accent); margin-top: 6px;">O aplikaci: <span style="color: var(--text);">SPA v jediném HTML souboru</span></div>
             </div>
             <div class="btn-row" style="margin-top: 20px;">
                 <button class="btn btn-yes-large" onclick="App.closeAuthor()" style="width: 100%; border-color: var(--accent3); color: var(--accent3); box-shadow: inset 0 0 15px rgba(245, 158, 11, 0.2); text-shadow: 0 0 8px rgba(245, 158, 11, 0.6);">ZAVŘÍT</button>
@@ -2155,6 +2172,8 @@
             // ne podle pouhého počtu průchodů jedním blokem.
             MAX_STATE_REPEAT: 200,
             MAX_TOTAL_STEPS: 20000,
+            // Expoirace uložených hodnot na PC po 90 minutách nečinnosti.
+            PC_SESSION_MS: 90 * 60 * 1000,
             nextStateCount(counts, key) {
                 counts[key] = (counts[key] || 0) + 1;
                 return counts[key];
@@ -2410,11 +2429,19 @@
                         if (e.key === 'Enter') this.submitName();
                     });
                 }
-                
+
+                // Expoirace dat na PC (90 min nečinnosti) — mobil se nikdy nemaže automaticky.
+                try {
+                    if (this.maybeExpirePcData(Date.now())) {
+                        this.toast('Uplynulo 90 minut — hodnoty na tomto počítači byly vymazány.', 3500);
+                    }
+                } catch(e) {}
+                this.noteLastActive();
+
                 Game.load();
                 this.migrateLegacyKeys();
                 this.setProfile(localStorage.getItem('blockflow_v3_profile') || 'H');
-                this.activeWorkspace = localStorage.getItem('blockflow_v3_active_ws') || APPLES_SLOT;
+                this.activeWorkspace = this.startupWorkspace();
                 this.cheatStep = 0;
                 if (this.modeOf(this.activeWorkspace) === 'campaign') {
                     this.lastCampaignSlot = this.activeWorkspace;
@@ -2439,7 +2466,7 @@
                     if (!loaded) this.fitToScreen();
                 }, 150);
 
-                setInterval(() => this.saveState(true), 3000);
+                setInterval(() => { this.saveState(true); this.noteLastActive(); }, 3000);
 
                 window.addEventListener('resize', () => {
                     clearTimeout(this.resizeTimer);
@@ -2459,6 +2486,58 @@
             },
 
             // ==== F1: režimy a plochy (slot = id mise např. 'm01' / 'e1', nebo 'spaceN') ====
+            // Start = vždy explicitně SPACE 1; výjimkou je rozehraný level (aktivní MISE).
+            startupWorkspace() {
+                let saved = null;
+                try { saved = localStorage.getItem('blockflow_v3_active_ws'); } catch (e) {}
+                const target = (saved && this.modeOf(saved) === 'campaign') ? saved : APPLES_SLOT;
+                if (target !== saved) {
+                    try { localStorage.setItem('blockflow_v3_active_ws', target); } catch (e) {}
+                }
+                return target;
+            },
+            isTouchDevice() {
+                try {
+                    if (navigator.maxTouchPoints && navigator.maxTouchPoints > 0) return true;
+                    if (typeof matchMedia === 'function') {
+                        const mq = matchMedia('(pointer: coarse)');
+                        return !!(mq && mq.matches);
+                    }
+                } catch (e) {}
+                return false;
+            },
+            noteLastActive() {
+                try { localStorage.setItem('blockflow_v3_last_active', String(Date.now())); } catch (e) {}
+            },
+            // PC: po 90 minutách nečinnosti se hodnoty vymažou; dotyková zařízení nikdy ne.
+            maybeExpirePcData(now) {
+                if (this.isTouchDevice()) return false;
+                let last = 0;
+                try { last = parseInt(localStorage.getItem('blockflow_v3_last_active') || '', 10) || 0; } catch (e) {}
+                if (!last) return false;
+                if (now - last < this.PC_SESSION_MS) return false;
+                this.clearAllAppData();
+                return true;
+            },
+            clearAllAppData() {
+                const keys = ['blockflow_v3_active_ws', 'blockflow_v3_profile', 'blockflow_v3_player', 'blockflow_v3_progress', 'blockflow_v3_last_active',
+                    'blockflow_v2_player', 'blockflow_v2_progress', 'blockflow_v2_profile', 'blockflow_v2_active',
+                    'blockflow_v1_player', 'blockflow_v1_progress', 'blockflow_v1_profile', 'blockflow_v1_active'];
+                this.workspaceSlots().forEach(s => keys.push('blockflow_v3_ws_' + s));
+                keys.forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
+                try {
+                    const extra = [];
+                    for (let i = 0; i < localStorage.length; i++) {
+                        const k = localStorage.key(i);
+                        if (k && String(k).indexOf('blockflow_') === 0) extra.push(k);
+                    }
+                    extra.forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
+                } catch (e) {}
+                Game.reset();
+                this.pendingCampaign = false;
+                this.pendingLevel = null;
+                this.nameSkipped = false;
+            },
             modeOf(slot) {
                 if (typeof slot === 'string' && CAMPAIGN_SLOTS.indexOf(slot) !== -1) return 'campaign';
                 return 'space';
@@ -5063,7 +5142,7 @@
                         statusColor = "#ef4444"; 
                     }
                     svg += `<text x="20" y="${totalH - 15}" font-family="monospace" font-size="14" font-weight="bold" fill="${statusColor}">${statusText}</text>`;
-                    svg += `<text x="${W - 20}" y="${totalH - 15}" font-family="monospace" font-size="12" fill="rgba(255,255,255,0.3)" text-anchor="end">GPLv3 © 2026 Luděk Sušický | CodeFlowChart EDU</text>`;
+                    svg += `<text x="${W - 20}" y="${totalH - 15}" font-family="monospace" font-size="12" fill="rgba(255,255,255,0.3)" text-anchor="end">MIT © 2026 Luděk Sušický | CodeFlowChart EDU</text>`;
                 }
 
                 svg += `</svg>`;

@@ -49,8 +49,9 @@ Pro vzdělávací obsah navíc: `md-skills/vzdelavaci-metodiky.md` (RVP/ŠVP, CZ
   každá mise ≤ 45 min po zaučení; 5–8 aktivních bloků, 2–3 testovací vektory, cíl ≤ 15 slov.
 - **Restart mise (potvrzený)** jen pro aktuální misi/profil; kliknutí na level vždy otevře
   **modal zadání** a nikdy nepřepíše rozpracovanou práci; pokrok mezi hodinami se zachovává
-  (localStorage + export JSON). **Bez auto-resetu po 3 h**; červený RESET jen jako samostatné
-  celkové vymazání.
+  (localStorage + export JSON). **Expirace dat:** na PC se hodnoty po **90 minutách nečinnosti**
+  automaticky vymažou; na mobilu/tabletu se nikdy nemažou automaticky — jen ručně červeným
+  RESET (celkové vymazání).
 - **Export JSON = úplný snímek** (všechny mise + všechny SPACE + aktivní kontext + jméno/`null`
   + `savedAt` datum/čas); po splnění mise nabídka stažení; opakovaný test nenásobí odměny ani nabídku.
 - **Bez odznaků** — jen značky Zprovozněno/Ověřeno/Upraveno (+ volitelně XP/hvězdy/hodnost
@@ -86,7 +87,8 @@ Pro vzdělávací obsah navíc: `md-skills/vzdelavaci-metodiky.md` (RVP/ŠVP, CZ
     story v modalu mise, volitelné jméno (přeskočit), `onLevelSuccess` (značky do menu), herní confirm modal,
     F4 restart přes UI (potvrzený modal), nabídka stažení JSON (jen při prvním přechodu do dokončeného stavu),
     přehled importu (open/cancel, pendingImportSnapshot),
-    UX: vstup do MISE přes jméno (MISE top + `pendingCampaign`), SVG ikony toolbaru bez emoji, validace vstupu číslo/text.
+    UX: vstup do MISE přes jméno (MISE top + `pendingCampaign`), SVG ikony toolbaru bez emoji, validace vstupu číslo/text,
+    start = SPACE 1 (obnova rozehraného levelu), expirace na PC (90 min nečinnosti, mobil nikdy), O autorovi/O programu/nápověda (zdroj HTML), MIT licence.
   - Sdílený `flow_test_utils.js` (načtení `App` + `Game` + `MISSIONS` + `SAMPLES` z inline `<script>` v Node).
   - **Dev cheat:** `Ctrl+Alt+C` s aktivním CapsLockem v MISE vyřeší aktuální
     level krok za krokem ze vzorového řešení (per-mise `solution` v `MISSIONS`); jen pro testování.

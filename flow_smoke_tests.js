@@ -423,5 +423,39 @@ check('tečka v číselném vstupu projde', inputRejected === true);
 App.resolveInputFn = savedFn;
 App.pendingInputType = null;
 
+console.log('\n[UX start = SPACE 1, rozehraný level se obnoví]');
+store.set('blockflow_v3_active_ws', 'space4');
+check('uložená space4 se při startu ignoruje → SPACE 1', App.startupWorkspace() === 'space1' && store.get('blockflow_v3_active_ws') === 'space1', App.startupWorkspace());
+store.set('blockflow_v3_active_ws', 'm02');
+check('rozehraná m02 se obnoví', App.startupWorkspace() === 'm02');
+store.set('blockflow_v3_active_ws', 'space1');
+
+console.log('\n[UX expirace dat — PC 90 min, mobil nikdy]');
+store.set('blockflow_v3_player', 'Kdo');
+store.set('blockflow_v3_ws_m01', '{}');
+store.set('blockflow_v3_last_active', String(Date.now() - 100 * 60 * 1000));
+check('PC: starší než 90 min → vymazáno', App.maybeExpirePcData(Date.now()) === true && store.get('blockflow_v3_player') === undefined && store.get('blockflow_v3_last_active') === undefined);
+store.set('blockflow_v3_player', 'Kdo');
+store.set('blockflow_v3_last_active', String(Date.now() - 100 * 60 * 1000));
+sandbox.navigator.maxTouchPoints = 5;
+check('mobil: starší než 90 min → NEMAŽE se', App.maybeExpirePcData(Date.now()) === false && store.get('blockflow_v3_player') === 'Kdo');
+store.set('blockflow_v3_player', 'Nova');
+store.set('blockflow_v3_last_active', String(Date.now() - 1000));
+sandbox.navigator.maxTouchPoints = 0;
+check('PC: čerstvý last_active → nemaže', App.maybeExpirePcData(Date.now()) === false && store.get('blockflow_v3_player') === 'Nova');
+App.noteLastActive();
+
+console.log('\n[UX O programu / O autorovi / nápověda — zdroj HTML]');
+check('O programu bez verzování', !html.includes('Verze jádra') && !html.includes('Codename: CyberCanvas'));
+check('O programu uvádí SPA + MIT', html.includes('SINGLE PAGE APPLICATION') && html.includes('MIT © 2026 Luděk Sušický'));
+check('autor má fungující mailto (spustí klienta)', html.includes('href="mailto:ludek.susicky@gmail.com"') && html.includes('ludek.susicky@gmail.com'));
+check('autor má X', html.includes('https://x.com/ludeksusicky'));
+check('autor má LinkedIn', html.includes('https://www.linkedin.com/in/ludek-susicky/'));
+check('autor je SŠ a VŠ učitel Informatiky', html.includes('SŠ a VŠ učitel Informatiky'));
+check('nápověda má O aplikaci + 90 minut', html.includes('O aplikaci') && html.includes('90 minutách nečinnosti') && html.includes('MIT © 2026'));
+check('patička plátna je MIT', /id="copyright-footer"[\s\S]{0,80}MIT © 2026/.test(html));
+check('SVG export = MIT', html.includes('MIT © 2026 Luděk Sušický | CodeFlowChart EDU'));
+check('mobil: O programu zůstává 33vh', /@media\s*\(hover:\s*none\),\s*\(pointer:\s*coarse\)\s*\{\s*#about-modal\s*\.modal-box\s*\{\s*max-height:\s*33vh/.test(html));
+
 console.log(`\nVýsledek: ${pass} OK, ${fail} FAIL`);
 process.exit(fail === 0 ? 0 : 1);

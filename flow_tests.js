@@ -77,6 +77,32 @@ app.logs = [];
 app.parseVariable('x = (');
 check('chybný výraz se zaloguje', app.logs.some((l) => l.msg.includes('CHYBA VÝRAZU')), JSON.stringify(app.logs));
 
+console.log('\n[vstup — deklarace typu (text vs číslo)]');
+eq('n = vstup číslo -> number', app.inputExpect('n = vstup číslo'), 'number');
+eq('n = vstup number -> number', app.inputExpect('n = input number'), 'number');
+eq('jmeno = vstup text -> text', app.inputExpect('jmeno = vstup text'), 'text');
+eq('n = cislo -> number', app.inputExpect('n = cislo'), 'number');
+eq('barevná var cislo = null', app.inputExpect('cislo'), null);
+eq('vek bez typu -> null', app.inputExpect('vek'), null);
+eq('zadej číslo -> number', app.inputExpect('zadej čislo'), 'number');
+
+console.log('\n[aritmetika přes text = CHYBA TYPU]');
+app.visualRAM = { pocet: '"abc"' };
+app.runtimeTypeError = false;
+app.parseVariable('pocet++');
+check('inkrement textu hlásí typ chybu', app.runtimeTypeError === true);
+eq('inkrement textu -> 1', app.visualRAM.pocet, 1);
+app.visualRAM = { skore: '"deset"' };
+app.runtimeTypeError = false;
+app.parseVariable('skore += 5');
+check('+= přes text hlásí typ chybu', app.runtimeTypeError === true);
+eq('+= přes text -> 5', app.visualRAM.skore, 5);
+app.visualRAM = { skore: '"deset"' };
+check('toNumber text hlásí typ chybu', app.toNumber('deset', 'Hodnota', 'test') === 0 && app.runtimeTypeError === true);
+app.visualRAM = { n: 5 };
+app.parseVariable('n += 2');
+eq('+= čísel nadále funguje', app.visualRAM.n, 7);
+
 console.log('\n[nekonečná smyčka — stavová detekce]');
 const counts = {};
 for (let i = 0; i < 201; i++) App.nextStateCount(counts, 'k');

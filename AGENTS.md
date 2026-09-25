@@ -73,7 +73,7 @@ Pro vzdělávací obsah navíc: `md-skills/vzdelavaci-metodiky.md` (RVP/ŠVP, CZ
 - **Revize funkčnosti (TACHI-style, `PLAN.md` §12) — zavedeno ve F0:**
   - `node syntax_check.js` — syntaxe inline `<script>` bloků.
   - `node flow_tests.js` — jádro: parser, VÝSTUP `{var}`, literály v uvozovkách, porty ANO/NE/TĚLO/KONEC,
-    runaway smyčka, bezpečnost konzole/RAM.
+    runaway smyčka, bezpečnost konzole/RAM, deklarace typu vstupu (text/číslo), aritmetika přes text = `CHYBA TYPU`.
   - `node flow_check_tests.js` (F2) — Checker: evaluátor podmínek, `runCheckVector` (události/`counts`/`requireLoop`/`maxOps`, vyčerpání zásoby vstupů, povinné dosažení KONCE, poznámka v toku), mapování literálů/var.
   - `node flow_storage_tests.js` (F4) — persistence (save/load workspace), migrace klíčů v1→v3,
     restart mise (jen aktuální mise, historie zůstává), export = úplný snímek (schemaVersion/savedAt/jméno‑null),
@@ -85,7 +85,8 @@ Pro vzdělávací obsah navíc: `md-skills/vzdelavaci-metodiky.md` (RVP/ŠVP, CZ
     nad bohatým DOM mockem, 19 ploch (5× SPACE + 14 misí = sloty m01..e6), menu ukázek + `loadSample`,
     story v modalu mise, volitelné jméno (přeskočit), `onLevelSuccess` (značky do menu), herní confirm modal,
     F4 restart přes UI (potvrzený modal), nabídka stažení JSON (jen při prvním přechodu do dokončeného stavu),
-    přehled importu (open/cancel, pendingImportSnapshot).
+    přehled importu (open/cancel, pendingImportSnapshot),
+    UX: vstup do MISE přes jméno (MISE top + `pendingCampaign`), SVG ikony toolbaru bez emoji, validace vstupu číslo/text.
   - Sdílený `flow_test_utils.js` (načtení `App` + `Game` + `MISSIONS` + `SAMPLES` z inline `<script>` v Node).
   - **Dev cheat:** `Ctrl+Alt+C` s aktivním CapsLockem v MISE vyřeší aktuální
     level krok za krokem ze vzorového řešení (per-mise `solution` v `MISSIONS`); jen pro testování.

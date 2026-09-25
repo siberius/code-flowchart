@@ -2,6 +2,40 @@
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
+## 2026-09-25 — UX balíček: ikonová tlačítka (SVG), jméno pro vstup do MISE, validace vstupu číslo/text (nezakomitováno)
+
+- **Toolbar bez emoji/textu:** undo/redo = oblouková šipka v kroužku, IMPORT = šipka do
+  zásobníku, EXPORT = šipka ze zásobníku, vymazat plochu = koš — vše SVG (stroke,
+  `currentColor`, 24px viewBox), pouze ikony (`top-icon` 36px čtverec, ikona 18px, hover/disabled
+  přes SVG). Tlačítko SVG exportu zůstává textové „SVG"; fullscreen `⛶ MAX` beze změny.
+- **Klik na MISE nahoře vyžaduje jméno:** `selectWorkspace('campaign')` bez
+  `Game.playerName` a bez `nameSkipped` otevře jmenný modal (`pendingCampaign=true`);
+  po `submitName()` (jméno i „Zatím ne — bez jména") se vstoupí do MISE
+  (`pendingCampaign=false`, `setMode('campaign')`); `doReset()` čistí `pendingCampaign`
+  i `pendingLevel`. Vstup přes konkrétní misi v menu (gating `enterCampaignLevel`) beze změny.
+- **Validace vstupu číslo vs text:** blok deklaruje typ — `n = vstup číslo` / `jmeno = vstup text`
+  (též `zadej číslo`, `n = cislo`); bez deklarace = auto (zpětně kompatibilní). Číselný vstup
+  odmítne text/čárku inline chybou a znovu se zeptá (čisté číslo, tečka). Nápověda uvnitř
+  modalu (`#sim-input-hint`). Aritmetika přes text už není tichá: `++/--/+=/-=/*=//=/%`
+  hlásí `[CHYBA TYPU]`, zastaví běh (`runtimeTypeError` → `lastSimStatus='error'`) místo
+  tichého dosazení 0 (`parseVariable` → `requireNumber`/`toNumber`).
+- **Rozměry modalů:** O programu = třetina obrazovky (`max-height: 33vh`, vnitřní scroll);
+  Nápověda o 30 % širší a centrovaná (`width: min(1040px, 94vw)`); obecně `.modal-box`
+  `margin:auto` + `max-height: calc(100vh − 48px)` + `overflow-y:auto` (mobil se posouvá).
+- **Emoji v modalech → SVG:** help (📖)→kniha, about (ℹ️)→info, autor (👨💻)→uživatel,
+  potvrzení (⚠️)→trojúhelník, level modal (▶/🧭/↻)→play/kompas/restart, výsledkový
+  modal (⭳/▶)→download/play, import-review ⭳ odebráno, boční menu (📖/ℹ️/👨💻/🧹)→SVG.
+  Nadpis nápovědy jen „Nápověda"; odstraněna help sekce „Témata (Streamer / Operátor)"
+  a v O programu „dvě přepínatelná narativní témata" (PLAN §16); „6 herních stupňů" →
+  „14 misí (8 H + 6 E/J)".
+- **Start hry = SPACE 1:** `APPLES_SLOT = 'space1'` zůstává výchozí plochou; na pozdějších
+  návštěvách se obnovuje aktivní kontext (PLAN §15) — potvrzeno typovým testem.
+- **Testy:** `flow_tests.js` +13 (deklarace typu vstupu, `[CHYBA TYPU]` pro `++`/`+=`,
+  `toNumber`), `flow_smoke_tests.js` +20 (gating MISE přes `pendingCampaign`, SVG ikony
+  podle zdroje HTML, absence starých emoji, validace vstupu číslo/text).
+- **Ověření:** syntax OK · flow_tests 39 · flow_check 70 · flow_game 90 · flow_storage 55 ·
+  flow_ui 6 · flow_smoke 131 (celkem **391** kontrol, 0 FAIL).
+
 ## 2026-09-25 — F4: restart mise + export/import JSON (úplný snímek) + migrace v1→v3 (nezakomitováno)
 
 - **Restart mise** (`PLAN.md` §7.9, §7.10, §16): tlačítko **↻ RESTART MISE** v level

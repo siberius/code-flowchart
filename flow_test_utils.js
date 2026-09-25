@@ -73,6 +73,7 @@ function makeApp(App) {
     app.blocks = [];
     app.logs = [];
     app.logConsole = (msg, type = 'info') => { app.logs.push({ msg, type }); };
+    app.toast = (msg) => { app.logs.push({ msg, type: 'toast' }); };
     app.updateRAM = () => {};
     return app;
 }

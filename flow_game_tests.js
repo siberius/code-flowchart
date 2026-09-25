@@ -140,11 +140,11 @@ g4.setTag('m01', Game.TAGS.UPRAVENO);
 eq('Upraveno povyšuje', g4.tagFor('m01'), 'upraveno');
 eq('neznámá mise → null', g4.tagFor('m99'), null);
 
-console.log('\n[opakované splnění nepřidává XP znovu]');
+console.log('\n[opakované splnění nepřidává XP ani certifikát (PLAN §8.4/§14.8)]');
 const before = g3.xp;
 g3.completeLevel('m01', {});
 eq('XP beze změny', g3.xp, before);
-eq('certifikát přesto vznikl', g3.certificates.length, 4);
+eq('certifikát se nezdvojí (odměna se nenásobí)', g3.certificates.length, 3);
 
 console.log('\n[persistence — save/load round-trip]');
 const gLoad = makeGame();
@@ -152,7 +152,7 @@ gLoad.load();
 eq('jméno přežilo', gLoad.playerName, 'Testik');
 eq('XP přežilo', gLoad.xp, before);
 eq('mise přežily', gLoad.levels.m01.status, 'done');
-eq('certifikáty přežily', gLoad.certificates.length, 4);
+eq('certifikáty přežily', gLoad.certificates.length, 3);
 
 console.log('\n[reset — smaže vše]');
 gLoad.reset();

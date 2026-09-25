@@ -1006,22 +1006,35 @@
         </div>
     </div>
 
-    <!-- Modál pro uložení projektu do JSON s názvem souboru -->
-    <div id="json-export-modal" class="modal-overlay" style="z-index: 600;">
+    <!-- F4: Modál pro uložení postupu do JSON (úplný snímek) s názvem souboru -->
+    <div id="json-export-modal" class="modal-overlay" style="z-index: 700;">
         <div class="modal-box">
-            <h3 style="color: var(--accent);">Uložit Projekt (JSON)</h3>
+            <h3 style="color: var(--accent);">Uložit Postup (JSON)</h3>
             
             <div style="margin-bottom: 15px;">
                 <label style="font-size: 12px; color: var(--text-dim); margin-bottom: 4px; display: block;">Název souboru:</label>
-                <input type="text" id="json-filename-input" class="input-dark" value="CodeFlowChart_Projekt" placeholder="Zadejte název...">
+                <input type="text" id="json-filename-input" class="input-dark" value="" placeholder="hefaistos-H-postup-2026-09-25.json">
             </div>
 
-            <p style="color: var(--text); font-size: 14px; margin-bottom: 15px;">Tento soubor si můžete později znovu nahrát (tlačítko ⭱ IMPORT).</p>
+            <p style="color: var(--text); font-size: 14px; margin-bottom: 15px;">Tento soubor si můžete později znovu nahrát (tlačítko ⭱ IMPORT). Obsahuje všechny mise, plochy i jméno.</p>
             <div class="btn-row">
                 <button class="btn btn-submit-large" onclick="App.executeJsonExport()" style="flex: 1; padding: 10px; font-size: 13px;">ULOŽIT DO PC</button>
             </div>
             <div class="btn-row" style="margin-top: 10px;">
                 <button class="btn" onclick="document.getElementById('json-export-modal').classList.remove('show')" style="width: 100%;">Zrušit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- F4: Přehled importu (úplný snímek) — potvrzení nahrazení + možnost předběžného exportu -->
+    <div id="import-review-modal" class="modal-overlay" style="z-index: 650;">
+        <div class="modal-box wide">
+            <h3 style="color: var(--accent3); text-shadow: 0 0 10px rgba(245,158,11,0.4);">Import postupu</h3>
+            <p id="import-review-text" style="color: var(--text); font-size: 14px; line-height: 1.6; margin-bottom: 15px;"></p>
+            <div class="btn-row">
+                <button class="btn" onclick="App.promptJsonExport()" style="flex: 1; padding: 10px; font-size: 13px; background: rgba(0,229,255,0.05); color: var(--accent); border-color: var(--accent); box-shadow: inset 0 0 15px rgba(0,229,255,0.2);">⭳ NEJPRVE EXPORT</button>
+                <button class="btn" onclick="App.executeJsonImportApply()" style="flex: 1; padding: 10px; font-size: 13px; background: rgba(239,68,68,0.05); color: #ef4444; border-color: #ef4444; box-shadow: inset 0 0 15px rgba(239,68,68,0.2);">NAHRADIT</button>
+                <button class="btn" onclick="App.cancelImportReview()" style="flex: 1; padding: 10px; font-size: 13px; background: rgba(255,255,255,0.03); color: var(--text); border-color: var(--border);">Zrušit</button>
             </div>
         </div>
     </div>
@@ -1094,7 +1107,9 @@
             <h3 id="result-title" style="color: #10b981; text-shadow: 0 0 12px rgba(16,185,129,0.45);">Mise splněna!</h3>
             <div id="result-stars" style="font-size: 42px; letter-spacing: 6px; color: var(--accent3); margin: 6px 0 2px; text-shadow: 0 0 18px rgba(245,158,11,0.5);">★★★</div>
             <p id="result-body" style="color: var(--text); font-size: 14px; line-height: 1.7; margin-bottom: 4px;"></p>
+            <p id="result-offer-text" style="display:none; color: var(--text); font-size: 14px; line-height: 1.5; margin: 10px 0 6px;">Mise splněna. Chceš si uložit postup pro příští hodinu?</p>
             <div class="btn-row">
+                <button id="result-save-btn" class="btn" onclick="App.downloadSnapshotNow()" style="display:none; flex: 1; padding: 10px; font-size: 13px; background: rgba(16,185,129,0.05); color: #10b981; border-color: #10b981; box-shadow: inset 0 0 15px rgba(16,185,129,0.2);">⭳ STÁHNOUT JSON</button>
                 <button class="btn" onclick="App.closeLevelResult()" style="flex: 1; padding: 10px; font-size: 13px; background: rgba(16,185,129,0.05); color: #10b981; border-color: #10b981; box-shadow: inset 0 0 15px rgba(16,185,129,0.2);">POKRAČOVAT ▶</button>
             </div>
         </div>
@@ -1109,6 +1124,7 @@
             <div class="btn-row">
                 <button class="btn" onclick="App.closeLevelModal()" style="flex: 1; padding: 10px; font-size: 13px; background: rgba(0,229,255,0.05); color: var(--accent); border-color: var(--accent); box-shadow: inset 0 0 15px rgba(0,229,255,0.2);">JDU NA TO ▶</button>
                 <button class="btn" onclick="App.toggleLevelKompas()" style="flex: 1; padding: 10px; font-size: 13px; background: rgba(245,158,11,0.05); color: var(--accent3); border-color: var(--accent3);">KOMPAS 🧭</button>
+                <button class="btn" onclick="App.promptMissionRestart()" style="flex: 1; padding: 10px; font-size: 13px; background: rgba(239,68,68,0.05); color: #ef4444; border-color: #ef4444; box-shadow: inset 0 0 15px rgba(239,68,68,0.2);">↻ RESTART MISE</button>
             </div>
         </div>
     </div>
@@ -1935,6 +1951,7 @@
         ];
         const APPLES_SLOT = 'space1';
         const CAMPAIGN_SLOTS = MISSIONS.H.map(m => m.id).concat(MISSIONS.E_J.map(m => m.id));
+        const CONTENT_VERSION = 'm01-m08/e1-e6-2026-09-25'; // verze obsahu misí (PLAN §8.4)
 
         // ==== F1: Game (learning mode) — jméno, XP, hodnost, stupně, certifikáty ====
         // Pouze pozitivní motivace: XP se nikdy neodečítá, nápověda nic nestojí.
@@ -2022,7 +2039,9 @@
                     levelId, levelName: level.name, playerName: this.playerName,
                     date: new Date().toISOString(), xp: bestXp, stars, rank: this.rank()
                 };
-                this.certificates.push(certificate);
+                // F4 (PLAN §8.4/§14.8): opakovaný úspěšný test nenásobí odměny —
+                // certifikát vzniká jen při přechodu aktuálního pokusu do dokončeného stavu.
+                if (firstTime) this.certificates.push(certificate);
                 this.save();
                 return { xp: gained, bestXp, stars, rank: this.rank(), certificate, firstTime };
             },
@@ -2248,7 +2267,9 @@
                 levelResultModal: document.getElementById('level-result-modal'),
                 resultTitle: document.getElementById('result-title'),
                 resultStars: document.getElementById('result-stars'),
-                resultBody: document.getElementById('result-body')
+                resultBody: document.getElementById('result-body'),
+                resultSaveBtn: document.getElementById('result-save-btn'),
+                resultOfferText: document.getElementById('result-offer-text')
             },
 
             toggleMenu(e) {
@@ -2774,6 +2795,48 @@
                 const modal = document.getElementById('reset-confirm-modal');
                 if (modal) modal.classList.add('show');
             },
+
+            // ==== F4 (PLAN §7.10, §16): restart MISE — potvrzená akce jen pro aktuální misi/profil ====
+            promptMissionRestart() {
+                const lvl = this.currentLevel();
+                if (!lvl) { this.toast('Restart mise je dostupný jen v MISE.'); return; }
+                if (this.isSimulating) { this.toast('Restart nelze během běžící simulace.'); return; }
+                this.openConfirm({
+                    title: 'Restart mise?',
+                    text: 'Vrátit tuto misi na začátek? Rozpracované řešení této mise bude nahrazeno.',
+                    confirmLabel: 'RESTARTOVAT',
+                    onConfirm: () => this.restartMission(lvl.id)
+                });
+            },
+            restartMission(id) {
+                if (!id || this.modeOf(id) !== 'campaign') return false;
+                const lvl = missionById(id);
+                const wasActive = this.activeWorkspace === id;
+                // Obnova POUZE aktuální mise/profilu: ostatní mise i SPACE zůstávají beze změny.
+                try { localStorage.removeItem('blockflow_v3_ws_' + id); } catch (e) {}
+                // Historické dosažené dokončení zůstává (Game.levels se nedotýkáme).
+                if (wasActive) {
+                    // Výchozí sestava se po restartu vytvoří znovu (PLAN §14.3).
+                    this.stateHistory = []; this.historyIndex = -1; this.cheatStep = 0;
+                    this.buildWorkspaceDefault(id);
+                    this.saveWorkspace(id);
+                    this.applyPalette(this.currentPalette());
+                    this.refreshCanvas();
+                    const that = this;
+                    setTimeout(() => { if (typeof that.renderArrows === 'function') that.renderArrows(); that.fitToScreen(); }, 50);
+                    // Aktuální pokus je nový a musí se znovu ověřit (PLAN §7.10, §16).
+                    this.levelFailed = false;
+                    this.levelHintUsed = false;
+                    this.lastCheck = null;
+                    this.lastSimStatus = 'untested';
+                    if (lvl) this.openLevelModal(lvl);
+                    // Znovuověření aktuálního (prázdného) řešení — žák pak staví znovu od začátku.
+                    this.runCheck(true);
+                }
+                this.toast('Mise „' + ((lvl && lvl.name) || id) + '" vrácena na začátek.');
+                return true;
+            },
+
             doReset() {
                 Game.reset();
                 this.nameSkipped = false;
@@ -2834,6 +2897,11 @@
                         'Celkem <strong>' + Game.totalStars() + ' ★</strong> · ' + Game.xp + ' XP';
                 }
                 this.dom.levelResultModal.classList.add('show');
+                // F4 (PLAN §8.4): nabídka stažení jen při přechodu aktuálního pokusu do
+                // dokončeného stavu; opakovaný úspěšný test už nabídku neotevře.
+                const first = !!res.firstTime;
+                if (this.dom.resultSaveBtn) this.dom.resultSaveBtn.style.display = first ? 'block' : 'none';
+                if (this.dom.resultOfferText) this.dom.resultOfferText.style.display = first ? 'block' : 'none';
             },
 
             buildDefaultGameLoop() {
@@ -2933,6 +3001,7 @@
 
             fitToScreen() {
                 if (this.blocks.length === 0) return;
+                if (!this.dom || !this.dom.canvasWrap) return;
                 let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
                 this.blocks.forEach(b => {
                     const el = document.getElementById(b.id);
@@ -3221,6 +3290,7 @@
             },
 
             renderArrows() {
+                if (!this.dom || !this.dom.arrowsSvg) return;
                 const existing = this.dom.arrowsSvg.querySelectorAll('.arrow-line, .arrow-hit');
                 existing.forEach(e => e.remove());
 
@@ -4894,94 +4964,228 @@
             },
 
             promptJsonExport() {
-                if (this.blocks.length === 0) { this.toast("Plátno je prázdné."); return; }
-                document.getElementById('json-export-modal').classList.add('show');
+                const modal = document.getElementById('json-export-modal');
+                if (modal) modal.classList.add('show');
                 setTimeout(() => {
                     const input = document.getElementById('json-filename-input');
-                    if (input) { input.focus(); input.select(); }
+                    if (input) {
+                        input.value = this.suggestedSnapshotName();
+                        input.focus(); input.select();
+                    }
                 }, 50);
             },
-
-            executeJsonExport() {
-                let filenameInput = document.getElementById('json-filename-input');
-                let filename = filenameInput ? filenameInput.value.trim() : 'CodeFlowChart_plochy';
-                if (!filename) filename = 'CodeFlowChart_plochy';
-                if (!filename.toLowerCase().endsWith('.json')) filename += '.json';
-
-                document.getElementById('json-export-modal').classList.remove('show');
-
-                this.saveWorkspace(this.activeWorkspace);
-                const data = {
-                    app: 'blockflow-workspaces',
-                    version: 2,
-                    exported: new Date().toISOString(),
-                    active: this.activeWorkspace,
-                    workspaces: {}
-                };
-                this.workspaceSlots().forEach(slot => {
-                    const raw = localStorage.getItem('blockflow_v3_ws_' + slot);
-                    if (raw) { try { data.workspaces[slot] = JSON.parse(raw); } catch (e) {} }
-                });
-
-                const a = document.createElement("a");
-                a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: "application/json;charset=utf-8" }));
-                a.download = filename;
-                a.click();
-                this.toast(`Plochy uloženy jako ${filename} ✓`);
+            suggestedSnapshotName() {
+                const d = (new Date()).toISOString().slice(0, 10);
+                return 'hefaistos-' + (this.profile || 'H') + '-postup-' + d + '.json';
             },
 
+            // F4 (PLAN §8.2): uložení aktuální plochy + herního pokroku před přepnutím/exportem.
+            saveProgress() { this.saveWorkspace(this.activeWorkspace); Game.save(); return true; },
+            // Překreslení plátna s tolerancí na chybějící DOM (headless testy).
+            refreshCanvas() { if (this.dom && this.dom.canvas) this.renderAll(); },
+
+            // F4 (PLAN §8.4): export = úplný snímek (všechny mise + SPACE + aktivní kontext +
+            // jméno/null + savedAt + savedTimeZone + verze formátu a obsahu).
+            buildSnapshot() {
+                const workspaces = {};
+                this.workspaceSlots().forEach(slot => {
+                    const raw = localStorage.getItem('blockflow_v3_ws_' + slot);
+                    if (raw) { try { workspaces[slot] = JSON.parse(raw); } catch (e) {} }
+                });
+                const missions = {};
+                MISSIONS.H.concat(MISSIONS.E_J).forEach(lvl => {
+                    if (Game.levels[lvl.id]) missions[lvl.id] = JSON.parse(JSON.stringify(Game.levels[lvl.id]));
+                });
+                return {
+                    app: 'hefaistos-code-flowchart',
+                    schemaVersion: 3,
+                    contentVersion: CONTENT_VERSION,
+                    savedAt: new Date().toISOString(),
+                    savedTimeZone: (typeof Intl !== 'undefined' && Intl.DateTimeFormat) ? (Intl.DateTimeFormat().resolvedOptions().timeZone || 'local') : 'local',
+                    playerName: Game.playerName || null,
+                    profile: this.profile,
+                    activeContext: {
+                        mode: this.modeOf(this.activeWorkspace),
+                        workspace: this.activeWorkspace,
+                        level: this.isCampaign() ? this.activeWorkspace : null
+                    },
+                    missions,
+                    workspaces,
+                    history: { certificates: (Game.certificates || []).slice() },
+                    game: { xp: Game.xp }
+                };
+            },
+            triggerDownload(filename, data) {
+                try {
+                    if (typeof Blob === 'undefined' || typeof URL === 'undefined' || !URL.createObjectURL) { this.toast('Stažení nelze (potřeba prohlížeč).'); return false; }
+                    const a = document.createElement("a");
+                    a.href = URL.createObjectURL(new Blob([data], { type: "application/json;charset=utf-8" }));
+                    a.download = filename;
+                    if (typeof a.click === 'function') a.click();
+                    return true;
+                } catch (e) { console.error('Chyba exportu', e); return false; }
+            },
+            executeJsonExport(name) {
+                const modal = document.getElementById('json-export-modal');
+                if (modal) modal.classList.remove('show');
+                this.saveProgress();
+                let filename = name;
+                if (!filename) {
+                    const input = document.getElementById('json-filename-input');
+                    filename = input ? input.value.trim() : '';
+                }
+                if (!filename) filename = this.suggestedSnapshotName();
+                if (!filename.toLowerCase().endsWith('.json')) filename += '.json';
+                if (this.triggerDownload(filename, JSON.stringify(this.buildSnapshot(), null, 2))) {
+                    this.toast('Postup uložen jako ' + filename + ' ✓');
+                }
+            },
+            downloadSnapshotNow() {
+                this.saveProgress();
+                this.executeJsonExport();
+            },
+
+            // F4 (PLAN §8.4 import): validace v dočasném stavu — neplatný soubor nesmí
+            // měnit práci; nahrazení je vždy výslovně potvrzené (s možností předběžného exportu).
+            parseImportData(text) {
+                if (typeof text !== 'string') return { type: 'invalid' };
+                let parsed;
+                try { parsed = JSON.parse(text); } catch (e) { return { type: 'invalid' }; }
+                if (!parsed || typeof parsed !== 'object') return { type: 'invalid' };
+                if (parsed.schemaVersion === 3 && parsed.workspaces && typeof parsed.workspaces === 'object') {
+                    return { type: 'full', snapshot: parsed };
+                }
+                if (parsed.workspaces && typeof parsed.workspaces === 'object') {
+                    return { type: 'legacy', workspaces: parsed.workspaces, active: parsed.active };
+                }
+                if (Array.isArray(parsed.blocks) && Array.isArray(parsed.arrows)) {
+                    return { type: 'diagram', blocks: parsed.blocks, arrows: parsed.arrows, nextId: parsed.nextId, vx: parsed.vx, vy: parsed.vy, vscale: parsed.vscale };
+                }
+                return { type: 'invalid' };
+            },
+            applySnapshot(snapshot) {
+                const out = { workspaces: 0, missions: 0 };
+                if (!snapshot || snapshot.schemaVersion !== 3) return out;
+                this.workspaceSlots().forEach(slot => {
+                    if (snapshot.workspaces && snapshot.workspaces[slot]) {
+                        try { localStorage.setItem('blockflow_v3_ws_' + slot, JSON.stringify(snapshot.workspaces[slot])); out.workspaces++; } catch (e) {}
+                    }
+                });
+                Game.playerName = snapshot.playerName || null;
+                Game.xp = (snapshot.game && Number.isFinite(snapshot.game.xp)) ? snapshot.game.xp : 0;
+                Game.levels = snapshot.missions || {};
+                Game.certificates = (snapshot.history && snapshot.history.certificates) ? snapshot.history.certificates.slice() : [];
+                Game.save();
+                out.missions = Object.keys(Game.levels).length;
+                this.setProfile(snapshot.profile);
+                const ctx = snapshot.activeContext || {};
+                const slots = this.workspaceSlots();
+                const target = (ctx.workspace && slots.indexOf(ctx.workspace) !== -1) ? ctx.workspace
+                    : (this.isCampaign() ? this.activeWorkspace : APPLES_SLOT);
+                this.activeWorkspace = target;
+                if (this.modeOf(target) === 'campaign') this.lastCampaignSlot = target;
+                try { localStorage.setItem('blockflow_v3_active_ws', target); } catch (e) {}
+                this.stateHistory = []; this.historyIndex = -1; this.cheatStep = 0;
+                this.lastSimStatus = 'untested'; this.levelFailed = false; this.levelHintUsed = false; this.lastCheck = null;
+                const loaded = this.loadWorkspace(target);
+                if (!loaded) { this.buildWorkspaceDefault(target); this.saveWorkspace(target); }
+                this.applyPalette(this.currentPalette());
+                this.updateWorkspaceUI();
+                this.refreshCanvas();
+                const that = this;
+                setTimeout(() => { if (typeof that.renderArrows === 'function') that.renderArrows(); if (!loaded) that.fitToScreen(); }, 50);
+                return out;
+            },
+            applyLegacyWorkspaces(workspaces, active) {
+                let count = 0;
+                this.workspaceSlots().forEach(slot => {
+                    if (workspaces[slot]) {
+                        try { localStorage.setItem('blockflow_v3_ws_' + slot, JSON.stringify(workspaces[slot])); count++; } catch (e) {}
+                    }
+                });
+                const slots = this.workspaceSlots();
+                const target = (active && slots.indexOf(active) !== -1) ? active : this.activeWorkspace;
+                this.activeWorkspace = target;
+                if (this.modeOf(target) === 'campaign') this.lastCampaignSlot = target;
+                try { localStorage.setItem('blockflow_v3_active_ws', target); } catch (e) {}
+                this.stateHistory = []; this.historyIndex = -1; this.cheatStep = 0;
+                const loaded = this.loadWorkspace(target);
+                if (!loaded) { this.buildWorkspaceDefault(target); this.saveWorkspace(target); }
+                this.applyPalette(this.currentPalette());
+                this.updateWorkspaceUI();
+                this.refreshCanvas();
+                const that = this;
+                setTimeout(() => { if (typeof that.renderArrows === 'function') that.renderArrows(); if (!loaded) that.fitToScreen(); }, 50);
+                return count;
+            },
+            openImportReview(snapshot) {
+                this.pendingImportSnapshot = snapshot;
+                const text = document.getElementById('import-review-text');
+                if (text) {
+                    const ids = Object.keys(snapshot.workspaces || {}).length;
+                    const missions = Object.keys(snapshot.missions || {}).length;
+                    text.innerHTML =
+                        'Soubor obsahuje <strong>' + missions + ' misí</strong> a <strong>' + ids + ' ploch</strong> (SPACE + mise).<br>' +
+                        'Stávající práce bude <strong>nahrazena</strong>. Před tím si ji můžeš uložit (⭳ NEJPRVE EXPORT).';
+                }
+                const modal = document.getElementById('import-review-modal');
+                if (modal) modal.classList.add('show');
+            },
+            cancelImportReview() {
+                this.pendingImportSnapshot = null;
+                const modal = document.getElementById('import-review-modal');
+                if (modal) modal.classList.remove('show');
+            },
+            executeJsonImportApply() {
+                const snap = this.pendingImportSnapshot;
+                this.pendingImportSnapshot = null;
+                const modal = document.getElementById('import-review-modal');
+                if (modal) modal.classList.remove('show');
+                if (!snap) { this.toast('Import zrušen (žádný soubor).'); return; }
+                this.applySnapshot(snap);
+                this.updateGameUI();
+                this.toast('Import dokončen — celý postup obnoven.');
+                // Obnova aktivního kontextu: aktivní level → znovu otevřít zadání;
+                // aktivní SPACE → applySnapshot už otevřel právě tento SPACE.
+                const ctx = snap.activeContext || {};
+                if (ctx.mode === 'campaign' && ctx.level) {
+                    const lvl = missionById(ctx.level);
+                    if (lvl) { this.activeLevel = ctx.level; this.openLevelModal(lvl); }
+                }
+            },
             handleJsonImport(event) {
                 const file = event.target.files[0];
                 if (!file) return;
-
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     try {
-                        const parsed = JSON.parse(e.target.result);
-                        if (parsed && parsed.workspaces && typeof parsed.workspaces === 'object') {
-                            // Balík všech ploch
-                            let count = 0;
-                            this.workspaceSlots().forEach(slot => {
-                                if (parsed.workspaces[slot]) {
-                                    localStorage.setItem('blockflow_v3_ws_' + slot, JSON.stringify(parsed.workspaces[slot]));
-                                    count++;
-                                }
-                            });
-                            const target = (parsed.active && this.workspaceSlots().indexOf(parsed.active) !== -1)
-                                ? parsed.active : this.activeWorkspace;
-                            this.activeWorkspace = target;
-                            if (this.modeOf(target) === 'campaign') this.lastCampaignSlot = target;
-                            this.loadWorkspace(target);
-                            localStorage.setItem('blockflow_v3_active_ws', target);
-                            this.stateHistory = []; this.historyIndex = -1; this.cheatStep = 0;
-                            this.applyPalette(this.currentPalette());
-                            this.updateWorkspaceUI();
-                            this.renderAll();
-                            this.pushHistory();
-                            setTimeout(() => { this.renderArrows(); this.fitToScreen(); }, 50);
-                            this.toast(`Importováno ${count} ploch ✓`);
-                        } else if (parsed && parsed.blocks && parsed.arrows) {
-                            // Jedno schéma → do aktuální plochy
-                            this.blocks = parsed.blocks;
-                            this.arrows = parsed.arrows;
-                            this.nextId = parsed.nextId || 1;
-                            if (typeof parsed.vx === 'number') this.vx = parsed.vx;
-                            if (typeof parsed.vy === 'number') this.vy = parsed.vy;
-                            if (typeof parsed.vscale === 'number') this.vscale = parsed.vscale;
-
-                            this.selectedBlocks.clear();
+                        const outcome = this.parseImportData(e.target.result);
+                        if (outcome.type === 'full') {
+                            this.openImportReview(outcome.snapshot);
+                        } else if (outcome.type === 'legacy') {
+                            const n = this.applyLegacyWorkspaces(outcome.workspaces, outcome.active);
+                            this.toast('Načten starý formát ploch (' + n + ') — bez herního stavu. Práce zůstává.');
+                        } else if (outcome.type === 'diagram') {
+                            // Jedno schéma → do aktuální plochy (zachováno z dřívějška).
+                            this.blocks = outcome.blocks;
+                            this.arrows = outcome.arrows;
+                            this.nextId = outcome.nextId || 1;
+                            if (typeof outcome.vx === 'number') this.vx = outcome.vx;
+                            if (typeof outcome.vy === 'number') this.vy = outcome.vy;
+                            if (typeof outcome.vscale === 'number') this.vscale = outcome.vscale;
+                            if (this.selectedBlocks) this.selectedBlocks.clear();
                             this.selectedArrow = null;
                             this.renderAll();
                             this.saveState(true);
                             this.pushHistory();
-
-                            setTimeout(() => { this.renderArrows(); this.applyTransform(); }, 50);
+                            const that = this;
+                            setTimeout(() => { if (typeof that.renderArrows === 'function') that.renderArrows(); that.applyTransform(); }, 50);
                             this.toast('Schéma nahráno do aktuální plochy ✓');
                         } else {
-                            this.toast('Chyba: Neplatný formát souboru.');
+                            this.toast('Chyba: Neplatný formát souboru. Práce se nezměnila.');
                         }
                     } catch (err) {
-                        this.toast('Chyba při čtení souboru.');
+                        this.toast('Chyba při čtení souboru. Práce se nezměnila.');
                         console.error(err);
                     }
                     event.target.value = '';

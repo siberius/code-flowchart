@@ -745,6 +745,7 @@
         .menu-mission.done { color: #10b981; }
         .menu-mission .mm-top { display: flex; justify-content: space-between; gap: 8px; }
         .menu-mission .mm-stars { color: var(--accent3); }
+        .menu-mission .mm-tag { font-size: 11px; opacity: 0.75; margin-top: 2px; color: var(--accent); }
 
         #name-modal .modal-box { border-color: rgba(0,229,255,0.3); }
         #name-input {
@@ -794,7 +795,7 @@
             <span></span>
         </div>
         <div id="logo">Code<span>Flow</span>Chart</div>
-        <button class="top-btn" id="btn-narrative" onclick="App.toggleNarrative()" title="Přepnout téma (Streamer / Operátor)">🎮</button>
+        <button class="top-btn" id="btn-profile" onclick="App.toggleProfile()" title="Přepnout profil (H / E_J)">⚙</button>
         <div class="topbar-sep"></div>
         <div class="topbar-btn-group">
             <button id="btn-simulate" onclick="App.toggleSimulation(false)">
@@ -832,7 +833,7 @@
 
     <!-- F1: HUD operátora (learning mode) -->
     <div id="hud">
-        <div class="hud-row"><span class="hud-label" id="hud-role">STREAMER</span> <span class="hud-val" id="hud-name">—</span></div>
+        <div class="hud-row"><span class="hud-label" id="hud-role">HEFAISTOS H</span> <span class="hud-val" id="hud-name">—</span></div>
         <div class="hud-row"><span class="hud-label">HODNOST</span> <span class="hud-val" id="hud-rank">Nováček</span></div>
         <div class="hud-row"><span class="hud-label">XP</span> <span class="hud-val" id="hud-xp">0</span> <span class="hud-val" id="hud-stars">★0</span></div>
     </div>
@@ -1037,16 +1038,16 @@
         </div>
     </div>
 
-    <!-- F1: Modál jména (learning mode — povinné) -->
+    <!-- F1: Modál jména (learning mode — dobrovolné; „bez jména" neblokuje) -->
     <div id="name-modal" class="modal-overlay" style="z-index: 700;">
         <div class="modal-box">
             <h3 style="color: var(--accent); text-shadow: 0 0 10px rgba(0,229,255,0.4);">Jak se jmenuješ, operátore?</h3>
-            <p style="color: var(--text); font-size: 13px; opacity: 0.8; margin: 0;">Jméno jde jen na certifikát. Zůstává v prohlížeči.</p>
+            <p style="color: var(--text); font-size: 13px; opacity: 0.8; margin: 0;">Jméno je dobrovolné — jde jen na certifikát a zůstává v prohlížeči.</p>
             <input id="name-input" type="text" maxlength="30" placeholder="1–30 znaků" autocomplete="off">
             <div id="name-error"></div>
             <div class="btn-row">
                 <button class="btn" onclick="App.submitName()" style="flex: 1; padding: 10px; font-size: 13px; background: rgba(0,229,255,0.05); color: var(--accent); border-color: var(--accent); box-shadow: inset 0 0 15px rgba(0,229,255,0.2);">START SMĚNY ▶</button>
-                <button class="btn" onclick="App.closeNameModal()" style="flex: 1; padding: 10px; font-size: 13px; background: rgba(255,255,255,0.03); color: var(--text); border-color: var(--border);">Zatím ne</button>
+                <button class="btn" onclick="App.submitName(true)" style="flex: 1; padding: 10px; font-size: 13px; background: rgba(255,255,255,0.03); color: var(--text); border-color: var(--border);">Zatím ne — bez jména</button>
             </div>
         </div>
     </div>
@@ -1309,493 +1310,553 @@
         document.addEventListener('pointerdown', () => AudioSys.init(), { once: false });
 
         // ==== F1: Data 6 stupňů (PLAN.md §16) ====
-        const LEVELS = [
-            {
-                id: 1, name: 'Průvodce skladem', type: 'sestav',
-                goal: 'Veronika nezná sklad. Slož jí cestičku: 3 kroky v pořadí.',
-                story: 'Řídíš proces ve skladu: seřaď kroky (brána → bedna → brána), než projede vozík.',
-                blocks: ['start', 'process', 'note', 'end'], xpBase: 100,
-                rvp: 'Zápis algoritmu vývojovým diagramem',
-                kompas: {
-                    cil: 'Technik potřebuje vidět cestičku od STARTU do KONCE.',
-                    hacek: 'Můžeš odejít ze skladu, aniž bys zavřel bránu?',
-                    vzor: 'START → Otevři bránu → Vezmi bednu → Zavři bránu → KONEC',
-                    postup: 'Krok 2: spoj AKCE pod sebe ve správném sledu.'
-                },
-                tests: [{ id: 'A', expected: ['Otevři bránu', 'Vezmi bednu', 'Zavři bránu'] }]
-            },
-            {
-                id: 2, name: 'Pokladna', type: 'sestav',
-                goal: 'Načti cenu a kusy. Vypiš mezisoučet.',
-                story: 'Obsluhuješ pokladnu: z ceny a počtu kusů spočítáš mezisoučet a vypíšeš ho.',
-                blocks: ['start', 'io', 'process', 'note', 'end'], xpBase: 120,
-                rvp: 'Proměnné, vstup a výstup',
-                kompas: {
-                    cil: 'Mezisoučet vzniká z dvojice čísel.',
-                    hacek: 'Vyhodí pokladna výsledek sám od sebe?',
-                    vzor: 'START → VSTUP cena → VSTUP kusy → mezisoucet = cena * kusy → VÝSTUP → KONEC',
-                    postup: 'Doplň AKCE mezi vstupy a výstup.'
-                },
-                tests: [
-                    { id: 'A', inputs: { cena: 15, kusy: 3 }, expected: 'Mezisoučet: 45' },
-                    { id: 'B', inputs: { cena: 80, kusy: 5 }, expected: 'Mezisoučet: 400' },
-                    { id: 'C', inputs: { cena: 12.5, kusy: 4 }, expected: 'Mezisoučet: 50' }
-                ]
-            },
-            {
-                id: 3, name: 'Vstupenka 15+', type: 'sestav+oprav',
-                goal: 'Načti věk. ANO=pusť, NE=vykašli se.',
-                story: 'Řídíš vstupenkový systém 15+: podmínkou pustíš nebo odmítneš návštěvníka.',
-                blocks: ['start', 'io', 'decision', 'process', 'note', 'end'], xpBase: 140,
-                rvp: 'Větvení (podmínka) + kontrola',
-                kompas: {
-                    cil: 'Přesně 15 let je „dost" — kde to rozseknem?',
-                    hacek: 'Co se stane, když je 15 přesně?',
-                    vzor: 'START → VSTUP vek → vek >= 15 ? ANO→„Vstupenka ANO" / NE→„Vstupenka NE" → KONEC',
-                    postup: 'Sprav obě větve pod PODMÍNKOU.'
-                },
-                tests: [
-                    { id: 'A', inputs: { vek: 18 }, expected: 'Vstupenka ANO' },
-                    { id: 'B', inputs: { vek: 12 }, expected: 'Vstupenka NE' },
-                    { id: 'C', inputs: { vek: 15 }, expected: 'Vstupenka ANO' }
-                ]
-            },
-            {
-                id: 4, name: 'Kontrola kvality', type: 'sestav',
-                goal: 'Skenuj díly, dokud nemáš 2 dobré. Spočítej, kolik jsi jich prošel.',
-                story: 'Řídíš kontrolu kvality: skenuješ díly, dokud nemáš 2 dobré, a počítáš, kolik jsi jich prošel.',
-                blocks: ['start', 'io', 'process', 'decision', 'loop', 'note', 'end'], xpBase: 200,
-                rvp: 'Cykly (fixní i podmíněný)',
-                kompas: {
-                    cil: 'Potřebuješ 2 dobré díly — smyčka se točí, dokud je nemáš.',
-                    hacek: 'Kolikrát se smyčka opakuje? Záleží to na vstupech?',
-                    vzor: 'Smyčka ok<2 → vstup stav → sken++ → když stav==ok, ok++',
-                    postup: 'Skenuj každý díl, počítej dobré a skonči, až jich máš 2.'
-                },
-                tests: [
-                    { id: 'A', inputs: { stav: ['vadne', 'ok', 'ok'] }, expected: 'Dobré díly: 2 z 3.' },
-                    { id: 'B', inputs: { stav: ['ok', 'ok'] }, expected: 'Dobré díly: 2 z 2.' },
-                    { id: 'C', inputs: { stav: ['vadne', 'vadne', 'ok', 'ok'] }, expected: 'Dobré díly: 2 z 4.' }
-                ]
-            },
-            {
-                id: 5, name: 'Volání opraváře', type: 'cti+sestav',
-                goal: 'Opravář je zavolán 3×. Zavolej ho správně.',
-                story: 'Voláš opraváře: místo ruční opravy použiješ podprogram (VOLÁNÍ) pro každý díl.',
-                blocks: ['start', 'process', 'call', 'note', 'end'], xpBase: 180,
-                rvp: 'Podprogram, dekompozice',
-                kompas: {
-                    cil: 'Opravář dělá totéž 3× — stačí jedno VOLÁNÍ s odlišným dílem.',
-                    hacek: 'Co se stane, když zavoláš s díl=B?',
-                    vzor: 'oprav(dil=A) → oprav(dil=B) → oprav(dil=C)',
-                    postup: 'Místo ruční AKCE použij blok VOLÁNÍ s parametrem dílu.'
-                },
-                tests: [
-                    { id: 'A', inputs: { dily: ['A', 'B', 'C'] }, expected: ['oprav(dil=A)', 'oprav(dil=B)', 'oprav(dil=C)'] },
-                    { id: 'B', inputs: { dily: ['C', 'A', 'B'] }, expected: ['oprav(dil=C)', 'oprav(dil=A)', 'oprav(dil=B)'] }
-                ]
-            },
-            {
-                id: 6, name: 'Záchrana serveru', type: 'oprav+vyber+tvorba',
-                goal: 'Server padá. Oprav smyčku, vyber čistší tok.',
-                story: 'Zachraňuješ server: najdeš chybu ve smyčce, opravíš ji a zvolíš čistší tok.',
-                blocks: ['start', 'io', 'process', 'decision', 'loop', 'call', 'note', 'end'], xpBase: 300,
-                rvp: 'Ověření, oprava, výběr, tvorba',
-                kompas: {
-                    cil: 'Najdi, co se opakuje, a nech smyčku doběhnout do konce.',
-                    hacek: 'Skončí smyčka dřív, než zpracuje poslední prvek?',
-                    vzor: 'Smyčka krok <= n → tělo → VÝSTUP „OK: zpracováno {n}"',
-                    postup: 'Oprav podmínky a vyber kratší variantu.'
-                },
-                tests: [
-                    { id: 'A', inputs: { n: 3 }, expected: 'OK: zpracováno 3' },
-                    { id: 'B', inputs: { n: 1 }, expected: 'OK: zpracováno 1' },
-                    { id: 'C', inputs: { n: 4 }, expected: 'OK: zpracováno 4' }
-                ]
-            }
-        ];
-
-        // ==== F1: scaffolding — rozházené, NEpropojené moduly na plátně (PLAN.md §16) ====
-        // Žák si spojení vytváří sám; loader moduly zamíchá do řídké 2D mřížky (+ jitter),
-        // aby nebyly pod sebou (pořadí/pozice by napovídaly řešení). x/y v datech se proto
-        // nepoužívají — slouží jen jako logický seznam modulů pro F5/F6.
-        const SCAFFOLDS = {
-            1: {
-                blocks: [
-                    { type: 'start', label: 'Začátek', x: 0, y: -220 },
-                    { type: 'process', label: 'Vezmi bednu', x: 0, y: -60 },
-                    { type: 'process', label: 'Otevři bránu', x: 0, y: 100 },
-                    { type: 'process', label: 'Zavři bránu', x: 0, y: 260 },
-                    { type: 'note', label: 'Pořadí je důležité!', x: 360, y: 40 },
-                    { type: 'end', label: 'Konec', x: 0, y: 420 }
-                ]
-            },
-            2: {
-                blocks: [
-                    { type: 'start', label: 'Začátek', x: 0, y: -220 },
-                    { type: 'io', label: 'cena', ioType: 'input', x: 0, y: -60 },
-                    { type: 'io', label: 'kusy', ioType: 'input', x: 0, y: 100 },
-                    { type: 'note', label: 'mezisoucet = cena * kusy', x: 360, y: 100 },
-                    { type: 'io', label: 'Mezisoučet: {mezisoucet}', ioType: 'output', x: 0, y: 380 },
-                    { type: 'end', label: 'Konec', x: 0, y: 540 }
-                ]
-            },
-            3: {
-                blocks: [
-                    { type: 'start', label: 'Začátek', x: 0, y: -240 },
-                    { type: 'io', label: 'vek', ioType: 'input', x: 0, y: -80 },
-                    { type: 'decision', label: '?', x: 0, y: 90, yesPort: 'right', noPort: 'left' },
-                    { type: 'io', label: 'Vstupenka NE', ioType: 'output', x: 320, y: 260 },
-                    { type: 'io', label: 'Vstupenka ANO', ioType: 'output', x: -320, y: 260 },
-                    { type: 'note', label: 'Podmínka: vek >= 15', x: 380, y: 60 },
-                    { type: 'end', label: 'Konec', x: 0, y: 450 }
-                ]
-            },
-            4: {
-                blocks: [
-                    { type: 'start', label: 'Začátek' },
-                    { type: 'process', label: 'ok = 0\nsken = 0' },
-                    { type: 'loop', label: 'ok < 2', yesPort: 'bottom', noPort: 'right' },
-                    { type: 'io', label: 'stav', ioType: 'input' },
-                    { type: 'process', label: 'sken++' },
-                    { type: 'decision', label: 'stav == "ok"', yesPort: 'right', noPort: 'bottom' },
-                    { type: 'process', label: 'ok++' },
-                    { type: 'io', label: 'Dobré díly: {ok} z {sken}.', ioType: 'output' },
-                    { type: 'end', label: 'Konec' },
-                    { type: 'note', label: 'Smyčka končí, až máš 2 dobré.' }
-                ]
-            },
-            5: {
-                blocks: [
-                    { type: 'start', label: 'Začátek', x: 0, y: -220 },
-                    { type: 'note', label: 'PODPROGRAM: oprav(dil) → vrátí opraveno=1', x: 380, y: -40 },
-                    { type: 'call', label: 'oprav(dil=A)', x: 0, y: -60 },
-                    { type: 'call', label: 'oprav(dil=B)', x: 0, y: 100 },
-                    { type: 'call', label: 'oprav(dil=D)', x: 0, y: 260 },
-                    { type: 'end', label: 'Konec', x: 0, y: 420 }
-                ]
-            },
-            6: {
-                blocks: [
-                    { type: 'start', label: 'Začátek', x: 0, y: -280 },
-                    { type: 'io', label: 'n', ioType: 'input', x: 0, y: -120 },
-                    { type: 'process', label: 'krok = 0', x: 0, y: 40 },
-                    { type: 'loop', label: 'krok < 3', x: 0, y: 210, yesPort: 'bottom', noPort: 'right' },
-                    { type: 'process', label: 'krok = krok + 1', x: 0, y: 400 },
-                    { type: 'decision', label: 'krok >= n', x: 380, y: 400, yesPort: 'right', noPort: 'bottom' },
-                    { type: 'io', label: 'OK: zpracováno {n}', ioType: 'output', x: 380, y: 600 },
-                    { type: 'end', label: 'Konec', x: 380, y: 760 }
-                ]
-            }
-        };
-        LEVELS.forEach(l => { if (SCAFFOLDS[l.id]) l.scaffold = SCAFFOLDS[l.id]; });
-
-        // ==== F1: vzorová řešení (cheat Ctrl+Alt+C s CapsLockem, krok za krokem) ====
-        // Stejný formát jako scaffolding: blocks + arrows = [fromIndex, fromPort, toIndex, toPort].
-        const SOLUTIONS = {
-            1: {
-                blocks: [
-                    { type: 'start', label: 'Začátek', x: 0, y: -220 },
-                    { type: 'process', label: 'Otevři bránu', x: 0, y: -60 },
-                    { type: 'process', label: 'Vezmi bednu', x: 0, y: 100 },
-                    { type: 'process', label: 'Zavři bránu', x: 0, y: 260 },
-                    { type: 'end', label: 'Konec', x: 0, y: 420 }
-                ],
-                arrows: [[0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'], [2, 'bottom', 3, 'top'], [3, 'bottom', 4, 'top']]
-            },
-            2: {
-                blocks: [
-                    { type: 'start', label: 'Začátek', x: 0, y: -220 },
-                    { type: 'io', label: 'cena', ioType: 'input', x: 0, y: -60 },
-                    { type: 'io', label: 'kusy', ioType: 'input', x: 0, y: 100 },
-                    { type: 'process', label: 'mezisoucet = cena * kusy', x: 0, y: 260 },
-                    { type: 'io', label: 'Mezisoučet: {mezisoucet}', ioType: 'output', x: 0, y: 420 },
-                    { type: 'end', label: 'Konec', x: 0, y: 580 }
-                ],
-                arrows: [[0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'], [2, 'bottom', 3, 'top'], [3, 'bottom', 4, 'top'], [4, 'bottom', 5, 'top']]
-            },
-            3: {
-                blocks: [
-                    { type: 'start', label: 'Začátek', x: 0, y: -240 },
-                    { type: 'io', label: 'vek', ioType: 'input', x: 0, y: -80 },
-                    { type: 'decision', label: 'vek >= 15', x: 0, y: 90, yesPort: 'right', noPort: 'left' },
-                    { type: 'io', label: 'Vstupenka ANO', ioType: 'output', x: 320, y: 260 },
-                    { type: 'io', label: 'Vstupenka NE', ioType: 'output', x: -320, y: 260 },
-                    { type: 'end', label: 'Konec', x: 0, y: 450 }
-                ],
-                arrows: [[0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'], [2, 'right', 3, 'top'], [2, 'left', 4, 'top'], [3, 'bottom', 5, 'top'], [4, 'bottom', 5, 'top']]
-            },
-            4: {
-                blocks: [
-                    { type: 'start', label: 'Začátek', x: 0, y: -420 },
-                    { type: 'process', label: 'ok = 0\nsken = 0', x: 0, y: -280 },
-                    { type: 'loop', label: 'ok < 2', x: 0, y: -140, yesPort: 'bottom', noPort: 'right' },
-                    { type: 'io', label: 'stav', ioType: 'input', x: 0, y: 20 },
-                    { type: 'process', label: 'sken++', x: 0, y: 180 },
-                    { type: 'decision', label: 'stav == "ok"', x: 0, y: 340, yesPort: 'right', noPort: 'bottom' },
-                    { type: 'process', label: 'ok++', x: 340, y: 340 },
-                    { type: 'io', label: 'Dobré díly: {ok} z {sken}.', ioType: 'output', x: 340, y: -140 },
-                    { type: 'end', label: 'Konec', x: 340, y: 20 }
-                ],
-                arrows: [
-                    [0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'], [2, 'bottom', 3, 'top'],
-                    [3, 'bottom', 4, 'top'], [4, 'bottom', 5, 'top'],
-                    [5, 'right', 6, 'left'], [6, 'left', 2, 'left'],
-                    [5, 'bottom', 2, 'left'],
-                    [2, 'right', 7, 'left'], [7, 'bottom', 8, 'top']
-                ]
-            },
-            5: {
-                blocks: [
-                    { type: 'start', label: 'Začátek', x: 0, y: -220 },
-                    { type: 'call', label: 'oprav(dil=A)', x: 0, y: -60 },
-                    { type: 'call', label: 'oprav(dil=B)', x: 0, y: 100 },
-                    { type: 'call', label: 'oprav(dil=C)', x: 0, y: 260 },
-                    { type: 'end', label: 'Konec', x: 0, y: 420 }
-                ],
-                arrows: [[0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'], [2, 'bottom', 3, 'top'], [3, 'bottom', 4, 'top']]
-            },
-            6: {
-                blocks: [
-                    { type: 'start', label: 'Začátek', x: 0, y: -300 },
-                    { type: 'io', label: 'n', ioType: 'input', x: 0, y: -140 },
-                    { type: 'process', label: 'krok = 0', x: 0, y: 20 },
-                    { type: 'loop', label: 'krok <= n', x: 0, y: 180, yesPort: 'bottom', noPort: 'right' },
-                    { type: 'process', label: 'krok = krok + 1', x: 0, y: 360 },
-                    { type: 'io', label: 'OK: zpracováno {n}', ioType: 'output', x: 340, y: 180 },
-                    { type: 'end', label: 'Konec', x: 340, y: 360 }
-                ],
-                arrows: [[0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'], [2, 'bottom', 3, 'top'], [3, 'bottom', 4, 'top'], [4, 'bottom', 3, 'left'], [3, 'right', 5, 'left'], [5, 'bottom', 6, 'top']]
-            }
-        };
-        LEVELS.forEach(l => { if (SOLUTIONS[l.id]) l.solution = SOLUTIONS[l.id]; });
-
-        // ==== F1: narativní témata (PLAN.md §4) ====
-        // Základní = „streamer" (Gen Alfa), přepínatelné na „operátor" (původní sklad,
-        // pro obory E) ikonou v horním panelu. Mění jen texty/názvy/hodnosti — algoritmus
-        // (typy bloků, porty, šipky, pořadí) zůstává stejný.
-        const NARRATIVES = {
-            streamer: {
-                label: 'Streamer', icon: '🎮', hudRole: 'STREAMER',
-                ranks: ['Nováček', 'Ranked hráč', 'Speedrunner', 'Legenda serveru'],
-                levels: {
-                    1: {
-                        name: 'První stream',
-                        goal: 'Nastartuj stream: kamera, mikrofon, live. Tři kroky v pořadí.',
-                        story: 'Zapojuješ streamovací studio: nastav kameru, mikrofon a spusť vysílání ve správném pořadí.',
-                        kompas: {
-                            cil: 'Chat čeká — uveď stream do vzduchu od STARTU do KONCE.',
-                            hacek: 'Můžeš jít live, aniž bys zapl kameru?',
-                            vzor: 'START → Zapni kameru → Zapni mikrofon → Spusť vysílání → KONEC',
-                            postup: 'Krok 2: spoj AKCE pod sebe ve správném sledu.'
-                        },
-                        scaffold: ['Start', 'Zapni kameru', 'Zapni mikrofon', 'Spusť vysílání', 'Pořadí je důležité!', 'Konec'],
-                        solution: ['Start', 'Zapni kameru', 'Zapni mikrofon', 'Spusť vysílání', 'Konec'],
-                        tests: [{ id: 'A', expected: ['Zapni kameru', 'Zapni mikrofon', 'Spusť vysílání'] }]
+        // ==== F1: datový model misí (PLAN.md §16, V2.2) ====
+        // Profily H (8 misí m01–m08) a E_J (6 navazujících misí e1–e6, bez mezer).
+        // Každá mise: stabilní id, typ, cíl ≤ 15 slov, příběh, povolené bloky, kompas,
+        // minimální scaffolding (rozhozené bloky — loader mixuje pozice), vzorové řešení
+        // pro cheat a testovací vektory. Plný obsah misí se dokončí ve F5/F6.
+        const MISSIONS = {
+            H: [
+                {
+                    id: 'm01', name: 'Probuď dílnu', type: 'sestav',
+                    goal: 'Sestav jednoznačné pořadí spuštění dílny.',
+                    story: 'Dílna je potmě. ŠROUB zapnul baterku a myslí, že tím problém vyřešil.',
+                    blocks: ['start', 'process', 'note', 'end'], xpBase: 100,
+                    kompas: {
+                        cil: 'Dílna se spouští v pevném sledu.',
+                        hacek: 'Může se aktivovat pracoviště dřív než napájení?',
+                        vzor: 'START → zapnutí napájení → diagnostika → aktivace → KONEC',
+                        postup: 'Propoj kroky tak, aby každý navazoval na předchozí.'
                     },
-                    2: {
-                        name: 'Donáty a subs',
-                        goal: 'Načti cenu subu a počet subů. Vypiš výdělek.',
-                        story: 'Řídíš výdělek z donátů a subs: z ceny subu a počtu subů spočítáš, kolik stream vydělal.',
-                        kompas: {
-                            cil: 'Výdělek vzniká z dvojice čísel.',
-                            hacek: 'Spočítá stream výdělek sám od sebe?',
-                            vzor: 'START → VSTUP cenaSub → VSTUP pocetSubu → vydelok = cenaSub * pocetSubu → VÝSTUP → KONEC',
-                            postup: 'Doplň AKCE mezi vstupy a výstup.'
-                        },
-                        scaffold: ['Start', 'cenaSub', 'pocetSubu', 'vydelok = cenaSub * pocetSubu', 'Výdělek: {vydelok}', 'Konec'],
-                        solution: ['Start', 'cenaSub', 'pocetSubu', 'vydelok = cenaSub * pocetSubu', 'Výdělek: {vydelok}', 'Konec'],
-                        tests: [
-                            { id: 'A', inputs: { cenaSub: 15, pocetSubu: 3 }, expected: 'Výdělek: 45' },
-                            { id: 'B', inputs: { cenaSub: 80, pocetSubu: 5 }, expected: 'Výdělek: 400' },
-                            { id: 'C', inputs: { cenaSub: 12.5, pocetSubu: 4 }, expected: 'Výdělek: 50' }
+                    scaffold: {
+                        blocks: [
+                            { type: 'start', label: 'Start' },
+                            { type: 'process', label: 'zapnout napájení' },
+                            { type: 'process', label: 'diagnostika' },
+                            { type: 'process', label: 'aktivace pracoviště' },
+                            { type: 'note', label: 'Počkej chvíli' },
+                            { type: 'note', label: 'Sled má pevné pořadí.' },
+                            { type: 'end', label: 'Konec' }
                         ]
                     },
-                    3: {
-                        name: 'Turnaj 15+',
-                        goal: 'Načti věk. ANO=pusť do turnaje, NE=domů.',
-                        story: 'Řídíš vstup do turnaje 15+: podmínkou rozhodneš, kdo je Přihlášen a kdo Zamítnut.',
-                        kompas: {
-                            cil: 'Přesně 15 let je „dost" — kde to rozseknem?',
-                            hacek: 'Co se stane, když je 15 přesně?',
-                            vzor: 'START → VSTUP vek → vek >= 15 ? ANO→„Přihlášen" / NE→„Zamítnut" → KONEC',
-                            postup: 'Sprav obě větve pod PODMÍNKOU.'
-                        },
-                        scaffold: ['Start', 'vek', '?', 'Zamítnut', 'Přihlášen', 'Podmínka: vek >= 15', 'Konec'],
-                        solution: ['Start', 'vek', 'vek >= 15', 'Přihlášen', 'Zamítnut', 'Konec'],
-                        tests: [
-                            { id: 'A', inputs: { vek: 18 }, expected: 'Přihlášen' },
-                            { id: 'B', inputs: { vek: 12 }, expected: 'Zamítnut' },
-                            { id: 'C', inputs: { vek: 15 }, expected: 'Přihlášen' }
+                    solution: {
+                        blocks: [
+                            { type: 'start', label: 'Start', x: 0, y: -240 },
+                            { type: 'process', label: 'zapnout napájení', x: 0, y: -80 },
+                            { type: 'process', label: 'diagnostika', x: 0, y: 80 },
+                            { type: 'process', label: 'aktivace pracoviště', x: 0, y: 240 },
+                            { type: 'end', label: 'Konec', x: 0, y: 400 }
+                        ],
+                        arrows: [[0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'], [2, 'bottom', 3, 'top'], [3, 'bottom', 4, 'top']]
+                    },
+                    tests: [{ id: 'A', expected: ['zapnout napájení', 'diagnostika', 'aktivace pracoviště'] }]
+                },
+                {
+                    id: 'm02', name: 'CNC odmítá pracovat', type: 'sestav+oprav',
+                    goal: 'Rozhodni podle vstupu krytZavren.',
+                    story: 'Kontrolka hlásí otevřený kryt. ŠROUB navrhuje přelepit kontrolku.',
+                    blocks: ['start', 'io', 'decision', 'process', 'note', 'end'], xpBase: 120,
+                    kompas: {
+                        cil: 'Kryt zavřený = výroba, otevřený = zastavit.',
+                        hacek: 'Co se stane s výrobou, když kryt dojde dovnitř?',
+                        vzor: 'podmínka krytZavren == true → ANO = výroba, NE = výzva',
+                        postup: 'Propoj větev ANO a NE pod PODMÍNKOU.'
+                    },
+                    scaffold: {
+                        blocks: [
+                            { type: 'start', label: 'Start' },
+                            { type: 'io', label: 'krytZavren', ioType: 'input' },
+                            { type: 'decision', label: 'krytZavren == true', yesPort: 'right', noPort: 'bottom' },
+                            { type: 'process', label: 'spustit výrobu' },
+                            { type: 'process', label: 'požádat o zavření krytu' },
+                            { type: 'note', label: 'Izolepa řešení není.' },
+                            { type: 'end', label: 'Konec' }
                         ]
                     },
-                    4: {
-                        name: 'Moderace chatu',
-                        goal: 'Projdi zprávy, dokud nemáš 2 virální. Spočítej, kolik jsi jich prošel.',
-                        story: 'Moderuješ chat: procházíš zprávy, dokud nenajdeš 2 virální, a počítáš, kolik jsi jich prošel.',
-                        kompas: {
-                            cil: 'Potřebuješ 2 virální — smyčka se točí, dokud je nemáš.',
-                            hacek: 'Kolikrát se smyčka opakuje? Záleží to na vstupech?',
-                            vzor: 'Smyčka vir<2 → vstup kvalita → klip++ → když kvalita=="viral", vir++',
-                            postup: 'Skenuj každou zprávu, počítej virální a skonči, až jich máš 2.'
-                        },
-                        scaffold: ['Start', 'vir = 0\nklip = 0', 'vir < 2', 'kvalita', 'klip++', 'kvalita == "viral"', 'vir++', 'Virální: {vir} z {klip}.', 'Konec', 'Smyčka končí, až máš 2 virální.'],
-                        solution: ['Start', 'vir = 0\nklip = 0', 'vir < 2', 'kvalita', 'klip++', 'kvalita == "viral"', 'vir++', 'Virální: {vir} z {klip}.', 'Konec'],
-                        tests: [
-                            { id: 'A', inputs: { kvalita: ['nuda', 'viral', 'viral'] }, expected: 'Virální: 2 z 3.' },
-                            { id: 'B', inputs: { kvalita: ['viral', 'viral'] }, expected: 'Virální: 2 z 2.' },
-                            { id: 'C', inputs: { kvalita: ['nuda', 'nuda', 'viral', 'viral'] }, expected: 'Virální: 2 z 4.' }
+                    solution: {
+                        blocks: [
+                            { type: 'start', label: 'Start', x: 0, y: -280 },
+                            { type: 'io', label: 'krytZavren', ioType: 'input', x: 0, y: -120 },
+                            { type: 'decision', label: 'krytZavren == true', x: 0, y: 40, yesPort: 'right', noPort: 'bottom' },
+                            { type: 'process', label: 'spustit výrobu', x: 320, y: 200 },
+                            { type: 'process', label: 'požádat o zavření krytu', x: 0, y: 260 },
+                            { type: 'end', label: 'Konec', x: 320, y: 360 }
+                        ],
+                        arrows: [
+                            [0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'],
+                            [2, 'right', 3, 'left'], [3, 'bottom', 5, 'top'],
+                            [2, 'bottom', 4, 'top'], [4, 'bottom', 5, 'bottom']
                         ]
                     },
-                    5: {
-                        name: 'Zavolej moda',
-                        goal: 'Mod je zavolán třikrát. Zavolej ho správně.',
-                        story: 'Řídíš zásah moda: místo ruční práce použiješ podprogram (VOLÁNÍ) pro každého hráče.',
-                        kompas: {
-                            cil: 'Mod dělá totéž třikrát — stačí jedno VOLÁNÍ s jiným hráčem.',
-                            hacek: 'Co se stane, když zavoláš s hráč=Bob?',
-                            vzor: 'ban(hráč=A) → ban(hráč=B) → ban(hráč=C)',
-                            postup: 'Místo ruční AKCE použij blok VOLÁNÍ s parametrem hráče.'
-                        },
-                        scaffold: ['Start', 'PODPROGRAM: ban(hráč) → vyhodí hráče', 'ban(hráč=A)', 'ban(hráč=B)', 'ban(hráč=D)', 'Konec'],
-                        solution: ['Start', 'ban(hráč=A)', 'ban(hráč=B)', 'ban(hráč=C)', 'Konec'],
-                        tests: [
-                            { id: 'A', inputs: { hraci: ['A', 'B', 'C'] }, expected: ['ban(hráč=A)', 'ban(hráč=B)', 'ban(hráč=C)'] }
+                    tests: [
+                        { id: 'A', inputs: { krytZavren: true }, expected: ['spustit výrobu'] },
+                        { id: 'B', inputs: { krytZavren: false }, expected: ['požádat o zavření krytu'] }
+                    ]
+                },
+                {
+                    id: 'm03', name: 'Vytiskni náhradní držák', type: 'sestav',
+                    goal: 'Z počtu výrobků vypočítej spotřebu materiálu.',
+                    story: 'Při manévru proletěl klíč jídelnou. Posádka potřebuje držáky na nářadí.',
+                    blocks: ['start', 'io', 'process', 'note', 'end'], xpBase: 130,
+                    kompas: {
+                        cil: 'Spotřeba roste s počtem kusů.',
+                        hacek: 'Použiješ sčítání, nebo násobení?',
+                        vzor: 'AKCE spotreba = pocet * 20 + VÝSTUP',
+                        postup: 'Načti počet, vynásob a vypiš s jednotkou.'
+                    },
+                    scaffold: {
+                        blocks: [
+                            { type: 'start', label: 'Start' },
+                            { type: 'io', label: 'pocet', ioType: 'input' },
+                            { type: 'process', label: 'spotreba = pocet * 20' },
+                            { type: 'io', label: 'Spotřeba: {spotreba} g', ioType: 'output' },
+                            { type: 'note', label: 'Jeden držák = 20 g materiálu.' },
+                            { type: 'end', label: 'Konec' }
                         ]
                     },
-                    6: {
-                        name: 'Záchrana streamu',
-                        goal: 'Stream padá. Oprav smyčku, vyber čistší tok.',
-                        story: 'Zachraňuješ padající stream: najdeš chybu ve smyčce, opravíš ji a zvolíš čistší tok.',
-                        kompas: {
-                            cil: 'Najdi, co se opakuje, a nech smyčku doběhnout do konce.',
-                            hacek: 'Skončí smyčka dřív, než zpracuje poslední prvek?',
-                            vzor: 'Smyčka krok <= n → tělo → VÝSTUP „OK: zpracováno {n}"',
-                            postup: 'Oprav podmínky a vyber kratší variantu.'
-                        },
-                        scaffold: ['Start', 'n', 'krok = 0', 'krok < 3', 'krok = krok + 1', 'krok >= n', 'OK: zpracováno {n}', 'Konec'],
-                        solution: ['Start', 'n', 'krok = 0', 'krok <= n', 'krok = krok + 1', 'OK: zpracováno {n}', 'Konec'],
-                        tests: [
-                            { id: 'A', inputs: { n: 3 }, expected: 'OK: zpracováno 3' },
-                            { id: 'B', inputs: { n: 1 }, expected: 'OK: zpracováno 1' },
-                            { id: 'C', inputs: { n: 4 }, expected: 'OK: zpracováno 4' }
+                    solution: {
+                        blocks: [
+                            { type: 'start', label: 'Start', x: 0, y: -240 },
+                            { type: 'io', label: 'pocet', ioType: 'input', x: 0, y: -80 },
+                            { type: 'process', label: 'spotreba = pocet * 20', x: 0, y: 80 },
+                            { type: 'io', label: 'Spotřeba: {spotreba} g', ioType: 'output', x: 0, y: 240 },
+                            { type: 'end', label: 'Konec', x: 0, y: 400 }
+                        ],
+                        arrows: [[0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'], [2, 'bottom', 3, 'top'], [3, 'bottom', 4, 'top']]
+                    },
+                    tests: [
+                        { id: 'A', inputs: { pocet: 1 }, expected: 'Spotřeba: 20 g' },
+                        { id: 'B', inputs: { pocet: 3 }, expected: 'Spotřeba: 60 g' },
+                        { id: 'C', inputs: { pocet: 5 }, expected: 'Spotřeba: 100 g' }
+                    ]
+                },
+                {
+                    id: 'm04', name: 'Vyrob sadu spojek', type: 'sestav',
+                    goal: 'Nahraď opakované příkazy cyklem s počtem.',
+                    story: 'Posádka potřebuje čtyři spojky. ŠROUB zkopíroval výrobní příkaz čtyřicetkrát.',
+                    blocks: ['start', 'process', 'loop', 'note', 'end'], xpBase: 180,
+                    kompas: {
+                        cil: 'Čtyři spojky = čtyřikrát stejná výroba.',
+                        hacek: 'Kolikrát bych psal příkaz ručně?',
+                        vzor: 'OPAKUJ 4× → vyrob spojku',
+                        postup: 'Umísti výrobu do těla cyklu a nastav počet.'
+                    },
+                    scaffold: {
+                        blocks: [
+                            { type: 'start', label: 'Start' },
+                            { type: 'process', label: 'spojky = 0' },
+                            { type: 'loop', label: 'spojky < 4', yesPort: 'bottom', noPort: 'right' },
+                            { type: 'process', label: 'spojky++' },
+                            { type: 'note', label: 'Tělo cyklu = jedna výroba spojky.' },
+                            { type: 'end', label: 'Konec' }
                         ]
-                    }
+                    },
+                    solution: {
+                        blocks: [
+                            { type: 'start', label: 'Start', x: 0, y: -300 },
+                            { type: 'process', label: 'spojky = 0', x: 0, y: -140 },
+                            { type: 'loop', label: 'spojky < 4', x: 0, y: 20, yesPort: 'bottom', noPort: 'right' },
+                            { type: 'process', label: 'spojky++', x: 0, y: 200 },
+                            { type: 'end', label: 'Konec', x: 340, y: 20 }
+                        ],
+                        arrows: [
+                            [0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'],
+                            [2, 'bottom', 3, 'top'], [3, 'bottom', 2, 'left'],
+                            [2, 'right', 4, 'left']
+                        ]
+                    },
+                    tests: [
+                        { id: 'A', requireLoop: true, counts: { 'spojky++': 4 } },
+                        { id: 'B', requireLoop: true, counts: { 'spojky++': 4 } }
+                    ]
+                },
+                {
+                    id: 'm05', name: 'Tři dobré kusy', type: 'sestav',
+                    goal: 'Kontroluj dodávku, dokud nejsou 3 dobré kusy.',
+                    story: 'Linka funguje, ale některé spojky vypadají, jako by je žvýkal robot.',
+                    blocks: ['start', 'io', 'process', 'decision', 'loop', 'note', 'end'], xpBase: 220,
+                    kompas: {
+                        cil: 'Potřebuješ 3 dobré — točíš, dokud je nemáš.',
+                        hacek: 'Kolikrát poběží smyčka? Záleží na vstupech?',
+                        vzor: 'Smyčka dobrych < 3 → stav → dobrý? dobrych++',
+                        postup: 'Ukonči cyklus, až dobrych == 3, a zvyš počítadlo jen u dobrého kusu.'
+                    },
+                    scaffold: {
+                        blocks: [
+                            { type: 'start', label: 'Start' },
+                            { type: 'process', label: 'dobrych = 0' },
+                            { type: 'loop', label: 'dobrych < 3', yesPort: 'bottom', noPort: 'right' },
+                            { type: 'io', label: 'stav', ioType: 'input' },
+                            { type: 'decision', label: 'stav == "ok"', yesPort: 'right', noPort: 'bottom' },
+                            { type: 'process', label: 'dobrych++' },
+                            { type: 'note', label: 'Zásoba má dost dobrých kusů.' },
+                            { type: 'end', label: 'Konec' }
+                        ]
+                    },
+                    solution: {
+                        blocks: [
+                            { type: 'start', label: 'Start', x: 0, y: -360 },
+                            { type: 'process', label: 'dobrych = 0', x: 0, y: -200 },
+                            { type: 'loop', label: 'dobrych < 3', x: 0, y: -40, yesPort: 'bottom', noPort: 'right' },
+                            { type: 'io', label: 'stav', ioType: 'input', x: 0, y: 140 },
+                            { type: 'decision', label: 'stav == "ok"', x: 0, y: 320, yesPort: 'right', noPort: 'bottom' },
+                            { type: 'process', label: 'dobrych++', x: 320, y: 320 },
+                            { type: 'end', label: 'Konec', x: 320, y: -40 }
+                        ],
+                        arrows: [
+                            [0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'],
+                            [2, 'bottom', 3, 'top'], [3, 'bottom', 4, 'top'],
+                            [4, 'right', 5, 'left'], [5, 'bottom', 2, 'left'],
+                            [4, 'bottom', 2, 'left'],
+                            [2, 'right', 6, 'left']
+                        ]
+                    },
+                    tests: [
+                        { id: 'A', inputs: { stav: ['ok', 'ok', 'ok'] }, requireLoop: true, counts: { 'dobrych++': 3 } },
+                        { id: 'B', inputs: { stav: ['vadne', 'ok', 'vadne', 'ok', 'ok'] }, requireLoop: true, counts: { 'dobrych++': 3 } }
+                    ]
+                },
+                {
+                    id: 'm06', name: 'Skladový robot zabloudil', type: 'oprav+ladění',
+                    goal: 'Najdi jednu chybu krokováním a ověř opravu.',
+                    story: 'Robot tvrdí, že doručil zásilku, ale stále stojí u regálu.',
+                    blocks: ['start', 'io', 'process', 'loop', 'note', 'end'], xpBase: 240,
+                    kompas: {
+                        cil: 'Nejdřív uhádni, pak ověř, pak najdi rozdíl.',
+                        hacek: 'Který vstup odhalí chybnou mez?',
+                        vzor: 'Smyčka krok < n → VÝSTUP „Doručeno: {krok}"',
+                        postup: 'Přečti program, spusť krok za krokem a oprav chybnou mez.'
+                    },
+                    scaffold: {
+                        blocks: [
+                            { type: 'start', label: 'Start' },
+                            { type: 'io', label: 'n', ioType: 'input' },
+                            { type: 'process', label: 'krok = 0' },
+                            { type: 'loop', label: 'krok < n', yesPort: 'bottom', noPort: 'right' },
+                            { type: 'process', label: 'krok = krok + 1' },
+                            { type: 'io', label: 'Doručeno: {krok}', ioType: 'output' },
+                            { type: 'note', label: 'Jedna cílená chyba v meze cyklu.' },
+                            { type: 'end', label: 'Konec' }
+                        ]
+                    },
+                    solution: {
+                        blocks: [
+                            { type: 'start', label: 'Start', x: 0, y: -300 },
+                            { type: 'io', label: 'n', ioType: 'input', x: 0, y: -140 },
+                            { type: 'process', label: 'krok = 0', x: 0, y: 20 },
+                            { type: 'loop', label: 'krok < n', x: 0, y: 180, yesPort: 'bottom', noPort: 'right' },
+                            { type: 'process', label: 'krok = krok + 1', x: 0, y: 360 },
+                            { type: 'io', label: 'Doručeno: {krok}', ioType: 'output', x: 340, y: 180 },
+                            { type: 'end', label: 'Konec', x: 340, y: 360 }
+                        ],
+                        arrows: [
+                            [0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'], [2, 'bottom', 3, 'top'],
+                            [3, 'bottom', 4, 'top'], [4, 'bottom', 3, 'left'],
+                            [3, 'right', 5, 'left'], [5, 'bottom', 6, 'top']
+                        ]
+                    },
+                    tests: [
+                        { id: 'A', inputs: { n: 1 }, expected: 'Doručeno: 1' },
+                        { id: 'B', inputs: { n: 3 }, expected: 'Doručeno: 3' }
+                    ]
+                },
+                {
+                    id: 'm07', name: 'Urychli výrobní linku', type: 'vyber+oprav+zdůvodni',
+                    goal: 'Porovnej dva algoritmy a odstraň zbytečné opakování.',
+                    story: 'Obě linky vyrábějí správně, ale jedna stále znovu načítá stejný plán.',
+                    blocks: ['start', 'io', 'process', 'loop', 'note', 'end'], xpBase: 260,
+                    kompas: {
+                        cil: 'Stejná zakázka, méně zbytečné práce.',
+                        hacek: 'Kolikrát se plán čte v variantě A pro 5 kusů?',
+                        vzor: 'Stačí načíst plán jednou před cyklem.',
+                        postup: 'Přesuň načtení plánu mimo cyklus.'
+                    },
+                    scaffold: {
+                        blocks: [
+                            { type: 'start', label: 'Start' },
+                            { type: 'io', label: 'n', ioType: 'input' },
+                            { type: 'process', label: 'plan = cteni_planu()' },
+                            { type: 'process', label: 'krok = 0' },
+                            { type: 'loop', label: 'krok < n', yesPort: 'bottom', noPort: 'right' },
+                            { type: 'process', label: 'plan = cteni_planu()' },
+                            { type: 'process', label: 'krok++' },
+                            { type: 'note', label: 'Plán je pro celou zakázku stejný.' },
+                            { type: 'end', label: 'Konec' }
+                        ]
+                    },
+                    solution: {
+                        blocks: [
+                            { type: 'start', label: 'Start', x: 0, y: -340 },
+                            { type: 'io', label: 'n', ioType: 'input', x: 0, y: -200 },
+                            { type: 'process', label: 'plan = cteni_planu()', x: 0, y: -60 },
+                            { type: 'process', label: 'krok = 0', x: 0, y: 80 },
+                            { type: 'loop', label: 'krok < n', x: 0, y: 240, yesPort: 'bottom', noPort: 'right' },
+                            { type: 'process', label: 'krok++', x: 0, y: 420 },
+                            { type: 'end', label: 'Konec', x: 340, y: 240 }
+                        ],
+                        arrows: [
+                            [0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'], [2, 'bottom', 3, 'top'],
+                            [3, 'bottom', 4, 'top'], [4, 'bottom', 5, 'top'], [5, 'bottom', 4, 'left'],
+                            [4, 'right', 6, 'left']
+                        ]
+                    },
+                    tests: [
+                        { id: 'A', inputs: { n: 3 }, requireLoop: true, expected: ['plan = cteni_planu()', 'krok = 0', 'krok++', 'krok++', 'krok++'] },
+                        { id: 'B', inputs: { n: 1 }, requireLoop: true, expected: ['plan = cteni_planu()', 'krok = 0', 'krok++'] }
+                    ]
+                },
+                {
+                    id: 'm08', name: 'Vlastní servisní zakázka', type: 'tvorba+cti',
+                    goal: 'Nakresli řešení své zakázky a otestuj ho.',
+                    story: 'Kapitán předává poslední zakázku. K ní není hotový diagram.',
+                    blocks: ['start', 'process', 'io', 'decision', 'loop', 'note', 'end'], xpBase: 300,
+                    kompas: {
+                        cil: 'Nakresli řešení své zakázky a otestuj ho.',
+                        hacek: 'Co je vstup a co výstup?',
+                        vzor: 'Základní tok: VSTUP → zpracování → VÝSTUP',
+                        postup: 'Vyber zakázku, urči vstup/výstup, sestav a navrhni 2 testy.'
+                    },
+                    scaffold: {
+                        blocks: [
+                            { type: 'start', label: 'Start' },
+                            { type: 'note', label: 'Zakázky: balíčky, kontrola dílů, tisk.' },
+                            { type: 'end', label: 'Konec' }
+                        ]
+                    },
+                    solution: null,
+                    tests: []
                 }
-            },
-            operator: {
-                label: 'Operátor', icon: '🏭', hudRole: 'OPERÁTOR',
-                ranks: ['Nováček u pásu', 'Pásový operátor', 'Mistr toku', 'Legenda déčka'],
-                levels: {
-                    1: {
-                        name: 'Průvodce skladem',
-                        goal: 'Veronika nezná sklad. Slož jí cestičku: 3 kroky v pořadí.',
-                        story: 'Řídíš proces ve skladu: seřaď kroky (brána → bedna → brána), než projede vozík.',
-                        kompas: {
-                            cil: 'Technik potřebuje vidět cestičku od STARTU do KONCE.',
-                            hacek: 'Můžeš odejít ze skladu, aniž bys zavřel bránu?',
-                            vzor: 'START → Otevři bránu → Vezmi bednu → Zavři bránu → KONEC',
-                            postup: 'Krok 2: spoj AKCE pod sebe ve správném sledu.'
-                        },
-                        scaffold: ['Začátek', 'Vezmi bednu', 'Otevři bránu', 'Zavři bránu', 'Pořadí je důležité!', 'Konec'],
-                        solution: ['Začátek', 'Otevři bránu', 'Vezmi bednu', 'Zavři bránu', 'Konec'],
-                        tests: [{ id: 'A', expected: ['Otevři bránu', 'Vezmi bednu', 'Zavři bránu'] }]
+            ],
+            E_J: [
+                {
+                    id: 'e1', name: 'Probuď dílnu', type: 'sestav',
+                    goal: 'Sestav jednoznačné pořadí spuštění dílny.',
+                    story: 'Dílna je potmě. ŠROUB zapnul baterku a myslí, že tím problém vyřešil.',
+                    blocks: ['start', 'process', 'note', 'end'], xpBase: 90,
+                    kompas: {
+                        cil: 'Dílna se spouští v pevném sledu.',
+                        hacek: 'Může se aktivovat pracoviště dřív než napájení?',
+                        vzor: 'START → zapnutí napájení → aktivace → KONEC',
+                        postup: 'Propoj kroky v pořadí uvedeném v poznámkách.'
                     },
-                    2: {
-                        name: 'Pokladna',
-                        goal: 'Načti cenu a kusy. Vypiš mezisoučet.',
-                        story: 'Obsluhuješ pokladnu: z ceny a počtu kusů spočítáš mezisoučet a vypíšeš ho.',
-                        kompas: {
-                            cil: 'Mezisoučet vzniká z dvojice čísel.',
-                            hacek: 'Vyhodí pokladna výsledek sám od sebe?',
-                            vzor: 'START → VSTUP cena → VSTUP kusy → mezisoucet = cena * kusy → VÝSTUP → KONEC',
-                            postup: 'Doplň AKCE mezi vstupy a výstup.'
-                        },
-                        scaffold: ['Začátek', 'cena', 'kusy', 'mezisoucet = cena * kusy', 'Mezisoučet: {mezisoucet}', 'Konec'],
-                        solution: ['Začátek', 'cena', 'kusy', 'mezisoucet = cena * kusy', 'Mezisoučet: {mezisoucet}', 'Konec'],
-                        tests: [
-                            { id: 'A', inputs: { cena: 15, kusy: 3 }, expected: 'Mezisoučet: 45' },
-                            { id: 'B', inputs: { cena: 80, kusy: 5 }, expected: 'Mezisoučet: 400' },
-                            { id: 'C', inputs: { cena: 12.5, kusy: 4 }, expected: 'Mezisoučet: 50' }
+                    scaffold: {
+                        blocks: [
+                            { type: 'start', label: 'Start' },
+                            { type: 'process', label: 'zapnout napájení' },
+                            { type: 'process', label: 'aktivace pracoviště' },
+                            { type: 'note', label: 'Napájení musí být dřív než aktivace.' },
+                            { type: 'end', label: 'Konec' }
                         ]
                     },
-                    3: {
-                        name: 'Vstupenka 15+',
-                        goal: 'Načti věk. ANO=pusť, NE=vykašli se.',
-                        story: 'Řídíš vstupenkový systém 15+: podmínkou pustíš nebo odmítneš návštěvníka.',
-                        kompas: {
-                            cil: 'Přesně 15 let je „dost" — kde to rozseknem?',
-                            hacek: 'Co se stane, když je 15 přesně?',
-                            vzor: 'START → VSTUP vek → vek >= 15 ? ANO→„Vstupenka ANO" / NE→„Vstupenka NE" → KONEC',
-                            postup: 'Sprav obě větve pod PODMÍNKOU.'
-                        },
-                        scaffold: ['Začátek', 'vek', '?', 'Vstupenka NE', 'Vstupenka ANO', 'Podmínka: vek >= 15', 'Konec'],
-                        solution: ['Začátek', 'vek', 'vek >= 15', 'Vstupenka ANO', 'Vstupenka NE', 'Konec'],
-                        tests: [
-                            { id: 'A', inputs: { vek: 18 }, expected: 'Vstupenka ANO' },
-                            { id: 'B', inputs: { vek: 12 }, expected: 'Vstupenka NE' },
-                            { id: 'C', inputs: { vek: 15 }, expected: 'Vstupenka ANO' }
+                    solution: {
+                        blocks: [
+                            { type: 'start', label: 'Start', x: 0, y: -200 },
+                            { type: 'process', label: 'zapnout napájení', x: 0, y: -60 },
+                            { type: 'process', label: 'aktivace pracoviště', x: 0, y: 100 },
+                            { type: 'end', label: 'Konec', x: 0, y: 260 }
+                        ],
+                        arrows: [[0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'], [2, 'bottom', 3, 'top']]
+                    },
+                    tests: [{ id: 'A', expected: ['zapnout napájení', 'aktivace pracoviště'] }]
+                },
+                {
+                    id: 'e2', name: 'CNC odmítá pracovat', type: 'sestav+oprav',
+                    goal: 'Rozhodni podle vstupu krytZavren.',
+                    story: 'Kontrolka hlásí otevřený kryt. ŠROUB navrhuje přelepit kontrolku.',
+                    blocks: ['start', 'io', 'decision', 'process', 'note', 'end'], xpBase: 110,
+                    kompas: {
+                        cil: 'Kryt zavřený = výroba, otevřený = zastavit.',
+                        hacek: 'Co se stane, když je kryt otevřený?',
+                        vzor: 'PODMÍNKA krytZavren == true → ANO/NЕ',
+                        postup: 'Připoj správnou větev k PODMÍNCE.'
+                    },
+                    scaffold: {
+                        blocks: [
+                            { type: 'start', label: 'Start' },
+                            { type: 'io', label: 'krytZavren', ioType: 'input' },
+                            { type: 'decision', label: 'krytZavren == true', yesPort: 'right', noPort: 'bottom' },
+                            { type: 'process', label: 'spustit výrobu' },
+                            { type: 'process', label: 'požádat o zavření krytu' },
+                            { type: 'end', label: 'Konec' }
                         ]
                     },
-                    4: {
-                        name: 'Kontrola kvality',
-                        goal: 'Skenuj díly, dokud nemáš 2 dobré. Spočítej, kolik jsi jich prošel.',
-                        story: 'Řídíš kontrolu kvality: skenuješ díly, dokud nemáš 2 dobré, a počítáš, kolik jsi jich prošel.',
-                        kompas: {
-                            cil: 'Potřebuješ 2 dobré díly — smyčka se točí, dokud je nemáš.',
-                            hacek: 'Kolikrát se smyčka opakuje? Záleží to na vstupech?',
-                            vzor: 'Smyčka ok<2 → vstup stav → sken++ → když stav==ok, ok++',
-                            postup: 'Skenuj každý díl, počítej dobré a skonči, až jich máš 2.'
-                        },
-                        scaffold: ['Začátek', 'ok = 0\nsken = 0', 'ok < 2', 'stav', 'sken++', 'stav == "ok"', 'ok++', 'Dobré díly: {ok} z {sken}.', 'Konec', 'Smyčka končí, až máš 2 dobré.'],
-                        solution: ['Začátek', 'ok = 0\nsken = 0', 'ok < 2', 'stav', 'sken++', 'stav == "ok"', 'ok++', 'Dobré díly: {ok} z {sken}.', 'Konec'],
-                        tests: [
-                            { id: 'A', inputs: { stav: ['vadne', 'ok', 'ok'] }, expected: 'Dobré díly: 2 z 3.' },
-                            { id: 'B', inputs: { stav: ['ok', 'ok'] }, expected: 'Dobré díly: 2 z 2.' },
-                            { id: 'C', inputs: { stav: ['vadne', 'vadne', 'ok', 'ok'] }, expected: 'Dobré díly: 2 z 4.' }
+                    solution: {
+                        blocks: [
+                            { type: 'start', label: 'Start', x: 0, y: -240 },
+                            { type: 'io', label: 'krytZavren', ioType: 'input', x: 0, y: -100 },
+                            { type: 'decision', label: 'krytZavren == true', x: 0, y: 60, yesPort: 'right', noPort: 'bottom' },
+                            { type: 'process', label: 'spustit výrobu', x: 320, y: 200 },
+                            { type: 'process', label: 'požádat o zavření krytu', x: 0, y: 260 },
+                            { type: 'end', label: 'Konec', x: 320, y: 380 }
+                        ],
+                        arrows: [
+                            [0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'],
+                            [2, 'right', 3, 'left'], [3, 'bottom', 5, 'top'],
+                            [2, 'bottom', 4, 'top'], [4, 'bottom', 5, 'bottom']
                         ]
                     },
-                    5: {
-                        name: 'Volání opraváře',
-                        goal: 'Opravář je zavolán 3×. Zavolej ho správně.',
-                        story: 'Voláš opraváře: místo ruční opravy použiješ podprogram (VOLÁNÍ) pro každý díl.',
-                        kompas: {
-                            cil: 'Opravář dělá totéž 3× — stačí jedno VOLÁNÍ s odlišným dílem.',
-                            hacek: 'Co se stane, když zavoláš s díl=B?',
-                            vzor: 'oprav(dil=A) → oprav(dil=B) → oprav(dil=C)',
-                            postup: 'Místo ruční AKCE použij blok VOLÁNÍ s parametrem dílu.'
-                        },
-                        scaffold: ['Začátek', 'PODPROGRAM: oprav(dil) → vrátí opraveno=1', 'oprav(dil=A)', 'oprav(dil=B)', 'oprav(dil=D)', 'Konec'],
-                        solution: ['Začátek', 'oprav(dil=A)', 'oprav(dil=B)', 'oprav(dil=C)', 'Konec'],
-                        tests: [
-                            { id: 'A', inputs: { dily: ['A', 'B', 'C'] }, expected: ['oprav(dil=A)', 'oprav(dil=B)', 'oprav(dil=C)'] }
+                    tests: [
+                        { id: 'A', inputs: { krytZavren: true }, expected: ['spustit výrobu'] },
+                        { id: 'B', inputs: { krytZavren: false }, expected: ['požádat o zavření krytu'] }
+                    ]
+                },
+                {
+                    id: 'e3', name: 'Vytiskni náhradní držák', type: 'sestav',
+                    goal: 'Z počtu výrobků vypočítej spotřebu materiálu.',
+                    story: 'Při manévru proletěl klíč jídelnou. Posádka potřebuje držáky na nářadí.',
+                    blocks: ['start', 'io', 'process', 'note', 'end'], xpBase: 120,
+                    kompas: {
+                        cil: 'Spotřeba roste s počtem kusů.',
+                        hacek: 'Použiješ sčítání, nebo násobení?',
+                        vzor: 'počet × spotřeba jednoho kusu',
+                        postup: 'Slož výraz z polí „počet" a „spotřeba jednoho kusu".'
+                    },
+                    scaffold: {
+                        blocks: [
+                            { type: 'start', label: 'Start' },
+                            { type: 'io', label: 'pocet', ioType: 'input' },
+                            { type: 'process', label: 'spotreba = pocet * 20' },
+                            { type: 'io', label: 'Spotřeba: {spotreba} g', ioType: 'output' },
+                            { type: 'end', label: 'Konec' }
                         ]
                     },
-                    6: {
-                        name: 'Záchrana serveru',
-                        goal: 'Server padá. Oprav smyčku, vyber čistší tok.',
-                        story: 'Zachraňuješ server: najdeš chybu ve smyčce, opravíš ji a zvolíš čistší tok.',
-                        kompas: {
-                            cil: 'Najdi, co se opakuje, a nech smyčku doběhnout do konce.',
-                            hacek: 'Skončí smyčka dřív, než zpracuje poslední prvek?',
-                            vzor: 'Smyčka krok <= n → tělo → VÝSTUP „OK: zpracováno {n}"',
-                            postup: 'Oprav podmínky a vyber kratší variantu.'
-                        },
-                        scaffold: ['Začátek', 'n', 'krok = 0', 'krok < 3', 'krok = krok + 1', 'krok >= n', 'OK: zpracováno {n}', 'Konec'],
-                        solution: ['Začátek', 'n', 'krok = 0', 'krok <= n', 'krok = krok + 1', 'OK: zpracováno {n}', 'Konec'],
-                        tests: [
-                            { id: 'A', inputs: { n: 3 }, expected: 'OK: zpracováno 3' },
-                            { id: 'B', inputs: { n: 1 }, expected: 'OK: zpracováno 1' },
-                            { id: 'C', inputs: { n: 4 }, expected: 'OK: zpracováno 4' }
+                    solution: {
+                        blocks: [
+                            { type: 'start', label: 'Start', x: 0, y: -200 },
+                            { type: 'io', label: 'pocet', ioType: 'input', x: 0, y: -60 },
+                            { type: 'process', label: 'spotreba = pocet * 20', x: 0, y: 100 },
+                            { type: 'io', label: 'Spotřeba: {spotreba} g', ioType: 'output', x: 0, y: 260 },
+                            { type: 'end', label: 'Konec', x: 0, y: 420 }
+                        ],
+                        arrows: [[0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'], [2, 'bottom', 3, 'top'], [3, 'bottom', 4, 'top']]
+                    },
+                    tests: [
+                        { id: 'A', inputs: { pocet: 2 }, expected: 'Spotřeba: 40 g' },
+                        { id: 'B', inputs: { pocet: 5 }, expected: 'Spotřeba: 100 g' }
+                    ]
+                },
+                {
+                    id: 'e4', name: 'Vyrob sadu spojek', type: 'sestav',
+                    goal: 'Nahraď opakované příkazy cyklem s počtem.',
+                    story: 'Posádka potřebuje čtyři spojky. ŠROUB zkopíroval výrobní příkaz čtyřicetkrát.',
+                    blocks: ['start', 'process', 'loop', 'note', 'end'], xpBase: 170,
+                    kompas: {
+                        cil: 'Čtyři spojky = čtyřikrát stejná výroba.',
+                        hacek: 'Kolikrát bych psal příkaz ručně?',
+                        vzor: 'OPAKUJ 4× → vyrob spojku',
+                        postup: 'Umísti výrobu do těla cyklu a nastav počet.'
+                    },
+                    scaffold: {
+                        blocks: [
+                            { type: 'start', label: 'Start' },
+                            { type: 'process', label: 'spojky = 0' },
+                            { type: 'loop', label: 'spojky < 4', yesPort: 'bottom', noPort: 'right' },
+                            { type: 'process', label: 'spojky++' },
+                            { type: 'end', label: 'Konec' }
                         ]
-                    }
+                    },
+                    solution: {
+                        blocks: [
+                            { type: 'start', label: 'Start', x: 0, y: -240 },
+                            { type: 'process', label: 'spojky = 0', x: 0, y: -100 },
+                            { type: 'loop', label: 'spojky < 4', x: 0, y: 40, yesPort: 'bottom', noPort: 'right' },
+                            { type: 'process', label: 'spojky++', x: 0, y: 220 },
+                            { type: 'end', label: 'Konec', x: 340, y: 40 }
+                        ],
+                        arrows: [
+                            [0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'],
+                            [2, 'bottom', 3, 'top'], [3, 'bottom', 2, 'left'],
+                            [2, 'right', 4, 'left']
+                        ]
+                    },
+                    tests: [
+                        { id: 'A', requireLoop: true, counts: { 'spojky++': 4 } }
+                    ]
+                },
+                {
+                    id: 'e5', name: 'Skladový robot zabloudil', type: 'oprav+ladění',
+                    goal: 'Najdi jednu chybu krokováním a ověř opravu.',
+                    story: 'Robot tvrdí, že doručil zásilku, ale stále stojí u regálu.',
+                    blocks: ['start', 'io', 'process', 'loop', 'note', 'end'], xpBase: 210,
+                    kompas: {
+                        cil: 'Nejdřív uhádni, pak ověř, pak najdi rozdíl.',
+                        hacek: 'Který vstup odhalí chybnou mez?',
+                        vzor: 'Smyčka krok < n → VÝSTUP „Doručeno: {krok}"',
+                        postup: 'Přečti program a oprav chybnou mez cyklu.'
+                    },
+                    scaffold: {
+                        blocks: [
+                            { type: 'start', label: 'Start' },
+                            { type: 'io', label: 'n', ioType: 'input' },
+                            { type: 'process', label: 'krok = 0' },
+                            { type: 'loop', label: 'krok < n', yesPort: 'bottom', noPort: 'right' },
+                            { type: 'process', label: 'krok = krok + 1' },
+                            { type: 'io', label: 'Doručeno: {krok}', ioType: 'output' },
+                            { type: 'end', label: 'Konec' }
+                        ]
+                    },
+                    solution: {
+                        blocks: [
+                            { type: 'start', label: 'Start', x: 0, y: -240 },
+                            { type: 'io', label: 'n', ioType: 'input', x: 0, y: -100 },
+                            { type: 'process', label: 'krok = 0', x: 0, y: 40 },
+                            { type: 'loop', label: 'krok < n', x: 0, y: 180, yesPort: 'bottom', noPort: 'right' },
+                            { type: 'process', label: 'krok = krok + 1', x: 0, y: 360 },
+                            { type: 'io', label: 'Doručeno: {krok}', ioType: 'output', x: 340, y: 180 },
+                            { type: 'end', label: 'Konec', x: 340, y: 360 }
+                        ],
+                        arrows: [
+                            [0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'], [2, 'bottom', 3, 'top'],
+                            [3, 'bottom', 4, 'top'], [4, 'bottom', 3, 'left'],
+                            [3, 'right', 5, 'left'], [5, 'bottom', 6, 'top']
+                        ]
+                    },
+                    tests: [
+                        { id: 'A', inputs: { n: 1 }, expected: 'Doručeno: 1' },
+                        { id: 'B', inputs: { n: 2 }, expected: 'Doručeno: 2' }
+                    ]
+                },
+                {
+                    id: 'e6', name: 'Vlastní servisní zakázka', type: 'tvorba+cti',
+                    goal: 'Nakresli řešení své zakázky a otestuj ho.',
+                    story: 'Kapitán předává poslední zakázku. K ní není hotový diagram.',
+                    blocks: ['start', 'process', 'io', 'decision', 'loop', 'end'], xpBase: 280,
+                    kompas: {
+                        cil: 'Nakresli řešení své zakázky a otestuj ho.',
+                        hacek: 'Co je vstup a co výstup?',
+                        vzor: 'Základní tok: VSTUP → zpracování → VÝSTUP',
+                        postup: 'Vyber zakázku, urči vstup/výstup a sestav tok.'
+                    },
+                    scaffold: {
+                        blocks: [
+                            { type: 'start', label: 'Start' },
+                            { type: 'note', label: 'Zakázky: balíčky, kontrola dílů, tisk.' },
+                            { type: 'end', label: 'Konec' }
+                        ]
+                    },
+                    solution: null,
+                    tests: []
                 }
-            }
+            ]
         };
-        const DEFAULT_NARRATIVE = 'streamer';
+        // Vyhledání mise podle stabilního id v obou profilech.
+        function missionById(id) {
+            for (const p in MISSIONS) {
+                const m = MISSIONS[p].find(x => x.id === id);
+                if (m) return m;
+            }
+            return null;
+        }
+
+        // ==== V2.2: scaffolding a vzorová řešení žijí přímo v MISSIONS ====
+        // (každá mise má scaffold.blocks / solution / tests inline; duplikované
+        // bloky SCAFFOLDS/SOLUTIONS z dřívějška jsou pryč).
+        // NARRATIVES (streamer/operator) byla zrušena — profily H/E_J mění jen
+        // prezentaci, algoritmus úloh zůstává (PLAN.md §15/§16).
+
 
         // ==== F1: ukázkové diagramy (inspirace pro žáky) ====
-        // Otevírají se z menu (sekce UKÁZKY) do aktuální plochy. Formát jako SOLUTIONS.
+        // Otevírají se z menu (sekce UKÁZKY) do aktuální plochy. Formát: blocks + arrows.
         const SAMPLES = [
             {
                 id: 'hello', name: 'Ahoj, světe!', hint: 'Sekvence a výstup',
@@ -1873,7 +1934,7 @@
             { slot: 'space5', label: 'SPACE 5', mode: 'space' }
         ];
         const APPLES_SLOT = 'space1';
-        const CAMPAIGN_SLOTS = LEVELS.map(l => 'lvl' + l.id);
+        const CAMPAIGN_SLOTS = MISSIONS.H.map(m => m.id).concat(MISSIONS.E_J.map(m => m.id));
 
         // ==== F1: Game (learning mode) — jméno, XP, hodnost, stupně, certifikáty ====
         // Pouze pozitivní motivace: XP se nikdy neodečítá, nápověda nic nestojí.
@@ -1886,19 +1947,34 @@
             ],
             KEY_PLAYER: 'blockflow_v2_player',
             KEY_PROGRESS: 'blockflow_v2_progress',
-            playerName: '',
+            playerName: '', // ''/null = jméno dobrovolné (nepovinné), v exportu se píše null
             xp: 0,
             levels: {},
             certificates: [],
 
+            // Značky dokončení (PLAN.md §15): Zprovozněno → Ověřeno → Upraveno.
+            // Povýšení je jen jednosměrné; nikdy se nedegraduje.
+            TAGS: { ZPROVOZNENO: 'zprovozneno', OVERENO: 'overeno', UPRAVENO: 'upraveno' },
+            TAG_ORDER: ['zprovozneno', 'overeno', 'upraveno'],
+            tagFor(missionId) {
+                const rec = this.levels[missionId];
+                return (rec && rec.tag) || null;
+            },
+            setTag(missionId, tag) {
+                if (!missionId || !this.TAG_ORDER.includes(tag)) return;
+                const rec = this.levels[missionId] = this.levels[missionId] || { status: '', stars: 0, bestXp: 0, attempts: 0 };
+                const cur = rec.tag ? this.TAG_ORDER.indexOf(rec.tag) : -1;
+                if (this.TAG_ORDER.indexOf(tag) >= cur) rec.tag = tag;
+                this.save();
+            },
             isValidName(name) {
                 if (typeof name !== 'string') return false;
                 const t = name.trim();
-                return t.length >= 1 && t.length <= 30;
+                return t.length === 0 || t.length <= 30; // prázdné = dobrovolné (null)
             },
             setPlayerName(name) {
                 if (!this.isValidName(name)) return false;
-                this.playerName = name.trim();
+                this.playerName = (name && name.trim()) ? name.trim() : null;
                 this.save();
                 return true;
             },
@@ -1927,7 +2003,7 @@
                 return Object.keys(this.levels).reduce((s, k) => s + (this.levels[k].stars || 0), 0);
             },
             completeLevel(levelId, opts = {}) {
-                const level = LEVELS.find(l => l.id === levelId);
+                const level = missionById(levelId);
                 if (!level) return null;
                 const base = level.xpBase;
                 const gained = this.bonusXp(base, opts);
@@ -1937,6 +2013,7 @@
                 const stars = this.starsFor(bestXp, base);
                 if (firstTime) this.xp += gained; // kumulativní hodnost roste jen při prvním splnění
                 this.levels[levelId] = {
+                    ...prev,
                     status: 'done', bestXp, stars,
                     attempts: (prev.attempts || 0) + 1,
                     noHint: !!opts.noHint, firstTry: !!opts.firstTry, efficient: !!opts.efficient
@@ -1952,7 +2029,7 @@
             load() {
                 try {
                     const n = localStorage.getItem(this.KEY_PLAYER);
-                    if (n) this.playerName = n;
+                    if (n) this.playerName = n;       // '' nebo null = dobrovolné jméno
                     const p = localStorage.getItem(this.KEY_PROGRESS);
                     if (p) {
                         const parsed = JSON.parse(p);
@@ -1965,7 +2042,7 @@
             },
             save() {
                 try {
-                    localStorage.setItem(this.KEY_PLAYER, this.playerName);
+                    localStorage.setItem(this.KEY_PLAYER, this.playerName || '');
                     localStorage.setItem(this.KEY_PROGRESS, JSON.stringify({
                         xp: this.xp, levels: this.levels, certificates: this.certificates
                     }));
@@ -1985,25 +2062,9 @@
             }
         };
 
-        // Aplikuje narativní téma na data (LEVELS texty + hodnosti Game). Bez DOM.
-        // Volá se při načtení (výchozí téma) i při přepnutí ikonou v horním panelu.
-        function setNarrativeData(id) {
-            const nar = NARRATIVES[id] || NARRATIVES[DEFAULT_NARRATIVE];
-            Game.RANKS = nar.ranks.map((name, i) => ({ min: [0, 450, 900, 1400][i], name }));
-            LEVELS.forEach(lvl => {
-                const t = nar.levels[lvl.id];
-                if (!t) return;
-                lvl.name = t.name;
-                lvl.goal = t.goal;
-                lvl.story = t.story;
-                lvl.kompas = t.kompas;
-                lvl.tests = t.tests;
-                if (lvl.scaffold) lvl.scaffold.blocks.forEach((b, i) => { if (t.scaffold[i] != null) b.label = t.scaffold[i]; });
-                if (lvl.solution) lvl.solution.blocks.forEach((b, i) => { if (t.solution[i] != null) b.label = t.solution[i]; });
-            });
-        }
-        setNarrativeData(DEFAULT_NARRATIVE);
-
+        // ==== V2.2: profily H / E_J ====
+        // setNarrativeData() zrušena. Profil mění jen prezentaci (menu, HUD role),
+        // nikdy nepřepisuje práci ani neoznačuje profil jako horší (PLAN.md §15).
         const App = {
             REGEX: {
                 pre: /(?<=.)\s+([\p{L}_][\p{L}0-9_]*\s*[+\-*/%]?=)/gu,
@@ -2079,10 +2140,11 @@
             },
 
             activeWorkspace: APPLES_SLOT,
-            narrative: DEFAULT_NARRATIVE,
+            profile: 'H', // profily H / E_J (prezentace; práce se nepřepisuje)
             activeLevel: null,
-            lastCampaignSlot: 'lvl1',
+            lastCampaignSlot: 'm01',
             pendingLevel: null,
+            nameSkipped: false,
             blocks: [], 
             arrows: [], 
             selectedBlocks: new Set(),
@@ -2159,7 +2221,7 @@
                 jsonExportModal: document.getElementById('json-export-modal'),
                 sideMenu: document.getElementById('side-menu'),
                 hamburgerBtn: document.getElementById('hamburger-btn'),
-                btnNarrative: document.getElementById('btn-narrative'),
+                btnProfile: document.getElementById('btn-profile'),
                 hud: document.getElementById('hud'),
                 hudRole: document.getElementById('hud-role'),
                 hudName: document.getElementById('hud-name'),
@@ -2314,7 +2376,7 @@
                 }
                 
                 Game.load();
-                this.applyNarrative(localStorage.getItem('blockflow_v3_narrative') || DEFAULT_NARRATIVE);
+                this.setProfile(localStorage.getItem('blockflow_v3_profile') || 'H');
                 this.activeWorkspace = localStorage.getItem('blockflow_v3_active_ws') || APPLES_SLOT;
                 this.cheatStep = 0;
                 if (this.modeOf(this.activeWorkspace) === 'campaign') {
@@ -2359,16 +2421,22 @@
                 });
             },
 
-            // ==== F1: režimy a plochy (slot na level) ====
+            // ==== F1: režimy a plochy (slot = id mise např. 'm01' / 'e1', nebo 'spaceN') ====
             modeOf(slot) {
-                if (typeof slot === 'string' && slot.indexOf('lvl') === 0) return 'campaign';
+                if (typeof slot === 'string' && CAMPAIGN_SLOTS.indexOf(slot) !== -1) return 'campaign';
                 return 'space';
             },
             workspaceSlots() { return CAMPAIGN_SLOTS.concat(WORKSPACES.map(w => w.slot)); },
             isCampaign() { return this.modeOf(this.activeWorkspace) === 'campaign'; },
             currentLevel() {
                 if (!this.isCampaign()) return null;
-                return LEVELS.find(l => 'lvl' + l.id === this.activeWorkspace) || null;
+                return missionById(this.activeWorkspace) || null;
+            },
+            // Editace rozpracované ověřené mise -> značka Upraveno (nikdy nesmaže Ověřeno).
+            noteCampaignEdit() {
+                const lvl = this.currentLevel();
+                const id = lvl ? lvl.id : (this.activeLevel || null);
+                if (id && Game.isLevelDone(id)) Game.setTag(id, Game.TAGS.UPRAVENO);
             },
             selectWorkspace(slot) {
                 this.closeMenu();
@@ -2378,7 +2446,7 @@
             setMode(mode) {
                 this.closeMenu();
                 if (mode === 'campaign') {
-                    this.switchWorkspace(this.lastCampaignSlot || 'lvl1');
+                    this.switchWorkspace(this.lastCampaignSlot || 'm01');
                 }
             },
             switchWorkspace(slot) {
@@ -2410,7 +2478,7 @@
             },
             buildWorkspaceDefault(slot) {
                 if (this.modeOf(slot) === 'campaign') {
-                    const lvl = LEVELS.find(l => 'lvl' + l.id === slot);
+                    const lvl = missionById(slot);
                     if (lvl) this.buildLevelScaffold(lvl);
                     else this.clearCanvasSilent();
                 } else if (slot === APPLES_SLOT) {
@@ -2524,44 +2592,40 @@
                 if (this.dom.btnVerify) this.dom.btnVerify.style.display = campaign ? 'flex' : 'none';
                 this.renderMenu();
             },
-            // Přepne narativní téma (streamer ↔ operátor): názvy stupňů, cíle, Kompas,
-            // texty bloků, hodnosti a HUD. Algoritmus úloh se nemění.
-            applyNarrative(id) {
-                const key = NARRATIVES[id] ? id : DEFAULT_NARRATIVE;
-                const nar = NARRATIVES[key];
-                this.narrative = key;
-                setNarrativeData(key);
-                if (this.dom.hudRole) this.dom.hudRole.textContent = nar.hudRole;
-                if (this.dom.btnNarrative) this.dom.btnNarrative.textContent = nar.icon;
-                try { localStorage.setItem('blockflow_v3_narrative', key); } catch (e) {}
+            // Přepne profil H ↔ E/J: mění se jen prezentace (menu, HUD role). Práce
+            // žáka se nikdy nepřepisuje, profil není „horší" (PLAN.md §15).
+            setProfile(profile) {
+                const key = (MISSIONS[profile] ? profile : 'H');
+                this.profile = key;
+                if (this.dom.hudRole) this.dom.hudRole.textContent = key === 'H' ? 'HEFAISTOS H' : 'HEFAISTOS E/J';
+                if (this.dom.btnProfile) this.dom.btnProfile.textContent = key === 'H' ? '⚙' : '🛠';
+                try { localStorage.setItem('blockflow_v3_profile', key); } catch (e) {}
+                this.updateWorkspaceUI();
             },
-            toggleNarrative() {
-                const next = this.narrative === 'streamer' ? 'operator' : 'streamer';
-                this.applyNarrative(next);
-                const inCampaign = this.isCampaign();
-                if (inCampaign) {
-                    this.buildWorkspaceDefault(this.activeWorkspace);
-                    this.saveWorkspace(this.activeWorkspace);
-                    this.renderAll();
-                    this.renderArrows();
-                }
+            toggleProfile() {
+                const next = this.profile === 'H' ? 'E_J' : 'H';
+                this.setProfile(next);
                 this.updateGameUI();
-                this.toast('Téma: ' + NARRATIVES[next].label + (inCampaign ? ' — level restartován' : ''));
+                this.toast('Profil: ' + (next === 'H' ? 'HEFAISTOS H (8 misí)' : 'HEFAISTOS E/J (6 misí)'));
             },
             renderMenu() {
                 const list = this.dom.menuMissions;
                 if (list) {
                     list.innerHTML = '';
-                    LEVELS.forEach(lvl => {
+                    const missions = MISSIONS[this.profile] || MISSIONS.H;
+                    const tagLabels = { zprovozneno: '⚙ Zprovozněno', overeno: '✓ Ověřeno', upraveno: '✎ Upraveno' };
+                    missions.forEach(lvl => {
                         const done = Game.isLevelDone(lvl.id);
                         const rec = Game.levels[lvl.id];
-                        const stars = rec ? '★'.repeat(rec.stars) + '☆'.repeat(3 - rec.stars) : '☆☆☆';
-                        const cur = this.activeWorkspace === 'lvl' + lvl.id;
+                        const stars = rec && rec.stars ? '★'.repeat(rec.stars) + '☆'.repeat(3 - rec.stars) : '☆☆☆';
+                        const tag = rec && rec.tag ? tagLabels[rec.tag] : '';
+                        const cur = this.activeWorkspace === lvl.id;
                         const row = document.createElement('div');
                         row.className = 'menu-mission' + (done ? ' done' : '') + (cur ? ' current' : '');
                         row.innerHTML =
                             '<div class="mm-top"><span>' + lvl.id + '. ' + lvl.name + '</span>' +
-                            '<span class="mm-stars">' + stars + '</span></div>';
+                            '<span class="mm-stars">' + stars + '</span></div>' +
+                            (tag ? '<div class="mm-tag">' + tag + '</div>' : '');
                         row.addEventListener('click', () => this.enterCampaignLevel(lvl.id));
                         list.appendChild(row);
                     });
@@ -2627,20 +2691,21 @@
                 });
             },
             enterCampaignLevel(id) {
-                const lvl = LEVELS.find(l => l.id === id);
+                const lvl = missionById(id);
                 if (!lvl) return;
-                if (!Game.playerName) { this.pendingLevel = id; this.openNameModal(); return; }
+                // Jméno je dobrovolné (PLAN.md §15) — modál se nabídne, nevyžaduje se.
+                if (!Game.playerName && !this.nameSkipped) { this.pendingLevel = id; this.openNameModal(); return; }
                 this.activeLevel = id;
                 this.levelHintUsed = false;
                 this.levelFailed = false;
-                this.switchWorkspace('lvl' + id);
+                this.switchWorkspace(id);
                 this.openLevelModal(lvl);
                 this.closeMenu();
             },
             openLevelModal(lvl) {
                 if (!this.dom.levelModal) return;
                 if (this.dom.levelTitle) this.dom.levelTitle.textContent = lvl.id + '. ' + lvl.name;
-                const typeLabel = { 'sestav': 'Sestav', 'sestav+oprav': 'Sestav a oprav', 'cti+sestav': 'Přečti a sestav', 'oprav+vyber+tvorba': 'Oprav, vyber, tvoř' }[lvl.type] || 'Mise';
+                const typeLabel = { 'sestav': 'Sestav', 'sestav+oprav': 'Sestav a oprav', 'oprav+ladění': 'Oprav a otestuj', 'vyber+oprav+zdůvodni': 'Vyber, oprav, zdůvodni', 'tvorba+cti': 'Navrhni a otestuj' }[lvl.type] || 'Mise';
                 const blockNames = { start: 'START', process: 'AKCE', io: 'VSTUP/VÝSTUP', decision: 'PODMÍNKA', loop: 'SMYČKA', call: 'VOLÁNÍ', note: 'POZNÁMKA', end: 'KONEC' };
                 const blocks = (lvl.blocks || []).map(b => blockNames[b] || b).join(' · ');
                 const steps = lvl.kompas ? lvl.kompas.postup : '';
@@ -2683,16 +2748,22 @@
             closeNameModal() {
                 if (this.dom.nameModal) this.dom.nameModal.classList.remove('show');
             },
-            submitName() {
-                const val = this.dom.nameInput ? this.dom.nameInput.value : '';
-                if (!Game.setPlayerName(val)) {
-                    if (this.dom.nameError) this.dom.nameError.textContent = 'Zadej 1–30 znaků, operátore.';
-                    return;
+            submitName(skip = false) {
+                if (skip) {
+                    Game.setPlayerName(''); // dobrovolné — pokračujeme bez jména
+                    this.nameSkipped = true;
+                } else {
+                    this.nameSkipped = false;
+                    const val = this.dom.nameInput ? this.dom.nameInput.value : '';
+                    if (!Game.setPlayerName(val)) {
+                        if (this.dom.nameError) this.dom.nameError.textContent = 'Zadej 0–30 znaků (nebo pokračuj bez jména).';
+                        return;
+                    }
                 }
                 if (this.dom.nameError) this.dom.nameError.textContent = '';
                 this.closeNameModal();
                 this.updateGameUI();
-                this.toast(`Vítej, ${Game.playerName}! Směna začíná.`, 3000);
+                if (!skip && Game.playerName) this.toast(`Vítej, ${Game.playerName}! Směna začíná.`, 3000);
                 if (this.pendingLevel) {
                     const id = this.pendingLevel;
                     this.pendingLevel = null;
@@ -2705,10 +2776,11 @@
             },
             doReset() {
                 Game.reset();
+                this.nameSkipped = false;
                 const modal = document.getElementById('reset-confirm-modal');
                 if (modal) modal.classList.remove('show');
                 this.updateGameUI();
-                this.toast('Vše vymazáno. Jméno se zeptá při vstupu do mise.', 3500);
+                this.toast('Vše vymazáno. Jméno se znovu nabídne při vstupu do mise.', 3500);
             },
 
             // ==== Obecné potvrzení v herním designu (místo window.confirm) ====
@@ -2736,6 +2808,8 @@
                 const lvl = this.currentLevel();
                 if (!lvl) return;
                 this.activeLevel = lvl.id;
+                // AUTO-kontrola prošla → značka Ověřeno (přeskočí přes Zprovozněno).
+                Game.setTag(lvl.id, Game.TAGS.OVERENO);
                 const opts = {
                     noHint: !this.levelHintUsed,
                     firstTry: !this.levelFailed,
@@ -2932,6 +3006,7 @@
                 this.resolveCollisions();
                 this.renderArrows(); 
                 this.saveState();
+                this.noteCampaignEdit();
                 
                 if (type === 'note') this.toast(`Přidána Poznámka`);
                 else this.toast(`Přidán blok: ${this.LABELS[type]}`);
@@ -3251,6 +3326,7 @@
 
                                 this.addArrowSilent(this.arrowFrom, this.arrowFromPort, toBlockId, toPort);
                                 this.renderArrows(); this.saveState();
+                                this.noteCampaignEdit();
                                 const targetEl = document.getElementById(toBlockId);
                                 targetEl.style.filter = "drop-shadow(var(--glow)) brightness(1.5)"; setTimeout(() => targetEl.style.filter = "", 300);
                                 
@@ -3523,6 +3599,7 @@
                 let nextIdx = (currIdx + 1) % pairs.length;
                 b.yesPort = pairs[nextIdx].y; b.noPort = pairs[nextIdx].n;
                 this.renderBlock(b); this.saveState();
+                this.noteCampaignEdit();
             },
 
             toggleIOType(blockId, event) {
@@ -3532,6 +3609,7 @@
                 if (!b || b.type !== 'io') return;
                 b.ioType = b.ioType === 'input' ? 'output' : 'input';
                 this.renderBlock(b); this.saveState();
+                this.noteCampaignEdit();
                 
                 this.toast(`Režim bloku přepnut na: ${b.ioType === 'input' ? 'VSTUP' : 'VÝSTUP'}`, 2500);
                 const el = document.getElementById(b.id);
@@ -3562,6 +3640,7 @@
             deleteBlock(id) {
                 this.blocks = this.blocks.filter(b => b.id !== id); this.arrows = this.arrows.filter(a => a.from !== id && a.to !== id);
                 this.selectedBlocks.delete(id); document.getElementById(id)?.remove(); this.renderArrows(); this.saveState();
+                this.noteCampaignEdit();
             },
 
             deleteSelected() {
@@ -3575,6 +3654,7 @@
                     this.selectedBlocks.clear(); this.toast('Bloky smazány');
                 }
                 this.renderArrows(); this.saveState();
+                this.noteCampaignEdit();
             },
 
             clearCanvasSilent() {
@@ -3839,6 +3919,7 @@
                 if (b) { 
                     b.label = text; 
                     this.renderBlock(b); 
+                    this.noteCampaignEdit();
                     
                     setTimeout(() => {
                         this.resolveCollisions();
@@ -4575,6 +4656,7 @@
                     document.querySelectorAll('.glass-wheel').forEach(e => e.style.display = 'flex');
                     this.isSimulating = false;
                     if (this.lastSimStatus === 'success' && this.isCampaign()) {
+                        if (this.activeLevel) Game.setTag(this.activeLevel, Game.TAGS.ZPROVOZNENO);
                         this.logConsole('Běh OK — spouštím automatickou kontrolu...', 'info');
                         this.runCheck(false);
                     }

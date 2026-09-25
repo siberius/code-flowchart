@@ -1,8 +1,10 @@
 // F2: Checker — automatická kontrola diagramu proti skrytým testovacím vektorům.
 // Jádro testuje samostatně (bez DOM); načte App z inline <script> jako ostatní sady.
+// Od F1 (V2.2) mají mise slot plochy = id mise (m01..m08, e1..e6) a data žijí v MISSIONS.
 const { loadApp, makeApp } = require('./flow_test_utils');
 
-const { App, LEVELS, Game } = loadApp();
+const { App, MISSIONS, Game, sandbox } = loadApp();
+const missionById = sandbox.missionById;
 
 let pass = 0, fail = 0;
 function check(name, cond, detail) {
@@ -11,7 +13,7 @@ function check(name, cond, detail) {
 }
 function eq(name, got, want) { check(name, got === want, 'got ' + JSON.stringify(got) + ', want ' + JSON.stringify(want)); }
 
-// Postaví diagram přesně podle vzorového řešení stupně.
+// Postaví diagram přesně podle vzorového řešení mise.
 function buildSolution(app, lvl) {
     app.blocks = []; app.arrows = []; app.nextId = 1;
     const sol = lvl.solution;
@@ -30,7 +32,7 @@ function buildSolution(app, lvl) {
 }
 
 function checkLevel(app, lvl) {
-    app.activeWorkspace = 'lvl' + lvl.id;
+    app.activeWorkspace = lvl.id;
     app.activeLevel = lvl.id;
     app.levelHintUsed = false;
     app.levelFailed = false;
@@ -39,37 +41,36 @@ function checkLevel(app, lvl) {
     return res;
 }
 
-console.log('[F2 Checker — vzorová řešení procházejí všemi vektory]');
+console.log('[F2 Checker — vzorová řešení procházejí všemi vektory, profily H a E_J]');
 const app = makeApp(App);
-Game.playerName = 'Evička';
 
-LEVELS.forEach(lvl => {
+MISSIONS.H.concat(MISSIONS.E_J).forEach(lvl => {
+    if (lvl.solution === null) {
+        check('mise ' + lvl.id + ' bez řešení a bez testů (doplní se F5/F6)', lvl.tests.length === 0);
+        return;
+    }
     const res = checkLevel(app, lvl);
     const detail = res ? res.results.filter(r => !r.ok).map(r => 'T' + r.id + ': ' + r.message).join(' | ') : 'null';
     check('mise ' + lvl.id + ' (' + lvl.name + '): ' + (res ? res.passed + '/' + res.total : '?'),
         !!res && res.allOk, detail);
 });
 
-console.log('\n[operator temat — vzorová řešení procházejí]');
-app.applyNarrative('operator');
-LEVELS.forEach(lvl => {
-    const res = checkLevel(app, lvl);
-    const detail = res ? res.results.filter(r => !r.ok).map(r => 'T' + r.id + ': ' + r.message).join(' | ') : 'null';
-    check('operator: mise ' + lvl.id + ' (' + lvl.name + '): ' + (res ? res.passed + '/' + res.total : '?'),
-        !!res && res.allOk, detail);
+console.log('\n[počet testovacích vektorů — informativní, cíl 2–3 na misi]');
+MISSIONS.H.concat(MISSIONS.E_J).forEach(lvl => {
+    check('mise ' + lvl.id + ': ' + lvl.tests.length + ' vektor(ů)', true);
 });
-app.applyNarrative('streamer');
 
-console.log('\n[uveření hvězd po úspěšné kontrole]');
+console.log('\n[udělení hvězd po úspěšné kontrole]');
 Game.levels = {}; Game.xp = 0;
 app.levelHintUsed = false; app.levelFailed = false;
-buildSolution(app, LEVELS[0]);
-app.activeWorkspace = 'lvl1'; app.activeLevel = 1;
+buildSolution(app, missionById('m01'));
+app.activeWorkspace = 'm01'; app.activeLevel = 'm01';
 const okCheck = app.runCheck(true);
 check('kontrola prošla', !!okCheck && okCheck.allOk);
-check('mise 1 označena splněná', Game.isLevelDone(1));
-check('hvězdy v záznamu = 3', Game.levels[1].stars === 3, Game.levels[1] && Game.levels[1].stars);
+check('mise m01 označena splněná', Game.isLevelDone('m01'));
+check('hvězdy v záznamu = 3', Game.levels.m01.stars === 3, Game.levels.m01 && Game.levels.m01.stars);
 check('XP přičteno', Game.xp > 0, Game.xp);
+check('značka Ověřeno po AUTO-kontrole', Game.tagFor('m01') === Game.TAGS.OVERENO, Game.tagFor('m01'));
 
 console.log('\n[selhání: špatný výstup]');
 Game.levels = {}; Game.xp = 0;
@@ -81,10 +82,10 @@ const e = app.addBlockSilent('end', 'Konec', 0, 300);
 app.addArrowSilent(s.id, 'bottom', a.id, 'top');
 app.addArrowSilent(a.id, 'bottom', o.id, 'top');
 app.addArrowSilent(o.id, 'bottom', e.id, 'top');
-app.activeWorkspace = 'lvl1'; app.activeLevel = 1;
+app.activeWorkspace = 'm01'; app.activeLevel = 'm01';
 const bad = app.runCheck(true);
 check('kontrola selhala', !!bad && !bad.allOk);
-check('mise 1 nesplněna', !Game.isLevelDone(1));
+check('mise m01 nesplněna', !Game.isLevelDone('m01'));
 check('chybová zpráva je konkrétní', !!bad && bad.results[0].message.indexOf('čekal jsem') !== -1,
     bad && bad.results[0].message);
 
@@ -93,7 +94,7 @@ app.blocks = []; app.arrows = []; app.nextId = 1;
 const s2 = app.addBlockSilent('start', 'Začátek', 0, 0);
 const a2 = app.addBlockSilent('process', 'Otevři bránu', 0, 100);
 app.addArrowSilent(s2.id, 'bottom', a2.id, 'top');
-app.activeWorkspace = 'lvl1'; app.activeLevel = 1;
+app.activeWorkspace = 'm01'; app.activeLevel = 'm01';
 const dead = app.runCheck(true);
 check('kontrola selhala', !!dead && !dead.allOk);
 check('zpráva o slepé uličce', !!dead && dead.results[0].message.indexOf('Slepá ulička') !== -1,
@@ -110,7 +111,7 @@ app.addArrowSilent(s3.id, 'bottom', init.id, 'top');
 app.addArrowSilent(init.id, 'bottom', l3.id, 'top');
 app.addArrowSilent(l3.id, 'bottom', p3.id, 'top');
 app.addArrowSilent(p3.id, 'bottom', l3.id, 'left');
-app.activeWorkspace = 'lvl1'; app.activeLevel = 1;
+app.activeWorkspace = 'm01'; app.activeLevel = 'm01';
 const loop = app.runCheck(true);
 check('kontrola selhala (zacyklení)', !!loop && !loop.allOk);
 check('zpráva o zacyklení', !!loop && loop.results[0].message.indexOf('Zacyklení') !== -1,

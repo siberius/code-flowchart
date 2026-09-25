@@ -74,7 +74,7 @@ Pro vzdělávací obsah navíc: `md-skills/vzdelavaci-metodiky.md` (RVP/ŠVP, CZ
   - `node syntax_check.js` — syntaxe inline `<script>` bloků.
   - `node flow_tests.js` — jádro: parser, VÝSTUP `{var}`, literály v uvozovkách, porty ANO/NE/TĚLO/KONEC,
     runaway smyčka, bezpečnost konzole/RAM.
-  - `node flow_check_tests.js` (F2) — Checker: evaluátor podmínek, `runCheckVector`, mapování literálů/var.
+  - `node flow_check_tests.js` (F2) — Checker: evaluátor podmínek, `runCheckVector` (události/`counts`/`requireLoop`/`maxOps`, vyčerpání zásoby vstupů, povinné dosažení KONCE, poznámka v toku), mapování literálů/var.
   - `node flow_storage_tests.js` — persistence (save/load workspace), migrace v1→v3, okrajové stavy.
   - `node flow_ui_tests.js` — viewport, responzivní breakpoint, tablet porty bez hoveru.
   - `node flow_game_tests.js` (F1) — herní vrstva: `LEVELS` data (m1–m8/profily), jméno, XP bonusy,

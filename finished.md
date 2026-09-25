@@ -2,6 +2,35 @@
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
+## 2026-09-25 — F2: Checker v2 — skutečné události, jeden engine (nezakomitováno)
+
+- **Checker (`App.runCheckVector`):** přidáno sledování **skutečných událostí běhu** —
+  `execCounts` (kolikrát proběhla operace), `loopsRun` (alespoň jedno vykonání smyčky),
+  `ops` (počet vykonaných operací) a `reachedEnd` (dosažení bloku KONEC). Vše vraceno
+  ve výsledku vektoru.
+- **Nová pole testovacích vektorů** (zpětně kompatibilní — staré vektory fungují beze změny):
+  - `counts: {label: n}` — operace `label` musí proběhnout **přesně n×** (cyklus neprojde
+    pouhým vypsáním očekávané věty bez provedení výrobní operace);
+  - `requireLoop: true` — běh musí aspoň jednou projít smyčkou;
+  - `maxOps: n` — limit efektivity (vykonané operace ≤ n, pro m07 efektivita = operace).
+- **Oprava vyčerpání zásoby vstupů (m05):** při vyčerpání sekvence VSTUPů se dřív
+  opakovala poslední hodnota → nyní konkrétní chyba „Došly testovací vstupy“ místo
+  výroby dalších umělých hodnot.
+- **Dosažení KONCE je povinné:** běh, který opustí tok bez návštěvy bloku `end`
+  (např. šipka do prázdna), skončí chybou „Program nepřišel k bloku KONEC“.
+- **Sjednocení sémantiky POZNÁMKY (ruční simulace = Checker):** ruční běh dřív
+  `break`oval tok na bloku poznámky → nyní poznámku nepřeruší běh (loguje
+  `[POZNÁMKA]` přes novou `.log-note` barvu konzole) a pokračuje dál; Checker už
+  poznámku přeskočí a nevyvolává zacyklení — oba režimy dávají stejný výsledek
+  (poznámka nemění algoritmus). Stejně jako operace volání se poznámka **nepočítá**
+  do `ops` ani `trace`.
+- **Testy:** `flow_check_tests.js` rozšířen o `[V2]` sekce: counts splněno/nesplněno,
+  requireLoop (vypsání čísla bez smyčky selže), maxOps (efektivita), vyčerpání zásoby
+  (stačí/vyčerpána), povinné dosažení KONCE, poznámka v toku (přeskočí se + nepočítá
+  se do operací), hranice cyklu 0/1/více (`krok<=n` vs `krok<n`).
+- **Ověření:** syntax OK · flow_tests 26 · flow_check 53 · flow_storage 10 · flow_ui 6 ·
+  flow_game 73 · flow_smoke 85 (celkem **253** kontrol, 0 FAIL).
+
 ## 2026-09-25 — PLAN.md V2.2: integrace zadání učebních oborů (H/E_J)
 
 - **Sloučeno** závazné zadání učebních oborů do `PLAN.md` (verze 2.2): RVP cíl

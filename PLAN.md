@@ -399,7 +399,7 @@ nikoli doslovnými požadavky RVP; při konečném zařazení učitel ověří v
 ### 12.2 Testovací sada (plánovaná)
 - `syntax_check.js` (jako TACHI) — kontrola složených závorek/funkcí HTML.
 - `flow_tests.js` — simulace jádra: parser, tester vektorů jablek A/B/C, port scenáře, nekonečná smyčka (detekce stavem), VÝSTUP `{var}`, literály v uvozovkách.
-- `flow_check_tests.js` — Checker: evaluátor podmínek, `runCheckVector` (události, slepá ulička, zacyklení, výstup/trace), `mapOutsideStrings` (literály vs proměnné).
+- `flow_check_tests.js` — Checker: evaluátor podmínek, `runCheckVector` (události, slepá ulička, zacyklení, výstup/trace), `mapOutsideStrings` (literály vs proměnné); v2: `counts` (operace N×), `requireLoop`, `maxOps` (efektivita), vyčerpání zásoby vstupů, povinné dosažení KONCE, poznámka v toku.
 - `flow_storage_tests.js` — persistence, save/load ploch, migrace v1→v3, okrajové stavy.
 - `flow_game_tests.js` — herní vrstva: profily H / E_J, jméno (dobrovolné), značky, mise `m01–m08`, `completeLevel` + certifikát, persistence, restart mise, `SAMPLES`.
 - `flow_smoke_tests.js` — UI smoke: `App.init()` + HUD/mise/jméno/restart, menu ukázek + `loadSample`, `story` v modalu mise, `onLevelSuccess` (značky do menu), herní confirm modal.

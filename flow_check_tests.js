@@ -124,6 +124,11 @@ eq('stav == "ok"', app.evalCondition('stav == "ok"', ram), true);
 eq('stav != "ok"', app.evalCondition('stav != "ok"', ram), false);
 eq('krok <= n', app.evalCondition('krok <= n', ram), true);
 eq('krok < n', app.evalCondition('krok < n', ram), false);
+eq('hranice: krok=0, n=0 (krok<=n)', app.evalCondition('krok <= n', { krok: 0, n: 0 }), true);
+eq('hranice: krok=0, n=0 (krok<n)', app.evalCondition('krok < n', { krok: 0, n: 0 }), false);
+eq('hranice: krok=0, n=1 (krok<n) — 1 průchod', app.evalCondition('krok < n', { krok: 0, n: 1 }), true);
+eq('hranice: krok=1, n=1 (krok<n) — konec', app.evalCondition('krok < n', { krok: 1, n: 1 }), false);
+eq('hranice: krok=2, n=2 (krok<n)', app.evalCondition('krok < n', { krok: 2, n: 2 }), false);
 eq('složená podmínka &&', app.evalCondition('vek >= 15 && stav == "ok"', ram), true);
 eq('složená podmínka ||', app.evalCondition('vek < 15 || stav == "ok"', ram), true);
 eq('nevyhodnotitelná podmínka → null', app.evalCondition('vek >=', ram), null);
@@ -137,6 +142,91 @@ eq('nuluje prázdné', app.canonOutput(null), '');
 console.log('\n[runCheck mimo MISE]');
 app.activeWorkspace = 'space2';
 eq('mimo MISE vrací null', app.runCheck(true), null);
+
+console.log('\n[V2: provedení operace N-krát (counts)]');
+app.blocks = []; app.arrows = []; app.nextId = 1;
+const cs = app.addBlockSilent('start', 'Začátek', 0, 0);
+const cn = app.addBlockSilent('process', 'n = 4', 0, 50);
+const ci = app.addBlockSilent('process', 'krok = 0', 0, 100);
+const cl = app.addBlockSilent('loop', 'krok < n', 0, 200); cl.yesPort = 'bottom'; cl.noPort = 'right';
+const cp = app.addBlockSilent('process', 'krok = krok + 1', 0, 300);
+const co = app.addBlockSilent('io', 'Vyrobeno: {krok}', 0, 400); co.ioType = 'output';
+const ce = app.addBlockSilent('end', 'Konec', 0, 500);
+app.addArrowSilent(cs.id, 'bottom', cn.id, 'top');
+app.addArrowSilent(cn.id, 'bottom', ci.id, 'top');
+app.addArrowSilent(ci.id, 'bottom', cl.id, 'top');
+app.addArrowSilent(cl.id, 'bottom', cp.id, 'top');
+app.addArrowSilent(cp.id, 'bottom', cl.id, 'left');
+app.addArrowSilent(cl.id, 'right', co.id, 'left');
+app.addArrowSilent(co.id, 'bottom', ce.id, 'top');
+const cr = app.runCheckVector({ id: 'A', inputs: { n: 4 }, expected: 'Vyrobeno: 4', counts: { 'krok = krok + 1': 4 } });
+check('smyčka 4× provedena -> prošlo', !!cr && cr.ok, cr && cr.message);
+const crBad = app.runCheckVector({ id: 'B', inputs: { n: 4 }, expected: 'Vyrobeno: 4', counts: { 'krok = krok + 1': 3 } });
+check('counts 3 místo 4 -> selže s konkrétní zprávou', !!crBad && !crBad.ok && crBad.message.indexOf('vyžaduje 3') !== -1,
+    crBad && crBad.message);
+
+console.log('\n[V2: smyčka se musí opravdu vykonat (requireLoop)]');
+app.blocks = []; app.arrows = []; app.nextId = 1;
+const rs = app.addBlockSilent('start', 'Začátek', 0, 0);
+const ro = app.addBlockSilent('io', 'Vyrobeno: 4', 0, 100); ro.ioType = 'output';
+const re = app.addBlockSilent('end', 'Konec', 0, 200);
+app.addArrowSilent(rs.id, 'bottom', ro.id, 'top');
+app.addArrowSilent(ro.id, 'bottom', re.id, 'top');
+const rr = app.runCheckVector({ id: 'A', inputs: {}, expected: 'Vyrobeno: 4', requireLoop: true });
+check('jen vypsat číslo bez smyčky -> selže', !!rr && !rr.ok && rr.message.indexOf('opakování se neprovedlo') !== -1,
+    rr && rr.message);
+
+console.log('\n[V2: efektivita operací (maxOps)]');
+app.blocks = []; app.arrows = []; app.nextId = 1;
+const os = app.addBlockSilent('start', 'Začátek', 0, 0);
+const op = app.addBlockSilent('process', 'x = 1', 0, 100);
+const oe = app.addBlockSilent('end', 'Konec', 0, 200);
+app.addArrowSilent(os.id, 'bottom', op.id, 'top');
+app.addArrowSilent(op.id, 'bottom', oe.id, 'top');
+const or = app.runCheckVector({ id: 'A', inputs: {}, expected: '', maxOps: 1 });
+check('1 operace do limitu 1 -> prošlo', !!or && or.ok, or && or.message);
+const orBad = app.runCheckVector({ id: 'B', inputs: {}, expected: '', maxOps: 0 });
+check('1 operace nad limit 0 -> selže', !!orBad && !orBad.ok && orBad.message.indexOf('operací') !== -1,
+    orBad && orBad.message);
+
+console.log('\n[V2: vyčerpání zásoby vstupů (m05) — neopakuje se poslední hodnota]');
+app.blocks = []; app.arrows = []; app.nextId = 1;
+const vs = app.addBlockSilent('start', 'Začátek', 0, 0);
+const vi = app.addBlockSilent('io', 'stav', 0, 100); vi.ioType = 'input';
+const vl = app.addBlockSilent('loop', 'stav == "vadne"', 0, 200); vl.yesPort = 'bottom'; vl.noPort = 'right';
+const ve = app.addBlockSilent('end', 'Konec', 0, 300);
+app.addArrowSilent(vs.id, 'bottom', vi.id, 'top');
+app.addArrowSilent(vi.id, 'bottom', vl.id, 'top');
+app.addArrowSilent(vl.id, 'bottom', vi.id, 'left');
+app.addArrowSilent(vl.id, 'right', ve.id, 'left');
+const vr = app.runCheckVector({ id: 'A', inputs: { stav: ['vadne', 'ok'] }, expected: '', requireLoop: true });
+check('zásoba [vadne, ok] stačí -> prošlo', !!vr && vr.ok, vr && vr.message);
+const vrEx = app.runCheckVector({ id: 'B', inputs: { stav: ['vadne'] }, expected: '', requireLoop: true });
+check('zásoba [vadne] vyčerpána -> chyba místo opakování', !!vrEx && !vrEx.ok && vrEx.message.indexOf('Došly testovací vstupy') !== -1,
+    vrEx && vrEx.message);
+
+console.log('\n[V2: dosažení bloku KONEC je povinné]');
+app.blocks = []; app.arrows = []; app.nextId = 1;
+const ns = app.addBlockSilent('start', 'Začátek', 0, 0);
+const np = app.addBlockSilent('process', 'x = 1', 0, 100);
+app.addArrowSilent(ns.id, 'bottom', np.id, 'top');
+app.addArrowSilent(np.id, 'bottom', 99999, 'top');
+const nr = app.runCheckVector({ id: 'A', inputs: {}, expected: '' });
+check('tok bez bloku KONEC -> chyba', !!nr && !nr.ok && nr.message.indexOf('KONEC') !== -1,
+    nr && nr.message);
+
+console.log('\n[V2: poznámka v toku nepřeruší běh a nepočítá se jako operace]');
+app.blocks = []; app.arrows = []; app.nextId = 1;
+const ps = app.addBlockSilent('start', 'Začátek', 0, 0);
+const pn = app.addBlockSilent('note', 'Toto je poznámka', 0, 100);
+const pp = app.addBlockSilent('process', 'Otevři bránu', 0, 200);
+const pe = app.addBlockSilent('end', 'Konec', 0, 300);
+app.addArrowSilent(ps.id, 'bottom', pn.id, 'top');
+app.addArrowSilent(pn.id, 'bottom', pp.id, 'top');
+app.addArrowSilent(pp.id, 'bottom', pe.id, 'top');
+const pr = app.runCheckVector({ id: 'A', inputs: {}, expected: ['Otevři bránu'] });
+check('tištěná poznámka se přeskočí a tok pokračuje', !!pr && pr.ok, pr && pr.message);
+check('poznámka se nepočítá do počtu operací', !!pr && pr.ops === 1, pr && pr.ops);
 
 console.log(`\nVýsledek: ${pass} OK, ${fail} FAIL`);
 process.exit(fail === 0 ? 0 : 1);

@@ -533,6 +533,7 @@
         .log-warning .log-msg { color: #f59e0b; }
         .log-error .log-msg { color: #ef4444; font-weight: bold; text-shadow: 0 0 5px rgba(239, 68, 68, 0.4); }
         .log-io .log-msg { color: #c4b5fd; font-weight: bold; }
+        .log-note .log-msg { color: #fde047; font-style: italic; }
 
         .ram-header {
             padding: 12px 16px; font-size: 11px; font-weight: 800; color: var(--text-dim);
@@ -4029,9 +4030,12 @@
                 const ram = {};
                 const outputs = [];
                 const trace = [];
+                const execCounts = {};
                 const stateCounts = {};
                 const inputState = {};
+                let ops = 0, loopsRun = 0, reachedEnd = false;
                 let error = null, errorBlock = null, steps = 0;
+                const EXHAUSTED = '%%VYČERPÁNO%%';
 
                 const takeInput = (name) => {
                     const inputs = vector.inputs;
@@ -4039,8 +4043,13 @@
                     const value = inputs[name];
                     if (!Array.isArray(value)) return value;
                     const i = inputState[name] || 0;
+                    if (i >= value.length) {
+                        error = 'Došly testovací vstupy pro „' + name + '“ (' + value.length + ' v sekvenci).';
+                        errorBlock = cur.id;
+                        return EXHAUSTED;
+                    }
                     inputState[name] = i + 1;
-                    return i < value.length ? value[i] : value[value.length - 1];
+                    return value[i];
                 };
 
                 let cur = blocks.find(b => b.type === 'start') || null;
@@ -4059,24 +4068,36 @@
                         if (this.isRunaway(stateCounts, key, steps)) { error = 'Zacyklení: tok se opakuje beze změny dat.'; errorBlock = cur.id; break; }
 
                         const type = cur.type;
-                        if (type === 'end') break;
-                        if (type === 'process') { trace.push(cur.label); this.parseVariable(cur.label); }
-                        else if (type === 'call') { trace.push(cur.label); }
-                        else if (type === 'note') { /* poznámka se neprovádí, tok pokračuje dál */ }
+                        const labelKey = String(cur.label || '').trim();
+                        if (type === 'end') { reachedEnd = true; break; }
+                        if (type === 'process') {
+                            trace.push(cur.label);
+                            execCounts[labelKey] = (execCounts[labelKey] || 0) + 1;
+                            ops++;
+                            this.parseVariable(cur.label);
+                        }
+                        else if (type === 'call') { trace.push(cur.label); execCounts[labelKey] = (execCounts[labelKey] || 0) + 1; }
+                        else if (type === 'note') { /* poznámka se neprovádí, tok pokračuje dál — nemění výsledek */ }
                         else if (type === 'io') {
                             if (cur.ioType === 'input') {
                                 const name = this.inputVarName(cur.label);
                                 const raw = takeInput(name);
+                                if (raw === EXHAUSTED) { cur = null; break; }
                                 const value = (raw === undefined || raw === null || raw === '') ? 0 : raw;
                                 const num = Number(value);
                                 ram[name] = (String(value).trim() !== '' && !isNaN(num)) ? num : String(value);
+                                execCounts[labelKey] = (execCounts[labelKey] || 0) + 1;
+                                ops++;
                             } else {
                                 outputs.push(this.replaceVars(cur.label));
+                                execCounts[labelKey] = (execCounts[labelKey] || 0) + 1;
+                                ops++;
                             }
                         }
                         else if (type === 'decision' || type === 'loop') {
                             const answer = this.evalCondition(cur.label, ram);
                             if (answer === null) { error = 'Podmínku nejde vyhodnotit: „' + cur.label + '“.'; errorBlock = cur.id; break; }
+                            if (type === 'loop' && answer) loopsRun++;
                             const arrow = this.pickNextArrow(cur, answer, arrows);
                             if (!arrow) {
                                 error = 'Větev ' + (answer ? 'ANO/TĚLO' : 'NE/KONEC') + ' u bloku „' + cur.label + '“ nikam nevede.';
@@ -4092,6 +4113,11 @@
                     }
                 } finally {
                     this.visualRAM = savedRam; this.logConsole = savedLog; this.updateRAM = savedUpd;
+                }
+
+                if (!error && !reachedEnd) {
+                    error = 'Program nepřišel k bloku KONEC — chybí ukončení toku.';
+                    errorBlock = cur && cur.id ? cur.id : (errorBlock || null);
                 }
 
                 let ok = !error;
@@ -4110,7 +4136,26 @@
                         if (!ok) message = 'čekal jsem „' + want + '“, ale máš „' + (got || 'žádný výstup') + '“';
                     }
                 }
-                return { id: vector.id, ok, message, outputs, trace, errorBlock };
+                if (ok && vector.counts) {
+                    for (const lbl in vector.counts) {
+                        const want = vector.counts[lbl];
+                        const got = execCounts[lbl] || 0;
+                        if (want !== got) {
+                            ok = false;
+                            message = 'Operace „' + lbl + '“ proběhla ' + got + '×, zadání vyžaduje ' + want + '×.';
+                            break;
+                        }
+                    }
+                }
+                if (ok && vector.requireLoop && loopsRun === 0) {
+                    ok = false;
+                    message = 'Požadované opakování se neprovedlo — projdi ALESPOŇ jednou smyčku.';
+                }
+                if (ok && typeof vector.maxOps === 'number' && ops > vector.maxOps) {
+                    ok = false;
+                    message = 'Běh vykonal ' + ops + ' operací, efektivní limit zadání je ' + vector.maxOps + '.';
+                }
+                return { id: vector.id, ok, message, outputs, trace, execCounts, ops, loopsRun, errorBlock };
             },
             runCheck(silent) {
                 const lvl = this.currentLevel();
@@ -4338,8 +4383,6 @@
                             await new Promise(r => setTimeout(r, 1));
                         }
 
-                        if (currentBlock.type === 'note') break;
-
                         const el = document.getElementById(currentBlock.id);
                         if (el) el.classList.add('sim-active');
 
@@ -4362,6 +4405,7 @@
                         }
 
                         if (currentBlock.type === 'start') this.logConsole(`[START] Běh programu zahájen.`, "success");
+                        else if (currentBlock.type === 'note') this.logConsole(`[POZNÁMKA] ${val}`, "note");
                         else if (currentBlock.type === 'end') {
                             this.logConsole(`[END] Program úspěšně dorazil na konec.`, "success");
                             previousBlock = currentBlock;

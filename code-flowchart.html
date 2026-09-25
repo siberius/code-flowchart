@@ -2058,6 +2058,201 @@
                     [7, 'left', 3, 'left'],
                     [3, 'right', 8, 'left']
                 ]
+            },
+            {
+                id: 'calculator', name: 'Kalkulačka', hint: 'Větvení a počítání: + − × ÷ ^ √',
+                blocks: [
+                    { type: 'start', label: 'Start', x: 0, y: -540 },
+                    { type: 'io', label: 'a', ioType: 'input', x: 0, y: -360 },
+                    { type: 'io', label: 'op', ioType: 'input', x: 0, y: -190 },
+                    { type: 'io', label: 'b', ioType: 'input', x: 0, y: -20 },
+                    { type: 'note', label: 'KALKULAČKA:\nZadáme číslo a, operátor (text)\na číslo b (pro ÷ a mocninu).\n√ používá jen číslo a.', x: -380, y: -120 },
+                    { type: 'decision', label: 'op == "soucet"', yesPort: 'right', noPort: 'bottom', x: 0, y: 150 },
+                    { type: 'process', label: 'vysledek = a + b', x: 400, y: 150 },
+                    { type: 'io', label: 'Výsledek: {vysledek}', ioType: 'output', x: 400, y: 310 },
+                    { type: 'end', label: 'Konec', x: 400, y: 470 },
+                    { type: 'decision', label: 'op == "rozdil"', yesPort: 'right', noPort: 'bottom', x: 0, y: 350 },
+                    { type: 'process', label: 'vysledek = a - b', x: 400, y: 350 },
+                    { type: 'io', label: 'Výsledek: {vysledek}', ioType: 'output', x: 400, y: 510 },
+                    { type: 'end', label: 'Konec', x: 400, y: 670 },
+                    { type: 'note', label: 'VĚTVENÍ:\nPodmínka op == "…" pustí\njen tu správnou větev,\nostatní se přeskočí.', x: -380, y: 480 },
+                    { type: 'decision', label: 'op == "soucin"', yesPort: 'right', noPort: 'bottom', x: 0, y: 550 },
+                    { type: 'process', label: 'vysledek = a * b', x: 400, y: 550 },
+                    { type: 'io', label: 'Výsledek: {vysledek}', ioType: 'output', x: 400, y: 710 },
+                    { type: 'end', label: 'Konec', x: 400, y: 870 },
+                    { type: 'decision', label: 'op == "podil"', yesPort: 'right', noPort: 'bottom', x: 0, y: 750 },
+                    { type: 'process', label: 'vysledek = a / b', x: 400, y: 750 },
+                    { type: 'io', label: 'Výsledek: {vysledek}', ioType: 'output', x: 400, y: 910 },
+                    { type: 'end', label: 'Konec', x: 400, y: 1070 },
+                    { type: 'decision', label: 'op == "mocnina"', yesPort: 'right', noPort: 'bottom', x: 0, y: 950 },
+                    { type: 'process', label: 'vysledek = a ** b', x: 400, y: 950 },
+                    { type: 'io', label: 'Výsledek: {vysledek}', ioType: 'output', x: 400, y: 1110 },
+                    { type: 'end', label: 'Konec', x: 400, y: 1270 },
+                    { type: 'decision', label: 'op == "odmocnina"', yesPort: 'right', noPort: 'bottom', x: 0, y: 1150 },
+                    { type: 'note', label: 'ODMOCNINA:\n√(a² + b²) i √(a) jde přes\nMath.sqrt(a) — nepotřebuje b.', x: -380, y: 1080 },
+                    { type: 'process', label: 'vysledek = Math.sqrt(a)', x: 400, y: 1150 },
+                    { type: 'io', label: 'Výsledek: {vysledek}', ioType: 'output', x: 400, y: 1310 },
+                    { type: 'end', label: 'Konec', x: 400, y: 1470 },
+                    { type: 'end', label: 'Konec (neznámý operátor)', x: 0, y: 1350 }
+                ],
+                arrows: [
+                    [0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'], [2, 'bottom', 3, 'top'], [3, 'bottom', 5, 'top'],
+                    [5, 'right', 6, 'left'], [6, 'bottom', 7, 'top'], [7, 'bottom', 8, 'top'],
+                    [5, 'bottom', 9, 'top'],
+                    [9, 'right', 10, 'left'], [10, 'bottom', 11, 'top'], [11, 'bottom', 12, 'top'],
+                    [9, 'bottom', 14, 'top'],
+                    [14, 'right', 15, 'left'], [15, 'bottom', 16, 'top'], [16, 'bottom', 17, 'top'],
+                    [14, 'bottom', 18, 'top'],
+                    [18, 'right', 19, 'left'], [19, 'bottom', 20, 'top'], [20, 'bottom', 21, 'top'],
+                    [18, 'bottom', 22, 'top'],
+                    [22, 'right', 23, 'left'], [23, 'bottom', 24, 'top'], [24, 'bottom', 25, 'top'],
+                    [22, 'bottom', 26, 'top'],
+                    [26, 'right', 28, 'left'], [28, 'bottom', 29, 'top'], [29, 'bottom', 30, 'top'],
+                    [26, 'bottom', 31, 'top']
+                ]
+            },
+            {
+                id: 'pythagoras', name: 'Pythagorova věta', hint: 'Vzorec s odmocninou (matematika)',
+                blocks: [
+                    { type: 'start', label: 'Start', x: 0, y: -220 },
+                    { type: 'io', label: 'a', ioType: 'input', x: 0, y: -60 },
+                    { type: 'io', label: 'b', ioType: 'input', x: 0, y: 100 },
+                    { type: 'note', label: 'PYTHAGOROVA VĚTA:\nc² = a² + b², a proto\nc = √(a² + b²).\nOdmocnina = Math.sqrt()', x: -360, y: -20 },
+                    { type: 'process', label: 'c = Math.sqrt(a * a + b * b)', x: 0, y: 260 },
+                    { type: 'io', label: 'Přepona c = {c}', ioType: 'output', x: 0, y: 420 },
+                    { type: 'end', label: 'Konec', x: 0, y: 580 }
+                ],
+                arrows: [[0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'], [2, 'bottom', 4, 'top'], [4, 'bottom', 5, 'top'], [5, 'bottom', 6, 'top']]
+            },
+            {
+                id: 'interest', name: 'Složený úrok', hint: 'Cyklus přes roky (ekonomika)',
+                blocks: [
+                    { type: 'start', label: 'Start', x: 0, y: -520 },
+                    { type: 'io', label: 'jistina', ioType: 'input', x: 0, y: -360 },
+                    { type: 'io', label: 'rocni_urok', ioType: 'input', x: 0, y: -200 },
+                    { type: 'io', label: 'roky', ioType: 'input', x: 0, y: -40 },
+                    { type: 'note', label: 'VÝVOJ ÚSPOR:\nVypočteme, na kolik vyroste\njistina po „roky" let při\nročním úroku v %.', x: -400, y: -80 },
+                    { type: 'process', label: 'i = 1', x: 0, y: 120 },
+                    { type: 'loop', label: 'i <= roky', yesPort: 'bottom', noPort: 'right', x: 0, y: 300 },
+                    { type: 'process', label: 'jistina = Math.round(jistina * (1 + rocni_urok / 100) * 100) / 100', x: 0, y: 480 },
+                    { type: 'process', label: 'i++', x: 0, y: 660 },
+                    { type: 'note', label: 'CYKLUS S POČÍTADLEM:\nKaždý rok se úrok přičte\nk jistině → „úrok z úroku".\nZaokrouhlení na haléře.', x: -400, y: 500 },
+                    { type: 'io', label: 'Po {roky} letech: {jistina} Kč', ioType: 'output', x: 380, y: 300 },
+                    { type: 'end', label: 'Konec', x: 380, y: 480 }
+                ],
+                arrows: [
+                    [0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'], [2, 'bottom', 3, 'top'], [3, 'bottom', 5, 'top'],
+                    [5, 'bottom', 6, 'top'],
+                    [6, 'bottom', 7, 'top'], [7, 'bottom', 8, 'top'], [8, 'left', 6, 'left'],
+                    [6, 'right', 10, 'left'], [10, 'bottom', 11, 'top']
+                ]
+            },
+            {
+                id: 'wage', name: 'Čistá mzda', hint: 'Sekvence a zaokrouhlení (ekonomika)',
+                blocks: [
+                    { type: 'start', label: 'Start', x: 0, y: -200 },
+                    { type: 'note', label: 'ČISTÁ MZDA:\nZ hrubé mzdy se srazí\npojistné 11 % (6,5 + 4,5)\na záloha na daň 15 %.', x: -400, y: -80 },
+                    { type: 'io', label: 'hruba', ioType: 'input', x: 0, y: -40 },
+                    { type: 'process', label: 'pojistne = hruba * 0.11', x: 0, y: 120 },
+                    { type: 'process', label: 'dan = hruba * 0.15', x: 0, y: 280 },
+                    { type: 'note', label: 'ZAOKROUHLENÍ:\nMath.round() zaokrouhlí\nna celé koruny.', x: -400, y: 400 },
+                    { type: 'process', label: 'cista = Math.round(hruba - pojistne - dan)', x: 0, y: 440 },
+                    { type: 'io', label: 'Čistá mzda: {cista} Kč', ioType: 'output', x: 0, y: 600 },
+                    { type: 'end', label: 'Konec', x: 0, y: 760 }
+                ],
+                arrows: [[0, 'bottom', 2, 'top'], [2, 'bottom', 3, 'top'], [3, 'bottom', 4, 'top'], [4, 'bottom', 6, 'top'], [6, 'bottom', 7, 'top'], [7, 'bottom', 8, 'top']]
+            },
+            {
+                id: 'fuel', name: 'Spotřeba paliva', hint: 'Přepočet a náklady (ekologie)',
+                blocks: [
+                    { type: 'start', label: 'Start', x: 0, y: -220 },
+                    { type: 'io', label: 'spotreba', ioType: 'input', x: 0, y: -60 },
+                    { type: 'io', label: 'km', ioType: 'input', x: 0, y: 100 },
+                    { type: 'io', label: 'cena_za_l', ioType: 'input', x: 0, y: 260 },
+                    { type: 'note', label: 'EKO-JÍZDA:\nSpotřeba auta se udává\nv litrech na 100 km.\nLitry = spotřeba × km ÷ 100.', x: -400, y: 20 },
+                    { type: 'process', label: 'litry = spotreba * km / 100', x: 0, y: 420 },
+                    { type: 'note', label: 'ZAOKROUHLENÍ:\nMath.round() → cena\nv celých korunách.', x: -400, y: 500 },
+                    { type: 'process', label: 'naklady = Math.round(litry * cena_za_l)', x: 0, y: 580 },
+                    { type: 'io', label: 'Cesta: {litry} l, náklady {naklady} Kč', ioType: 'output', x: 0, y: 740 },
+                    { type: 'end', label: 'Konec', x: 0, y: 900 }
+                ],
+                arrows: [[0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'], [2, 'bottom', 3, 'top'], [3, 'bottom', 5, 'top'], [5, 'bottom', 7, 'top'], [7, 'bottom', 8, 'top'], [8, 'bottom', 9, 'top']]
+            },
+            {
+                id: 'waste', name: 'Třídění odpadu', hint: 'Kaskádové větvení (ekologie)',
+                blocks: [
+                    { type: 'start', label: 'Start', x: 0, y: -420 },
+                    { type: 'io', label: 'material', ioType: 'input', x: 0, y: -260 },
+                    { type: 'note', label: 'TŘÍDĚNÍ:\nDo které popelnice materiál\npatří? Jeden směr = jedna\nVĚTEV podmínky.', x: -380, y: -300 },
+                    { type: 'decision', label: 'material == "plast"', yesPort: 'right', noPort: 'bottom', x: 0, y: -100 },
+                    { type: 'io', label: 'Plast → žlutý kontejner', ioType: 'output', x: 380, y: -100 },
+                    { type: 'end', label: 'Konec', x: 380, y: 60 },
+                    { type: 'decision', label: 'material == "papir"', yesPort: 'right', noPort: 'bottom', x: 0, y: 100 },
+                    { type: 'io', label: 'Papír → modrý kontejner', ioType: 'output', x: 380, y: 100 },
+                    { type: 'end', label: 'Konec', x: 380, y: 260 },
+                    { type: 'note', label: 'KASKÁDA PODMÍNEK:\nSrovnáváme postupně,\ndokud není materiál vhodný\n(nebo neznámý).', x: -380, y: 260 },
+                    { type: 'decision', label: 'material == "sklo"', yesPort: 'right', noPort: 'bottom', x: 0, y: 300 },
+                    { type: 'io', label: 'Sklo → zelený kontejner', ioType: 'output', x: 380, y: 300 },
+                    { type: 'end', label: 'Konec', x: 380, y: 460 },
+                    { type: 'decision', label: 'material == "bio"', yesPort: 'right', noPort: 'bottom', x: 0, y: 500 },
+                    { type: 'io', label: 'Bio → hnědý kontejner', ioType: 'output', x: 380, y: 500 },
+                    { type: 'end', label: 'Konec', x: 380, y: 660 },
+                    { type: 'io', label: 'Neznámý materiál: {material}', ioType: 'output', x: 0, y: 700 },
+                    { type: 'end', label: 'Konec', x: 0, y: 860 }
+                ],
+                arrows: [
+                    [0, 'bottom', 1, 'top'], [1, 'bottom', 3, 'top'],
+                    [3, 'right', 4, 'left'], [4, 'bottom', 5, 'top'], [3, 'bottom', 6, 'top'],
+                    [6, 'right', 7, 'left'], [7, 'bottom', 8, 'top'], [6, 'bottom', 10, 'top'],
+                    [10, 'right', 11, 'left'], [11, 'bottom', 12, 'top'], [10, 'bottom', 13, 'top'],
+                    [13, 'right', 14, 'left'], [14, 'bottom', 15, 'top'], [13, 'bottom', 16, 'top'],
+                    [16, 'bottom', 17, 'top']
+                ]
+            },
+            {
+                id: 'bmi', name: 'BMI', hint: 'Vzorec a vyhodnocení (zdravověda)',
+                blocks: [
+                    { type: 'start', label: 'Start', x: 0, y: -420 },
+                    { type: 'io', label: 'vaha', ioType: 'input', x: 0, y: -260 },
+                    { type: 'io', label: 'vyska', ioType: 'input', x: 0, y: -100 },
+                    { type: 'note', label: 'VÝŠKA V METRECH:\nNapíšeme 1,75, ne 175.\nBMI = hmotnost ÷ výška².', x: -380, y: -140 },
+                    { type: 'process', label: 'bmi = Math.round(vaha / (vyska * vyska) * 10) / 10', x: 0, y: 60 },
+                    { type: 'decision', label: 'bmi < 18.5', yesPort: 'right', noPort: 'bottom', x: 0, y: 220 },
+                    { type: 'io', label: 'Podváha (BMI {bmi})', ioType: 'output', x: 360, y: 220 },
+                    { type: 'end', label: 'Konec', x: 360, y: 380 },
+                    { type: 'decision', label: 'bmi <= 25', yesPort: 'right', noPort: 'bottom', x: 0, y: 420 },
+                    { type: 'io', label: 'Norma (BMI {bmi})', ioType: 'output', x: 360, y: 420 },
+                    { type: 'end', label: 'Konec', x: 360, y: 580 },
+                    { type: 'note', label: 'ROZSAHY (orientačně):\npod 18,5 podváha · 18,5–25\nnorma · 25–30 nadváha ·\nnad 30 obezita.', x: -380, y: 480 },
+                    { type: 'decision', label: 'bmi <= 30', yesPort: 'right', noPort: 'bottom', x: 0, y: 620 },
+                    { type: 'io', label: 'Nadváha (BMI {bmi})', ioType: 'output', x: 360, y: 620 },
+                    { type: 'end', label: 'Konec', x: 360, y: 780 },
+                    { type: 'io', label: 'Obezita (BMI {bmi})', ioType: 'output', x: 0, y: 820 },
+                    { type: 'end', label: 'Konec', x: 0, y: 980 }
+                ],
+                arrows: [
+                    [0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'], [2, 'bottom', 4, 'top'],
+                    [4, 'bottom', 5, 'top'], [5, 'bottom', 8, 'top'],
+                    [5, 'right', 6, 'left'], [6, 'bottom', 7, 'top'],
+                    [8, 'right', 9, 'left'], [9, 'bottom', 10, 'top'], [8, 'bottom', 12, 'top'],
+                    [12, 'right', 13, 'left'], [13, 'bottom', 14, 'top'], [12, 'bottom', 15, 'top'],
+                    [15, 'bottom', 16, 'top']
+                ]
+            },
+            {
+                id: 'scale', name: 'Měřítko mapy', hint: 'Přepočet na skutečnost (zeměpis)',
+                blocks: [
+                    { type: 'start', label: 'Start', x: 0, y: -220 },
+                    { type: 'io', label: 'na_mape', ioType: 'input', x: 0, y: -60 },
+                    { type: 'note', label: 'MĚŘÍTKO 1:25000\nznamená: 1 cm na mapě\nje 250 m ve skutečnosti.\nZadáme vzdálenost v cm.', x: -400, y: -40 },
+                    { type: 'io', label: 'meritko', ioType: 'input', x: 0, y: 100 },
+                    { type: 'process', label: 'realne_cm = na_mape * meritko', x: 0, y: 260 },
+                    { type: 'note', label: 'JEDNOTKY:\nPo vynásobení máme cm,\nkm = cm ÷ 100 000.', x: -400, y: 200 },
+                    { type: 'process', label: 'realne_km = realne_cm / 100000', x: 0, y: 420 },
+                    { type: 'io', label: 'Skutečnost: {realne_km} km', ioType: 'output', x: 0, y: 580 },
+                    { type: 'end', label: 'Konec', x: 0, y: 740 }
+                ],
+                arrows: [[0, 'bottom', 1, 'top'], [1, 'bottom', 3, 'top'], [3, 'bottom', 4, 'top'], [4, 'bottom', 6, 'top'], [6, 'bottom', 7, 'top'], [7, 'bottom', 8, 'top']]
             }
         ];
 

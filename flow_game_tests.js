@@ -50,13 +50,19 @@ console.log('\n[testovací vektory — informativní, cíl 2–3 na misi (m08/e6
 allMissions().forEach(l => eq('mise ' + l.id + ' vektorů', l.tests.length, l.tests.length));
 
 console.log('\n[SAMPLES — ukázkové diagramy]');
-check('alespoň 3 ukázky', SAMPLES.length >= 3, 'got ' + SAMPLES.length);
+check('alespoň 12 ukázek (4 původní + 8 z jiných předmětů)', SAMPLES.length >= 12, 'got ' + SAMPLES.length);
 check('ukázky mají id/název/bloky', SAMPLES.every(s => s.id && s.name && Array.isArray(s.blocks) && s.blocks.length > 0));
-check('ukázky začínají Startem a končí Koncem',
+check('ukázky začínají START a končí KONEC', 
     SAMPLES.every(s => s.blocks[0].type === 'start' && s.blocks[s.blocks.length - 1].type === 'end'));
 check('ukázky mají platné šipky', SAMPLES.every(s => (s.arrows || []).length > 0 && s.arrows.every(a =>
     Array.isArray(a) && a.length === 4 && a[0] >= 0 && a[0] < s.blocks.length && a[2] >= 0 && a[2] < s.blocks.length)));
 check('ukázky mají bloky s pozicí', SAMPLES.every(s => s.blocks.every(b => b.type && b.label && typeof b.x === 'number' && typeof b.y === 'number')));
+check('ukázky napříč předměty: kalkulačka, √, úrok, odpad, BMI', 
+    SAMPLES.some(s => s.id === 'calculator' && s.blocks.some(b => b.label.indexOf('Math.sqrt') !== -1)) &&
+    SAMPLES.some(s => s.id === 'pythagoras' && s.blocks.some(b => b.label.indexOf('Math.sqrt') !== -1)) &&
+    SAMPLES.some(s => s.id === 'waste') && SAMPLES.some(s => s.id === 'bmi') &&
+    SAMPLES.filter(s => !['hello','circle','sum','fizzbuzz'].includes(s.id))
+        .every(s => s.blocks.some(b => b.type === 'note')));
 
 console.log('\n[jméno — dobrovolné, 0–30 znaků (prázdné → null)]');
 const g1 = makeGame();

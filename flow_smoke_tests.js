@@ -290,7 +290,7 @@ check('platný vstup se odešle', inputResolved === true);
 console.log('\n[ukázky v samostatném modalu Alt+S]');
 App.openSamples();
 check('modal ukázek otevřen', App.dom.samplesModal.classList.contains('show'));
-check('seznam ukázek naplněn', App.dom.menuSamples.children.length >= 3, 'got ' + App.dom.menuSamples.children.length);
+check('seznam ukázek naplněn (12 ukázek)', App.dom.menuSamples.children.length === 12, 'got ' + App.dom.menuSamples.children.length);
 App.closeSamples();
 check('modal ukázek zavřen', !App.dom.samplesModal.classList.contains('show'));
 check('Alt+S je v keydown handleru', /e\.altKey && !e\.ctrlKey && e\.key\.toLowerCase\(\)\s*===\s*'s'/.test(html));
@@ -300,6 +300,10 @@ check('ukázka načtena do plochy', App.blocks.length === 4, 'bloky=' + App.bloc
 check('ukázka má šipky', App.arrows.length === 3, 'šipky=' + App.arrows.length);
 check('ukázka začíná Startem', App.blocks[0].type === 'start');
 check('ukázka má výstupní blok', App.blocks.some(b => b.type === 'io' && b.ioType === 'output'));
+check('zdroj: 12 ukázek včetně předmětů s poznámkami', 
+    (html.match(/id: '(hello|circle|sum|fizzbuzz|calculator|pythagoras|interest|wage|fuel|waste|bmi|scale)'/g) || []).length === 12 &&
+    html.includes("type: 'note'", undefined) && /op == \"soucet\"/.test(html));
+check('zdroj: ukázky z předmětů používají Math.sqrt / Math.round', /Math\.sqrt\(a\)/.test(html) && /Math\.round\(hruba/.test(html));
 
 console.log('\n[paleta Ctrl+K — spustitelná, s hledáním, souhrnné zkratky]');
 const haveShortcut = k => App.paletteCommands().some(c => c.shortcut.indexOf(k) !== -1);

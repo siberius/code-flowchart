@@ -2,6 +2,27 @@
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
+## 2026-09-25 — Ukázky napříč předměty (8 nových, s poznámkami) (nezakomitováno)
+
+- **SAMPLES rozšířeny ze 4 na 12** — „read + remix" i pro jiné předměty (RVP H/E_J):
+  - **Kalkulačka** (`calculator`, matematika) — vstup a, op (text), b; větvení pro + − × ÷ mocninu
+    `a ** b` a odmocninu `Math.sqrt(a)`; výchozí větev „neznámý operátor".
+  - **Pythagorova věta** (`pythagoras`, matematika) — `c = Math.sqrt(a * a + b * b)`.
+  - **Složený úrok** (`interest`, ekonomika) — cyklus přes roky, zaokrouhlení na haléře.
+  - **Čistá mzda** (`wage`, ekonomika) — pojistné 11 % + daň 15 %, `Math.round`.
+  - **Spotřeba paliva** (`fuel`, ekologie) — litry = spotřeba × km ÷ 100, náklady.
+  - **Třídění odpadu** (`waste`, ekologie) — kaskádové větvení textových podmínek.
+  - **BMI** (`bmi`, zdravověda) — vzorec + vyhodnocení podváha/norma/nadváha/obezita.
+  - **Měřítko mapy** (`scale`, zeměpis) — přepočet cm → km (1:25000).
+- **Každá nová ukázka má přehledné POZNÁMKY** (bloky `note` po straně, bez šipek — tok
+  nepřerušují) + popis `hint` do modalu. Trigonometrie (sin/cos/tg/cotg) záměrně NE — moc
+  pro obory H/E_J; jádro by je přitom zvládlo beze změny.
+- **Testy:** `flow_game_tests.js` 90 → **91** (12 ukázek, kalkulačka/√/úrok/odpad/BMI,
+  poznámky ve všech nových ukázkách); `flow_smoke_tests.js` 210 → **212** (seznam 12 položek,
+  zdroj: 12 id + `op == "soucet"` + `Math.sqrt`/`Math.round` s poznámkami).
+- **Ověření:** syntax OK · flow_tests 39 · flow_check 70 · flow_game 91 · flow_storage 55 ·
+  flow_ui 6 · flow_smoke 212 (celkem **473** kontrol, 0 FAIL).
+
 ## 2026-09-25 — Šedý text v modalech a menu zesvětlen o 20 % (nezakomitováno)
 
 - **`--text-dim` `#64748b` → `#8390a2`** (o 20 % světlejší směrem k bílé). Pokrývá menu

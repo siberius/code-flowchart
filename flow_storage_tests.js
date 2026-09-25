@@ -116,6 +116,20 @@ check('plochy v snímku', snap.workspaces.m02 && snap.workspaces.space3);
 check('historie certifikátů v snímku', snap.history.certificates.length === 1);
 check('xp v snímku', snap.game.xp === 255);
 
+console.log('\n[F4 migrace klíčů v1 → v3 (PLAN §7.9 — bezeztrátová, novější data mají přednost)]');
+sandbox.localStorage.clear();
+sandbox.localStorage.setItem('blockflow_v1_player', 'První');
+sandbox.localStorage.setItem('blockflow_v1_ws_m03', JSON.stringify({ blocks: [], arrows: [] }));
+const am = makeApp(App);
+const moved = am.migrateLegacyKeys();
+check('migrace přesunula v1 klíče', moved === 2, 'moved=' + moved);
+check('player migrován na v2', sandbox.localStorage.getItem('blockflow_v2_player') === 'První');
+check('plocha m03 migrována na v3', sandbox.localStorage.getItem('blockflow_v3_ws_m03') !== null);
+sandbox.localStorage.setItem('blockflow_v1_player', 'Starší');
+sandbox.localStorage.setItem('blockflow_v2_player', 'Novější');
+const moved2 = am.migrateLegacyKeys();
+check('novější data mají přednost', sandbox.localStorage.getItem('blockflow_v2_player') === 'Novější' && moved2 === 0);
+
 console.log('\n[F4 export bez jména → null, savedAt se mění]');
 const anon = makeApp(App);
 Game.playerName = '';
@@ -124,6 +138,7 @@ const s1 = anon.buildSnapshot();
 check('jméno = null', s1.playerName === null);
 Game.playerName = null;
 Game.save();
+const t0 = Date.now(); while (Date.now() - t0 < 5) {}
 const s2 = anon.buildSnapshot();
 check('jméno i po defaultu = null', s2.playerName === null);
 check('savedAt se aktualizuje (nový čas)', s2.savedAt !== s1.savedAt && s2.savedAt >= s1.savedAt);

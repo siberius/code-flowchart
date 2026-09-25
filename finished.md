@@ -2,6 +2,44 @@
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
+## 2026-09-25 — F4: restart mise + export/import JSON (úplný snímek) + migrace v1→v3 (nezakomitováno)
+
+- **Restart mise** (`PLAN.md` §7.9, §7.10, §16): tlačítko **↻ RESTART MISE** v level
+  modalu (`promptMissionRestart`, potvrzovací modal s textem „Vrátit tuto misi na začátek?
+  Rozpracované řešení této mise bude nahrazeno."); `restartMission(id)` smaže **jen**
+  `blockflow_v3_ws_<id>` aktuální mise, scaffold se postaví znovu (bloky bez spojů),
+  pokus je nový (`levelFailed=false`, `lastSimStatus='untested'`) a řešení se znovu
+  ověří (`runCheck(true)`); historie dokončení i značky (Zprovozněno/Ověřeno/Upraveno)
+  zůstávají; jiné mise i SPACE plochy se restartu nedotýkají.
+- **Export JSON = úplný snímek** (`buildSnapshot`): `schemaVersion: 3`, `contentVersion`,
+  `savedAt` ISO 8601 + `savedTimeZone`, jméno nebo `null`, `activeContext`
+  (mode/workspace/level), `missions`, `workspaces` (všechny sloty), `history.certificates`,
+  `game.xp`; `saveProgress()` před exportem uloží poslední editaci; výchozí název
+  `hefaistos-<profil>-postup-<datum>.json`; stahuje se jen vyžádáním (žádný auto-download).
+- **Nabídka stažení po splnění mise:** `result-save-btn`/`result-offer-text` v výsledkovém
+  modalu se ukáže **jen při prvním přechodu pokusu do dokončeného stavu** (`res.firstTime`);
+  opakovaný úspěch nenabízí nic a nenásobí odměny (`completeLevel` tvoří certifikát a XP
+  jen při `firstTime`).
+- **Import JSON:** `parseImportData` rozliší full/legacy/invalid/diagram; `applySnapshot`
+  nahrazuje až po potvrzení v novém `#import-review-modal` (⭳ NEJPRVE EXPORT / NAHRADIT /
+  Zrušit), vrací počty obnovených ploch/misí, obnovuje jméno, profil, XP, certifikáty
+  a aktivní kontext (aktivní level se znovu otevře zadáním, aktivní SPACE se otevře);
+  neplatný soubor práci nepoškodí; starý v2 balík ploch (`{app:'blockflow-workspaces'}`)
+  se načte jako diagramy s varováním.
+- **Migrace klíčů v1→v3** (`migrateLegacyKeys`, volá se v `init()`): kopie
+  `blockflow_v1_player/progress/profile/active`→v2/v3 a `blockflow_v1_ws_<slot>`→
+  `blockflow_v3_ws_<slot>`, bezeztrátová, novější data mají přednost (přeskočí existující
+  cíl); splňuje `PLAN.md` §7.9.
+- **Robustnost pro headless testy:** guardy `fitToScreen` (null `canvasWrap`) a
+  `renderArrows` (null `arrowsSvg`).
+- **Testy:** `flow_storage_tests.js` +20 (F4 restart, snapshot, round-trip, invalid,
+  legacy, migrace v1→v3), `flow_smoke_tests.js` +18 (F4 restart přes UI, nabídka stažení
+  jen při prvním splnění, název exportu, přehled importu), `flow_test_utils.js` `makeApp`
+  přidává override `toast`; sady `flow_game_tests.js` aktualizovány na certifikát bez
+  zdvojení (90 OK).
+- **Ověření:** syntax OK · flow_tests 26 · flow_check 70 · flow_game 90 · flow_storage 55 ·
+  flow_ui 6 · flow_smoke 111 (celkem **358** kontrol, 0 FAIL).
+
 ## 2026-09-25 — F1: datový model m01–m08 + profily H/E_J, sloty misí, značky (nezakomitováno)
 
 - **Migrace úplně dokončena:** zrušeny bloky `SCAFFOLDS`, `SOLUTIONS`, `NARRATIVES`

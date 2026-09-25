@@ -75,13 +75,17 @@ Pro vzdělávací obsah navíc: `md-skills/vzdelavaci-metodiky.md` (RVP/ŠVP, CZ
   - `node flow_tests.js` — jádro: parser, VÝSTUP `{var}`, literály v uvozovkách, porty ANO/NE/TĚLO/KONEC,
     runaway smyčka, bezpečnost konzole/RAM.
   - `node flow_check_tests.js` (F2) — Checker: evaluátor podmínek, `runCheckVector` (události/`counts`/`requireLoop`/`maxOps`, vyčerpání zásoby vstupů, povinné dosažení KONCE, poznámka v toku), mapování literálů/var.
-  - `node flow_storage_tests.js` — persistence (save/load workspace), migrace v1→v3, okrajové stavy.
+  - `node flow_storage_tests.js` (F4) — persistence (save/load workspace), migrace klíčů v1→v3,
+    restart mise (jen aktuální mise, historie zůstává), export = úplný snímek (schemaVersion/savedAt/jméno‑null),
+    import full/legacy/invalid (round-trip, neplatný soubor nepoškodí), okrajové stavy.
   - `node flow_ui_tests.js` — viewport, responzivní breakpoint, tablet porty bez hoveru.
   - `node flow_game_tests.js` (F1) — herní vrstva: `MISSIONS` data (8× H m01–m08 + 6× E_J e1–e6), jméno (dobrovolné), XP bonusy,
-    značky Zprovozněno→Ověřeno→Upraveno, `completeLevel` + certifikát, profily, persistence, restart mise, `SAMPLES`.
-  - `node flow_smoke_tests.js` (F1) — UI smoke: `App.init()` + HUD/mise/jméno/restart
+    značky Zprovozněno→Ověřeno→Upraveno, `completeLevel` + certifikát (bez zdvojení odměn), profily, persistence, restart mise, `SAMPLES`.
+  - `node flow_smoke_tests.js` (F1/F4) — UI smoke: `App.init()` + HUD/mise/jméno/restart
     nad bohatým DOM mockem, 19 ploch (5× SPACE + 14 misí = sloty m01..e6), menu ukázek + `loadSample`,
-    story v modalu mise, volitelné jméno (přeskočit), `onLevelSuccess` (značky do menu), herní confirm modal.
+    story v modalu mise, volitelné jméno (přeskočit), `onLevelSuccess` (značky do menu), herní confirm modal,
+    F4 restart přes UI (potvrzený modal), nabídka stažení JSON (jen při prvním přechodu do dokončeného stavu),
+    přehled importu (open/cancel, pendingImportSnapshot).
   - Sdílený `flow_test_utils.js` (načtení `App` + `Game` + `MISSIONS` + `SAMPLES` z inline `<script>` v Node).
   - **Dev cheat:** `Ctrl+Alt+C` s aktivním CapsLockem v MISE vyřeší aktuální
     level krok za krokem ze vzorového řešení (per-mise `solution` v `MISSIONS`); jen pro testování.

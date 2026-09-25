@@ -315,5 +315,57 @@ check('dokončena mise m03 (podle plochy)', Game.isLevelDone('m03'), 'levels=' +
 check('mise m01 dokončena nebyla', !Game.isLevelDone('m01'));
 App.closeLevelResult();
 
+console.log('\n[F4 restart mise přes UI — potvrzený modal, obnova jen aktuální mise]');
+Game.playerName = 'Operátor';
+App.switchWorkspace('m01');
+App.buildWorkspaceDefault('m01');
+App.saveWorkspace('m01');
+const m02WsBeforeRestart = localStorage.getItem('blockflow_v3_ws_m02');
+Game.levels = { m01: { status: 'done', stars: 3, bestXp: 145, tag: 'overeno', attempts: 1 } };
+Game.setTag('m01', Game.TAGS.ZPROVOZNENO);
+const wsM01Before = localStorage.getItem('blockflow_v3_ws_m01');
+check('plocha m01 připravena (scaffold)', App.blocks.length === 7, 'bloky=' + App.blocks.length);
+App.promptMissionRestart();
+check('restart otevřel potvrzení', App.dom.confirmModal.classList.contains('show'));
+check('potvrzení má text §7.10', String(App.dom.confirmText.innerHTML).indexOf('Vrátit tuto misi na začátek') !== -1);
+App.closeConfirm();
+check('zrušený restart nic nezměnil', localStorage.getItem('blockflow_v3_ws_m01') === wsM01Before);
+check('zrušený restart nesmazal plochu m01', App.blocks.length > 0, 'bloky=' + App.blocks.length);
+App.promptMissionRestart();
+App.confirmYes();
+check('potvrzený restart obnovil scaffold m01', App.blocks.length === 7 && App.arrows.length === 0, 'bloky=' + App.blocks.length + ' šipky=' + App.arrows.length);
+check('jiná mise se restartu nedotkla', localStorage.getItem('blockflow_v3_ws_m02') === m02WsBeforeRestart);
+check('historie mise zůstává', Game.isLevelDone('m01') && Game.levels.m01.tag === 'overeno');
+check('jmený modal se při restartu neotevřel', !App.dom.nameModal.classList.contains('show'));
+
+console.log('\n[F4 nabídka stažení JSON — jen při přechodu do dokončeného stavu]');
+Game.reset();
+Game.playerName = 'Operátor';
+App.switchWorkspace('m03');
+App.activeWorkspace = 'm03';
+App.activeLevel = 'm03';
+App.levelHintUsed = false;
+App.levelFailed = false;
+Game.levels = {};
+Game.certificates = [];
+Game.xp = 0;
+App.blocks = [];
+App.onLevelSuccess();
+check('výsledkový modal otevřen', App.dom.levelResultModal.classList.contains('show'));
+check('první splnění ukazuje nabídku stažení', App.dom.resultSaveBtn.style.display === 'block' && App.dom.resultOfferText.style.display === 'block');
+check('další úspěšný test nabídku neotevře', (App.onLevelSuccess(), App.dom.resultSaveBtn.style.display === 'none' && App.dom.resultOfferText.style.display === 'none'));
+App.closeLevelResult();
+
+console.log('\n[F4 export/import JSON — názvy souborů a přehled importu]');
+App.setProfile('H');
+check('doporučený název začíná hefaistos-H-postup-', App.suggestedSnapshotName().startsWith('hefaistos-H-postup-'));
+check('doporučený název končí .json', App.suggestedSnapshotName().endsWith('.json'));
+App.openImportReview({ workspaces: { m01: {}, space2: {} }, missions: { m01: { status: 'done' } } });
+check('přehled importu otevřen', document.getElementById('import-review-modal').classList.contains('show'));
+check('přehled má počet ploch', String(document.getElementById('import-review-text').innerHTML).indexOf('2 ploch') !== -1);
+App.cancelImportReview();
+check('přehled importu zavřen', !document.getElementById('import-review-modal').classList.contains('show'));
+check('pendingImportSnapshot zrušen', App.pendingImportSnapshot === null);
+
 console.log(`\nVýsledek: ${pass} OK, ${fail} FAIL`);
 process.exit(fail === 0 ? 0 : 1);

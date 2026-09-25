@@ -1183,7 +1183,7 @@
                         <h4>Plochy a ukázky</h4>
                         <div class="help-item"><strong>MISE</strong> — úlohy; <strong>SPACE 1</strong> — demo „sbírání jablek"; <strong>SPACE 2–5</strong> — volné plochy pro vlastní tvorbu.</div>
                         <div class="help-item"><strong>Ukázky</strong> v menu (Ahoj světe, Obsah kruhu, Součet 1..N, FizzBuzz) načtou hotový diagram do plochy — můžeš si je prohlédnout a upravit.</div>
-                        <div class="help-item"><strong>IMPORT / EXPORT</strong> (JSON) uloží a načte všechny plochy; <strong>SVG</strong> exportuje obrázek diagramu.</div>
+                        <div class="help-item"><strong>IMPORT / EXPORT</strong> (JSON) uloží a načte celý postup — mise, plochy i jméno; <strong>SVG</strong> exportuje obrázek diagramu.</div>
                     </div>
 
                     <div class="help-section">
@@ -2397,6 +2397,7 @@
                 }
                 
                 Game.load();
+                this.migrateLegacyKeys();
                 this.setProfile(localStorage.getItem('blockflow_v3_profile') || 'H');
                 this.activeWorkspace = localStorage.getItem('blockflow_v3_active_ws') || APPLES_SLOT;
                 this.cheatStep = 0;
@@ -3694,10 +3695,10 @@
                     const saved = localStorage.getItem(`blockflow_v3_ws_${slot}`);
                     if (saved) {
                         const parsed = JSON.parse(saved);
-                        this.blocks = parsed.blocks || []; 
-                        this.arrows = parsed.arrows || []; 
+                        this.blocks = parsed.blocks || [];
+                        this.arrows = parsed.arrows || [];
                         this.nextId = parsed.nextId || 1;
-                        
+
                         if (typeof parsed.vx === 'number') this.vx = parsed.vx;
                         if (typeof parsed.vy === 'number') this.vy = parsed.vy;
                         if (typeof parsed.vscale === 'number') this.vscale = parsed.vscale;
@@ -3705,6 +3706,29 @@
                     }
                 } catch(e) { console.error("Chyba načtení", e); }
                 return false;
+            },
+
+            migrateLegacyKeys() {
+                const map = {
+                    blockflow_v1_player: 'blockflow_v2_player',
+                    blockflow_v1_progress: 'blockflow_v2_progress',
+                    blockflow_v1_profile: 'blockflow_v3_profile',
+                    blockflow_v1_active: 'blockflow_v3_active_ws'
+                };
+                let moved = 0;
+                Object.keys(map).forEach(oldKey => {
+                    const raw = localStorage.getItem(oldKey);
+                    if (!raw) return;
+                    if (localStorage.getItem(map[oldKey])) return;
+                    try { localStorage.setItem(map[oldKey], raw); moved++; } catch (e) {}
+                });
+                this.workspaceSlots().forEach(slot => {
+                    const raw = localStorage.getItem('blockflow_v1_ws_' + slot);
+                    if (!raw) return;
+                    if (localStorage.getItem('blockflow_v3_ws_' + slot)) return;
+                    try { localStorage.setItem('blockflow_v3_ws_' + slot, raw); moved++; } catch (e) {}
+                });
+                return moved;
             },
 
             deleteBlock(id) {

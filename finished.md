@@ -1,6 +1,26 @@
-# finished.md — CodeFlowChart EDU (code-flowchart)
+# finished.md — CodeFlowChart HEFAISTOS (code-flowchart)
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
+
+## 2026-09-25 — PLAN.md V2.2: integrace zadání učebních oborů (H/E_J)
+
+- **Sloučeno** závazné zadání učebních oborů do `PLAN.md` (verze 2.2): RVP cíl
+  **pouze H (8 misí m01–m08) + E/J (6 misí 1–6 bez mezer)**, gymnázia/maturitní obory mimo cíl.
+- **§0** tabulka rozhodnutí, **§1** story HEFAISTOS (servisní loď + robot ŠROUB), **§2**
+  architektura + `MissionState` (openMission/openAssignment/initializeMission/restartMission/
+  saveProgress/exportProgress/importProgress), **§3** mise m01–m08 + schéma, **§4** vzor m04,
+  **§5** Checker (události, jeden engine, VOLÁNÍ mimo povinnou cestu, efektivita = operace),
+  **§6** Kompas/Ladička (názorná ukázka po neúspěchu povolena), **§7–§10** režimy/plochy,
+  restart mise, export JSON úplný snímek, certifikát fakultativní, textová politika HEFAISTOS.
+- **§11** RVP SOV H (příloha 2b) + E/J (příloha 1b) + podkladové odkazy; **§12.2** testovací sada
+  aktualizovaná (flow_check, restart mise, profily, self-test m01–m08); **§13** fáze F1–F9 dle nové
+  specifikace; **§14** DoD + **§14.1 všech 19 akceptačních scénářů** ze zadání; **§15** rozhodnutí
+  (jméno dobrovolné, restart mise, auto-reset 3 h zrušen, bez NARRATIVES toggle, značky
+  Zprovozněno/Ověřeno/Upraveno); **§16** kompletní obsah m01–m08 + varianty E/J + dobrovolná dílna.
+- **Smazán** redundantní `code-flowchart-zadani-ucebni-obory.md` (obsah plně integrován do PLAN.md).
+- **AGENTS.md** aktualizován na nové zadání (profily H/E_J, 8+6 misí, restart mise, bez 3 h
+  auto-resetu, bez NARRATIVES toggle, klíče ploch v2/v3).
+- Bez změny kódu hry — čeká na schválení plánu V2.2 a fází F3+.
 
 ## 2026-09-24 — F1: dokončení mise, modaly, příběh stupně, RVP SOŠ (nezakomitováno)
 

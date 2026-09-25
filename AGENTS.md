@@ -1,9 +1,11 @@
-# CodeFlowChart EDU (code-flowchart) — výuková hra (algoritmizace, vývojové diagramy)
+# CodeFlowChart HEFAISTOS (code-flowchart) — výuková hra (algoritmizace, vývojové diagramy)
 
 Výukový editor a simulátor vývojových diagramů v jediném `code-flowchart.html`
-(SPA, žádný build) pro žáky 15–19 let. Hra učí základní algoritmy zábavnou
-formou (cyberpunková linka „Operátor déčku"). Řídící dokument přestavby:
-`PLAN.md` (verze 2.1 — analýza, návrh, obsah 6 stupňů, revize funkčnosti F0–F9).
+(SPA, žádný build) pro žáky 15–19 let (učební obory H + podpůrná cesta E/J).
+Hra učí základní algoritmy zábavnou formou (servisní loď HEFAISTOS, robot ŠROUB).
+Řídící dokument přestavby:
+`PLAN.md` (verze 2.2 — analýza, návrh, obsah misí m01–m08 + variant E/J,
+revize funkčnosti F0–F9).
 
 ## Nadřazená pravidla — POVINNÉ ČTENÍ
 Žádná pravidla v tomto souboru NEJSOU náhradou za nadřazené dokumenty.
@@ -32,25 +34,31 @@ Pro vzdělávací obsah navíc: `md-skills/vzdelavaci-metodiky.md` (RVP/ŠVP, CZ
 ### Železná pravidla hry (z `PLAN.md`)
 1. **SPA beze změny** — vše zůstává v jednom HTML souboru.
 2. **Nic se neodstraňuje bez náhrady** — každý efekt/funkce zůstává stejně
-   dobrý nebo lepší (`PLAN.md` §1.3).
+   dobrý nebo lepší (`PLAN.md` §1.3); kód se nemění, dokud zadavatel neschválí fázi.
 3. **Žák se vždy dobere k řešení sám** — Kompas (4 stupně) + Ladička;
-   vzor až po 2 pokusech, bez zásahu učitele.
-4. **Pouze pozitivní motivace** — nápověda nic nestojí, XP se nikdy neodečítá.
-5. **Adiktivita = kognitivní přívětivost** — hra láká dokončit, nestresuje.
+   po neúspěšných pokusech smí dostat názornou ukázku (žádná tvrdá blokáda „nikdy neprozradit").
+4. **Pouze pozitivní motivace** — nápověda nic nestojí, XP se nikdy neodečítá;
+   značky **Zprovozněno → Ověřeno → Upraveno** odpovídají skutečné činnosti.
+5. **Jeden vykonávací model** — animovaný běh = krokování = automatické testy;
+   a **adiktivita = kognitivní přívětivost** (hra láká dokončit, nestresuje).
 
 ### Rozhodnutí zadavatele (závazná — `PLAN.md` §0 a §15)
-- **Jeden HTML soubor**; learning mode vyžaduje jméno žáka (uložené 1× na
-  zařízení, 1–30 znaků); volný režim (ukázka jablek) jméno nevyžaduje.
-- **6 otevřených stupňů** (nutné minimum RVP G + SOŠ neprogramátorské obory), level ≤ 45 min
-  po zaučení; 5–10 bloků, 2–3 testovací vektory, cíl ≤ 15 slov.
-- **Po 3 h aktivní hry auto-reset** (smaže vše včetně jména, s varováním
-  v 02:30); **červené RESET** (potvrzené) dostupné všude i na PC.
-- **Bez odznaků** — jen XP + hvězdy + hodnost; certifikát SVG po každém stupni
-  (jméno, datum, čas, XP, hvězdy, hodnost).
-- Oba režimy simulace: ruční „žák = procesor" i AUTO-kontrola (skryté vektory).
-- **Narativní témata:** výchozí `streamer` (Gen Alfa), přepínatelné na `operator`
-  (původní sklad, pro obory E) ikonou v horním panelu (`NARRATIVES`, `toggleNarrative`);
-  mění jen texty/názvy/hodnosti, algoritmus úloh zůstává. Program startuje na SPACE 1.
+- **Jeden HTML soubor**; learning mode (MISE) má **jméno dobrovolné** (1–30 znaků,
+  `null` v exportu neblokuje); volný režim (SPACE 1 – jablka + SPACE 2–5) jméno nevyžaduje.
+- **8 misí H (m01–m08) + 6 navazujících misí E/J (1–6 bez mezer, interní ID stabilní)**;
+  každá mise ≤ 45 min po zaučení; 5–8 aktivních bloků, 2–3 testovací vektory, cíl ≤ 15 slov.
+- **Restart mise (potvrzený)** jen pro aktuální misi/profil; kliknutí na level vždy otevře
+  **modal zadání** a nikdy nepřepíše rozpracovanou práci; pokrok mezi hodinami se zachovává
+  (localStorage + export JSON). **Bez auto-resetu po 3 h**; červený RESET jen jako samostatné
+  celkové vymazání.
+- **Export JSON = úplný snímek** (všechny mise + všechny SPACE + aktivní kontext + jméno/`null`
+  + `savedAt` datum/čas); po splnění mise nabídka stažení; opakovaný test nenásobí odměny ani nabídku.
+- **Bez odznaků** — jen značky Zprovozněno/Ověřeno/Upraveno (+ volitelně XP/hvězdy/hodnost
+  vázané na doložené dokončení); certifikát SVG **fakultativní** (jméno, datum, čas).
+- Oba režimy simulace: ruční „žák = procesor" i AUTO-kontrola (skryté vektory) — **jeden engine**.
+- **Profil H vs E_J:** přepnutí neoznačuje profil jako horší a **nepřepisuje práci**; nezávisle
+  se mění pouze prezentace. **Bez NARRATIVES toggle** (dualita streamer/operator zrušena,
+  `PLAN.md` §16). Program startuje na SPACE 1.
 
 ### Konvence a mantinely
 - UI texty a komentáře v aplikaci jsou česky; kód, identifikátory a názvy
@@ -64,19 +72,20 @@ Pro vzdělávací obsah navíc: `md-skills/vzdelavaci-metodiky.md` (RVP/ŠVP, CZ
 - Hra běží offline přímo z `code-flowchart.html` (SPA, bez build kroku).
 - **Revize funkčnosti (TACHI-style, `PLAN.md` §12) — zavedeno ve F0:**
   - `node syntax_check.js` — syntaxe inline `<script>` bloků.
-  - `node flow_tests.js` — jádro: parser, VÝSTUP `{var}`, porty ANO/NE/TĚLO/KONEC,
+  - `node flow_tests.js` — jádro: parser, VÝSTUP `{var}`, literály v uvozovkách, porty ANO/NE/TĚLO/KONEC,
     runaway smyčka, bezpečnost konzole/RAM.
-  - `node flow_storage_tests.js` — persistence (save/load workspace), okrajové stavy.
+  - `node flow_check_tests.js` (F2) — Checker: evaluátor podmínek, `runCheckVector`, mapování literálů/var.
+  - `node flow_storage_tests.js` — persistence (save/load workspace), migrace v1→v3, okrajové stavy.
   - `node flow_ui_tests.js` — viewport, responzivní breakpoint, tablet porty bez hoveru.
-  - `node flow_game_tests.js` (F1) — herní vrstva: `LEVELS` data, jméno, XP bonusy,
-    hvězdy, hodnosti, `completeLevel` + certifikát, persistence, reset, `SAMPLES`.
-  - `node flow_smoke_tests.js` (F1) — UI smoke: `App.init()` + HUD/kampaň/jméno/reset
+  - `node flow_game_tests.js` (F1) — herní vrstva: `LEVELS` data (m1–m8/profily), jméno, XP bonusy,
+    značky, `completeLevel` + certifikát, persistence, restart mise, `SAMPLES`.
+  - `node flow_smoke_tests.js` (F1) — UI smoke: `App.init()` + HUD/mise/jméno/restart
     nad bohatým DOM mockem, menu ukázek + `loadSample`, `story` v modalu mise,
-    `onLevelSuccess` (hvězdy do menu), herní confirm modal.
+    `onLevelSuccess` (značky do menu), herní confirm modal.
   - Sdílený `flow_test_utils.js` (načtení `App` + `Game` + `LEVELS` + `SAMPLES` z inline `<script>` v Node).
   - **Dev cheat:** `Ctrl+Alt+C` s aktivním CapsLockem v MISE vyřeší aktuální
     level krok za krokem ze vzorového řešení (`SOLUTIONS`); jen pro testování.
   - Plánováno (F7/F9): plný browser matrix 1440/1024/390/320 px, `prefers-reduced-motion`,
-    self-test všech 6 stupňů (až vzniknou).
+    self-test misí m01–m08 pro oba profily (až vzniknou).
 - Po každé změně ověřit přiměřeně riziku (MASTER „Git, verification and completion");
   dokončené úkoly eviduj v `finished.md` (formát dle MASTER completion + `governance/PROJECT-OPERATIONS.md` changelog).

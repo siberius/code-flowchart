@@ -74,9 +74,9 @@ CÍL (1 věta, ≤ 15 slov) → SESTAV diagram → SPUSTIT / KROKOVAT / OVĚŘIT
 ## 2. Dvouvrstvá architektura (uvnitř jednoho HTML)
 
 **Vrstva 1 — Studio (`App`):** editor + simulace + linter + export (dnešní kód).
-**Vrstva 2 — Hra (`Game`):** learning mode, jméno (nepovinné), mise, značky/odměny, certifikáty, Kompas, Ladička, session hodiny.
+**Vrstva 2 — Hra (`Game`):** learning mode, jméno (nepovinné), mise, značky/odměny, certifikáty, Kompas, Ladička, sledování času mise (≤ 45 min, nedestruktivní).
 
-> **V2.2:** dvouvrstvá architektura zůstává; místo „stupňů" modelujeme **profily a mise** (§12):
+> **V2.2:** dvouvrstvá architektura zůstává; místo „stupňů" modelujeme **profily a mise** (§3):
 > `profileId` (`H` / `E_J`) × `missionId` (`m01`–`m08`). Přidává se centrální stav mise:
 > `openMission`, `openAssignment`, `initializeMission`, `restartMission`, `saveProgress`,
 > `exportProgress`, `importProgress` — oddělené operace, `openAssignment` nikdy nezapisuje
@@ -85,7 +85,7 @@ CÍL (1 věta, ≤ 15 slov) → SESTAV diagram → SPUSTIT / KROKOVAT / OVĚŘIT
 Datové klíče `blockflow_v2_player` / `blockflow_v2_progress` a `blockflow_v3_ws_*` (plochy) v `localStorage` (migrace z `v1_1` bezeztrátová). Žádný server, žádný tracking.
 
 ```
-Game          – stav hráče, jméno (nepovinné), značky/XP, hodnost, stav misí, session hodiny
+Game          – stav hráče, jméno (nepovinné), značky/XP, hodnost, stav misí, čas mise (≤ 45 min)
 Data          – profily H / E_J + mise m01–m08 (mission objects, testy, scaffolding) + jablka demo
 MissionState  – openMission / openAssignment / initializeMission / restartMission / saveProgress / exportProgress / importProgress
 Checker       – auto-kontrola: evaluátor podmínek + tester událostí a výsledků (jeden engine jako simulace)
@@ -140,7 +140,7 @@ Každá mise je navržena na **1 vyučovací hodinu (≤ 45 min po zaučení)**:
 ```
 
 > **Obsah misí:** kompletní specifikace m01–m08 vč. variant E/J je v **§16**. Stupeň s podmíněným
-> cyklem a počítadly odpovídá v novém členění mísi **m05 „Tři dobré kusy"** (viz §16.5).
+> cyklem a počítadly odpovídá v novém členění misi **m05 „Tři dobré kusy"** (viz §16 m05).
 
 ---
 
@@ -242,7 +242,7 @@ a m05 (podmíněný cyklus s počítadly). Kompletní specifikace všech misí j
   - *rozpracovaná/dokončená:* načte se uložený stav beze změny; výchozí sestava se nevytváří znovu;
   - *restart* je samostatná výslovná akce (§7.10).
 - **Změny v modalu** (otevření/zavření/přepnutí mise/obnovení stránky) **nikdy nemění bloky, propojení, vstupy, fázi, historii pomoci ani záznam dokončení**.
-- **Klíče ploch (v3):** `blockflow_v3_player`/`blockflow_v3_progress` + `blockflow_v3_ws_<slot>`; aktivní kontext `blockflow_v3_active_ws`. Migrace v1→v3 = F4. Po změně scaffoldu se načte čistý stav jen pro nově založené mise.
+- **Klíče ploch:** hráč/pokrok `blockflow_v2_player`/`blockflow_v2_progress`, plochy `blockflow_v3_ws_<slot>` (mise i SPACE), aktivní `blockflow_v3_active_ws`. Migrace v1→v2/v3 = F4. Po změně scaffoldu se načte čistý stav jen pro nově založené mise.
 - **Export/import (JSON):** jediná dvojice „Export JSON" / „Import JSON" v menu souborových operací (žádná výrazná dvojice tlačítek na ploše). **Export = úplný snapshot celé aplikace** — všechny mise, všechny SPACE, aktivní kontext, jméno (`null`), datum+čas (`savedAt` ISO 8601 + `savedTimeZone`), verze formátu, historie a platnost ověření (podrobnosti §8).
 - **Cheat (jen pro vývoj/testování):** `Ctrl+Alt+C` s aktivním CapsLockem krok za krokem ze vzorového řešení; další stisk vyčistí.
 
@@ -364,6 +364,15 @@ diagram; proměnné + vstup/výstup; větvení; cykly (fixní `OPAKUJ` i podmín
 (jádro algoritmizace bez specializačního programování). Ukázky (`SAMPLES`) slouží jako
 „read + remix" (Bloom: porozumění → aplikace), m08 + volné plochy jako tvorba (Bloom: tvorba).
 
+**Podkladové odkazy:**
+- [RVP SOV – nové pojetí ICT, H, příloha 2b](https://digitalizace.rvp.cz/files/priloha-2b-ict-sov-h.pdf)
+- [RVP SOV – nové pojetí ICT, E/J, příloha 1b](https://digitalizace.rvp.cz/files/priloha-1b-ict-sov-e-j.pdf)
+- [NPI: změny informatického vzdělávání v SOV](https://digitalizace.rvp.cz/sov/co-se-meni)
+- Pedagogická opora: `md-skills/vzdelavaci-metodiky.md` (selektivně použito dle zadání).
+
+Konkrétní mise, počty hodin, příběh a technické řešení jsou navrženou pedagogickou realizací,
+nikoli doslovnými požadavky RVP; při konečném zařazení učitel ověří vazbu na konkrétní obor a ŠVP.
+
 ---
 
 ## 12. Revize funkčnosti algoritmů a procesů (TACHI-style F0)
@@ -381,7 +390,7 @@ diagram; proměnné + vstup/výstup; větvení; cykly (fixní `OPAKUJ` i podmín
 | **Token animace / stopa kroků** | trasa, speed 1x/2x/MAX, abort | vizuální kontrola + hodinky |
 | **Linter** | `=` v podmínce, poměr závorek, `+ =` apod. | 6 chyb + 6 čistých |
 | **Undo/redo / historie** | 50 kroků, edge „index na konci" | 30-akční scénář |
-| **Persistence** | migrace `v1_1`→`v2`, auto-save 3 s, WS přepínání | testy ukládání + restart |
+| **Persistence** | migrace `v1_1`→`v2`→`v3`, auto-save, přepínání mise/plochy, restart mise, export/import JSON (úplný snímek) | testy ukládání + restart + JSON round-trip |
 | **Import/export** | JSON round-trip, SVG (s/v konzolí), clipboard Word/PPT | round-trip test + vizuál |
 | **Bezpečnost** | XSS přes label/RAM/konzoli; escaping všech `innerHTML` | security test (typicky injekce do bloku a proměnné) |
 | **Responzivita** | 1440 / 1024 / 390 / 320 px; porty bez hoveru; touch ≥44 px | browser matrix |
@@ -410,7 +419,7 @@ diagram; proměnné + vstup/výstup; větvení; cykly (fixní `OPAKUJ` i podmín
 | **F1** | `Game` + jméno (volitelné) + `Data` (profily H/E_J + mise m01–m08) + `MissionState` a režimy/plochy + modál zadání + scaffolding loader + značky (pozitivní) | vstup do mise vykreslí modál + scaffolding; otevření/zavření modalu nemění práci |
 | **F2** | `Checker` (evaluace + tester + sjednocený engine, litál v uvozovkách) — režim OVĚŘIT | vektory m01–m08 (i jablka A/B/C) projdou; m04 neprojde bez provedení cyklu |
 | **F3** | Kompas (zdarma) + Ladička + názorná ukázka po neúspěchu (ne tvrdá blokáda) | scénář „žák ztracen → po ukázce sám pokračuje a dokončí" |
-| **F4** | `MissionState` + restart mise (potvrzený) + auto-save + export/import JSON (úplný snímek) | akceptační scénáře §13 zadání (kliknutí nic nepřepíše, restart jen mise, JSON round-trip vč. SPACE) |
+| **F4** | `MissionState` + restart mise (potvrzený) + auto-save + export/import JSON (úplný snímek) | akceptační scénáře §14 (kliknutí nic nepřepíše, restart jen mise, JSON round-trip vč. SPACE) |
 | **F5** | Mise m01–m04 obsahu (zadání, testy, kompas; E/J varianty m03 s oporou) | každá mise projde svými vektory v obou profilech |
 | **F6** | Mise m05–m08 (H) + podpůrné varianty E/J (m06, m08 menší rozsah) | self-test všech misí obou profilů |
 | **F7** | UI tablet: porty, šipky ANO/NE, stopa kroků, minimapa, topbar režimy | 768 i 1280 px |
@@ -436,6 +445,28 @@ Každá fáze končí **definovaným autotestem**, ne „to běží".
 11. Nic ze dnešní funkčnosti nezmizelo (editor, simulace, exporty, undo/redo, jablka, SPACE).
 12. Texty ≤ 15 slov; „nečíst, klikat."
 13. Plugin F0: testy green (syntax, jádro, checker, úložiště, hra, smoke, UI matrix, security).
+
+### 14.1 Akceptační scénáře (v plném znění ze zadání)
+
+1. H zobrazuje 8 misí, E/J 6 souvisle očíslovaných misí.
+2. Kliknutí na libovolný level vždy otevře modal zadání.
+3. Žák přesune blok, změní hodnotu a propojení; po opětovném otevření stejného levelu vše zůstane zachované.
+4. Přepnutí do jiného levelu a zpět, obnovení stránky i změna příběhu nezničí práci.
+5. I úmyslně vyprázdněná plocha zůstane po návratu prázdná; šablona se nevytvoří znovu podle počtu bloků.
+6. Zrušený restart nic nezmění. Potvrzený restart obnoví pouze aktuální misi a profil.
+7. Po splnění celého levelu se nabídne stažení JSON. Volba „Teď ne" umožní pokračovat.
+8. Opakovaný úspěšný test bez změny stavu nevyvolá další exportní modal ani další odměnu.
+9. Rozpracovaný level lze exportovat z menu a po importu na jiném počítači obnovit včetně fáze a propojení.
+10. Neplatný nebo nekompatibilní JSON nepoškodí aktuální práci; nahrazení existující práce validním importem je výslovné.
+11. Cyklová úloha neprojde pouhým vypsáním očekávané věty bez provedení výrobních operací.
+12. Krokování a automatické ověření dávají pro stejné vstupy stejné výsledky.
+13. Alternativní správné řešení projde, pokud dodržuje uvedená omezení.
+14. Použití nápovědy ani více pokusů nesnižuje dosažitelné hodnocení.
+15. V pilotní hodině žák zvládne ovládání bez dlouhého výkladu; čas tráví řešením postupu, nikoli hledáním bloků nebo opravami syntaxe.
+16. Žák upraví dva levely a dvě různé SPACE, potom exportuje z levelu: po importu jsou všechny čtyři úpravy zachované a aktivní je správný level.
+17. Stejný úplný export provedený ze SPACE zachová levely i ostatní SPACE a po importu otevře původně aktivní SPACE.
+18. Export obsahuje poslední editaci bez nutnosti předem přepnout plochu, jméno hráče nebo `null` a platné datum i čas uložení.
+19. Druhý export aktualizuje `savedAt`; samotný import původní čas uložení nezmění. Uložení bez jména funguje bez dodatečného dotazu.
 
 ---
 
@@ -478,114 +509,183 @@ Každá fáze končí **definovaným autotestem**, ne „to běží".
 
 ---
 
-### 16.1 Stupeň 1 — „Průvodce skladem" (sekvence)
+### m01 — Probuď dílnu
 
-**Typ:** sestav · **Bloom:** aplikace · **Učivo:** sekvence, pořadí kroků, START/AKCE/KONEC · **RVP:** zápis algoritmu diagramem.
+**Typ:** sestav · **Bloom:** aplikace · **Učivo:** posloupnost, pořadí kroků, čtení postupu · **Profil:** H i E/J.
 
-- **Cíl:** „Veronika nezná sklad. Slož jí cestičku: 3 kroky v pořadí."
-- **Povolené bloky:** start, process, note, end.
-- **Scaffolding:** uprostřed START, pod ním KONEC, panel AKCE se 3 bloky navíc (smíchané pořadí) + 1 POZNÁMKA „Pořadí je důležité!".
-- **Požadovaná akce:** spojit 3 AKCE ve správném pořadí: `Otevři bránu` → `Vezmi bednu` → `Zavři bránu`.
-- **Test (1 vektor — ověřuje pořadí):**
-  ```
-  Vektor A: očekávaný sled = ["Otevři bránu","Vezmi bednu","Zavři bránu"]
-            → PASS jen při přesném pořadí
-  ```
-- **Kompas (≤40 slov):** Cíl: „Technik potřebuje vidět cestičku od STARTU do KONCE." → Háček: „Můžeš odejít ze skladu, aniž bys zavřel bránu?" → Vzor: vzorový diagram (START → 3× AKCE → KONEC) → Postup: „Krok 2: spoj AKCE pod sebe ve správném sledu."
-- **XP:** zaklad 100; bonusy dle §16.x.
+**Příběh:** Dílna je potmě. ŠROUB zapnul baterku a považuje problém za vyřešený.
 
----
-
-### 16.2 Stupeň 2 — „Pokladna" (vstup, výstup, proměnná)
-
-**Typ:** sestav · **Bloom:** aplikace · **Učivo:** proměnná, VSTUP/VÝSTUP · **RVP:** data, vstup/výstup.
-
-- **Cíl:** „Načti cenu a kusy. Vypiš mezisoučet."
-- **Povolené bloky:** start, io, process, note, end.
-- **Scaffolding:** START + VSTUP `cena` + VSTUP `kusy` + VÝSTUP (prázdné pole + POZNÁMKA „mezisoučet = cena × kusy").
-- **Úkoly:** (1) doplnit AKCE `mezisoucet = cena * kusy`, (2) VÝSTUP obsahuje `„Mezisoučet: {mezisoucet}"`.
-- **Test (3 vektory):**
-  ```
-  Vektor A: cena=15, kusy=3  → "Mezisoučet: 45"
-  Vektor B: cena=80, kusy=5  → "Mezisoučet: 400"
-  Vektor C: cena=12.5, kusy=4→ "Mezisoučet: 50"   (desetinný vstup — ověření parseru)
-  ```
-- **Kompas:** Cíl: „Mezisoučet vzniká z dvojice čísel." → Háček: „Vyhodí pokladna výsledek sám od sebe?" → Vzor: vzorový diagram s AKCE i VÝSTUP → Postup: „Doplň AKCE mezi vstupy a výstup."
-- **XP:** zaklad 120.
+- **Cíl:** „Sestav jednoznačné pořadí spuštění dílny." (≤ 15 slov)
+- **Povolené bloky:** start, process, io, note, end.
+- **Scaffolding:** kartičky START, „zapnout napájení", „diagnostika", „aktivace pracoviště", KONEC (rozhozené, propojení nesmí napovídat).
+- **Požadovaná akce:** určit nutnou návaznost a propojit tok; simulace postupně obnovuje dílnu.
+- **Test:** aktivace smí nastat až po úspěšném předchozím postupu; žák poté označí krok po diagnostice.
+- **Malá změna:** vložit kontrolu spojení před aktivaci.
+- **H:** opravit neurčitý pokyn „Počkej chvíli" na přesný, vykonatelný pokyn.
+- **E/J:** jen potřebné kartičky + možnost přehrát první dva kroky.
+- **Rozsah:** ~5–6 bloků včetně START a KONEC.
+- **Kompas:** Cíl: „Dílna se spouští v pevném sledu." → Háček: „Může se aktivovat pracoviště dřív než napájení?" → Vzor: START → zapnutí napájení → diagnostika → aktivace → KONEC → Postup: „Propoj kroky tak, aby každý navazoval na předchozí."
 
 ---
 
-### 16.3 Stupeň 3 — „Vstupenka 15+" (větvení)
+### m02 — CNC odmítá pracovat
 
-**Typ:** sestav + oprav · **Bloom:** aplikace → analýza · **Učivo:** větvení PODMÍNKA, kontrola · **RVP:** větvení, kontrola správnosti.
+**Typ:** sestav + oprav · **Bloom:** aplikace → analýza · **Učivo:** větvení PODMÍNKA, kontrola · **Profil:** H i E/J.
 
-- **Cíl:** „Načti věk. ANO=pusť, NE=vykašli se."
+**Příběh:** Kontrolka hlásí otevřený kryt. ŠROUB navrhuje přelepit kontrolku. Technik obnoví správné rozhodování.
+
+- **Cíl:** „Rozhodni podle vstupu `krytZavren`." (≤ 15 slov)
 - **Povolené bloky:** start, io, decision, process, note, end.
-- **Scaffolding:** START + VSTUP `vek` + PODMÍNKA (prázdná) + dvě větve s VÝSTUPY (prohozené! → oprava) + POZNÁMKA „Podmínka: vek >= 15".
-- **Zdrojový „bug":** VÝSTUP „Vstupenka NE" je na ANO větvi a naopak → žák musí podmínku/spojení opravit.
-- **Test (3 vektory):**
-  ```
-  Vektor A: vek=18 → "Vstupenka ANO"
-  Vektor B: vek=12 → "Vstupenka NE"
-  Vektor C: vek=15 → "Vstupenka ANO"   (hraniční hodnota — RVP preciznost)
-  ```
-- **Kompas:** Cíl: „Přesně 15 let je ‚dost' — kde to rozseknem?" → Háček: „Co se stane, když je 15 přesně?" → Vzor: diagram s `vek >= 15` → Postup: „Sprav obě větve pod PODMÍNKOU."
-- **XP:** zaklad 140.
+- **Scaffolding:** START → načti stav → podmínka → povolit výrobní simulaci / požádat o zavření krytu → KONEC.
+- **Testy:** otevřený a zavřený kryt; před spuštěním žák odhadne větev (hraniční chování `true`/`false`).
+- **Malá změna:** upravit stejný princip pro kontrolu přítomnosti materiálu; nespojovat hned obě podmínky.
+- **H:** nabídnout jednu alternativní chybnou podmínku (žák vybere správnou).
+- **E/J:** správná podmínka je připravená, žák připojuje větve.
+- **Rozsah:** ~6 bloků.
+- **Kompas:** Cíl: „Kryt zavřený = výroba, otevřený = zastavit." → Háček: „Co se stane s výrobou, když kryt dojde dovnitř?" → Vzor: podmínka `krytZavren == true` → ANO = výroba, NE = výzva → Postup: „Propoj větev ANO a NE pod PODMÍNKOU."
 
 ---
 
-### 16.4 Stupeň 4 — „Kontrola kvality" (podmíněný cyklus + počítadla) — **vzor §4, kompletní**
+### m03 — Vytiskni náhradní držák
 
-**Typ:** sestav · **Bloom:** aplikace → analýza · **Učivo:** cyklus s podmínkou, počítadla, větvení · **RVP:** cyklus (fixní i podmíněný), větvení.
+**Typ:** sestav · **Bloom:** aplikace · **Učivo:** proměnná, VSTUP, výpočet, VÝSTUP · **Profil:** H i E/J (s oporou).
 
-- **Cíl:** „Skenuj díly, dokud nemáš 2 dobré. Spočítej, kolik jsi jich prošel."
+**Příběh:** Při manévru proletěl klíč jídelnou. Posádka potřebuje držáky na nářadí.
+
+- **Cíl:** „Z počtu výrobků vypočítej spotřebu materiálu." (≤ 15 slov)
+- **Model:** jeden držák spotřebuje 20 g; tok načte počet, vypočítá součin a zobrazí výsledek.
+- **Povolené bloky:** start, io, process, note, end.
+- **Testy:** 1, 3 a 5 držáků → 20, 60 a 100 g (vč. desetinného/okrajového vstupu).
+- **Malá změna:** jiný model potřebuje 30 g na kus.
+- **H:** žák volí operaci a následně nahradí pevnou spotřebu vstupní hodnotou.
+- **E/J:** žák skládá výraz pomocí polí „počet × spotřeba jednoho kusu".
+- **Vizuální výstup:** ukazatel materiálu a číselná hodnota s jednotkou.
+- **Nezařazovat** teploty, nastavení sliceru ani další nesouvisející parametry.
+- **Rozsah:** ~5–6 bloků.
+- **Kompas:** Cíl: „Spotřeba roste s počtem kusů." → Háček: „Použiješ sčítání, nebo násobení?" → Vzor: AKCE `spotreba = pocet * 20` + VÝSTUP → Postup: „Načti počet, vynásob a vypiš s jednotkou."
+
+---
+
+### m04 — Vyrob sadu spojek
+
+**Typ:** sestav · **Bloom:** aplikace → analýza · **Učivo:** fixní cyklus (OPAKUJ), tělo cyklu · **Profil:** H i E/J.
+
+**Příběh:** Posádka potřebuje čtyři spojky. ŠROUB zkopíroval výrobní příkaz čtyřicetkrát „pro jistotu".
+
+- **Cíl:** „Nahraď opakované příkazy cyklem s počtem." (≤ 15 slov)
+- **Povolené bloky:** start, process, loop (SMYČKA), note, end.
+- **Scaffolding:** cyklus `OPAKUJ 4×` s jednou výrobní operací v těle; tělo cyklu jasně ohraničené, návratová vazba automaticky vedená.
+- **Test:** skutečně vzniknou právě čtyři spojky; **nestačí vypsat číslo 4** — ověření počítá vykonanou výrobní operaci. Dále otestovat 0 a 1 průchod.
+- **Malá změna:** objednávka šesti spojek.
+- **H:** počet přichází ze vstupu; testovat 0, 1 a více kusů.
+- **E/J:** počet se mění přímo v kartičce, bez ručního počítadla.
+- **Návrh zobrazení:** neměnit princip editoru více, než je potřeba pro srozumitelnost.
+- **Kompas:** Cíl: „Čtyři spojky = čtyřikrát stejná výroba." → Háček: „Kolikrát bych psal příkaz ručně?" → Vzor: `OPAKUJ 4× → vyrob spojku` → Postup: „Umísti výrobu do těla cyklu a nastav počet."
+
+---
+
+### m05 — Tři dobré kusy
+
+**Typ:** sestav · **Bloom:** aplikace → analýza · **Učivo:** podmíněný cyklus s počítadlem, větvení uvnitř cyklu · **Profil:** H (E/J vynechat).
+
+**Příběh:** Linka funguje, ale některé spojky vypadají, jako by je žvýkal robot.
+
+- **Cíl:** „Kontroluj dodávku, dokud nejsou 3 dobré kusy." (≤ 15 slov)
 - **Povolené bloky:** start, io, process, decision, loop, note, end.
-- **Scaffolding:** START + AKCE `ok = 0`, `sken = 0` + SMYČKA `ok < 2` + VSTUP `stav` + AKCE `sken++` + PODMÍNKA `stav == "ok"` + AKCE `ok++` + VÝSTUP `„Dobré díly: {ok} z {sken}."` + KONEC + POZNÁMKA „Smyčka končí, až máš 2 dobré." (nepropojené, rozhozené).
-- **Úkoly:** inicializuj počítadla; uvnitř smyčky načti `stav`, vždy zvyš `sken`, a když `stav == "ok"`, zvyš `ok`; po splnění `ok < 2` vypiš výsledek.
-- **Test (3 vektory):**
-  ```
-  Vektor A: stavy=[vadne, ok, ok]          → "Dobré díly: 2 z 3."
-  Vektor B: stavy=[ok, ok]                 → "Dobré díly: 2 z 2."
-  Vektor C: stavy=[vadne, vadne, ok, ok]   → "Dobré díly: 2 z 4."
-  ```
-- **Pozn. k vektoru B:** smyčka proběhne jen 2× — ověřuje podmíněný cyklus (ne fixní počet).
-- **Kompas:** Cíl: „Potřebuješ 2 dobré díly — smyčka se točí, dokud je nemáš." → Háček: „Kolikrát se smyčka opakuje? Záleží to na vstupech?" → Vzor: „Smyčka ok<2 → vstup stav → sken++ → když stav==ok, ok++" → Postup: „Skenuj každý díl, počítej dobré a skonči, až jich máš 2."
-- **XP:** zaklad 200; bonus efektivni za použití počítadla a podmíněné smyčky místo ručního vypisování.
+- **Scaffolding:** připravený základ — počítadlo dobrých kusů `dobrych = 0`; dodávka postupně předává stav kusu (`stav == "ok"` jinak nevyhovuje). **Větší diagram má částečně připravené propojení**, aby nový princip nezanikl v práci s šipkami.
+- **Žák doplní:** podmínku ukončení cyklu (`dobrych < 3`) a rozhodnutí, kdy počítadlo zvýšit.
+- **Testy:** všechny kusy dobré a smíšená dodávka. **Předem uvést předpoklad,** že testovací zásoba obsahuje dostatek dobrých kusů; při vyčerpání zásoby zobrazit srozumitelný stav (opakování poslední hodnoty zakázáno).
+- **Malá změna:** požadavek na dva dobré kusy.
+- **Pouze jedno počítadlo** (počítání všech kontrolovaných kusů není povinné).
+- **Kompas:** Cíl: „Potřebuješ 3 dobré — točíš, dokud je nemáš." → Háček: „Kolikrát poběží smyčka? Záleží na vstupech?" → Postup: „Ukonči cyklus, až `dobrych == 3`, a zřejmě zvyš počítadlo jen u dobrého kusu."
 
 ---
 
-### 16.5 Stupeň 5 — „Volání opraváře" (podprogram / dekompozice)
+### m06 — Skladový robot zabloudil
 
-**Typ:** cti + sestav · **Bloom:** porozumění → aplikace · **Učivo:** VOLÁNÍ, parametry, dekompozice · **RVP:** podprogram, dekompozice.
+**Typ:** oprav + ladění · **Bloom:** analýza → hodnocení → aplikace · **Učivo:** ladění (Ladička), krokování, ověření opravy · **Profil:** H i E/J.
 
-- **Cíl:** „Opravář je zavolán 3×. Zavolej ho správně."
-- **Povolené bloky:** start, process, call, note, end.
-- **Struktura:** definice podprogramu v POZNÁMCE („PODPROGRAM: oprav(dil) → vrátí: opraveno=1"), žák sestaví sekvenci 3× VOLÁNÍ s parametry `dil=A`, `dil=B`, `dil=C`.
-- **Část „cti":** náčrt s 1 chybným VOLÁNÍM (chybný parametr) → žák ho najde a znovu zavolá správně.
-- **Test (2 vektory — sled volání):**
-  ```
-  Vektor A: pořadí dílů [A, B, C] → PASS při sledu [oprav(A), oprav(B), oprav(C)]
-  Vektor B: pořadí dílů [C, A, B] (a 1 chybné VOLÁNÍ v náčrtu) → PASS při [oprav(C), oprav(A), oprav(B)]
-  ```
-- **Kompas:** Cíl: „Opravář dělá totéž 3× — stačí jedno VOLÁNÍ s odlišným dílem." → Háček: „Co se stane, když zavoláš s díl=B?" → Vzor: vzorová sekvence VOLÁNÍ → Postup: „Místo ruční AKCE použij blok VOLÁNÍ s parametrem dílu."
-- **XP:** zaklad 180.
+**Příběh:** Robot tvrdí, že doručil zásilku, ale stále stojí u regálu.
+
+- **Cíl:** „Najdi jednu chybu krokováním a ověř opravu." (≤ 15 slov)
+- **Postup:** krátký hotový program chybí nebo má chybnou mez cyklu (jedna cílená chyba) → žák odhadne správný výsledek → krokuje → označí odchylku → opraví → znovu otestuje.
+- **H:** žák vybere vstup, který chybu odhalí (např. jedna bedna).
+- **E/J:** dostane konkrétní vstup a dvě možnosti opravy.
+- **Hlášení:** sestavit z nabídek „Mělo se stát… / Stalo se… / Opravil jsem…".
+- **Malá změna:** ověření pro jiný počet beden.
+- **Kompas:** Cíl: „Nejdřív uhádni, pak ověř, pak najdi rozdíl." → Háček: „Který vstup odhalí chybnou mez?" → Postup: „Přečti program, spusť krok za krokem a označ, kde se liší od odhadu."
 
 ---
 
-### 16.6 Stupeň 6 — „Záchrana serveru" (boss: kombinace + oprav + vyber)
+### m07 — Urychli výrobní linku
 
-**Typ:** oprav + vyber + tvorba · **Bloom:** analýza → hodnocení → tvorba · **Učivo:** kombinace všeho, oprava, výběr efektivnější varianty · **RVP:** ověření, oprava, výběr, tvorba.
+**Typ:** vyber + oprav + zdůvodni · **Bloom:** hodnocení → aplikace · **Učivo:** porovnání algoritmů, efektivita = vykonané operace · **Profil:** H (E/J vynechat).
 
-- **Cíl:** „Server padá. Oprav smyčku, vyber čistší tok."
-- **Povolené bloky:** všechny.
-- **Část 1 — „oprav":** diagram se 2 chybami: přehozené větve PODMÍNKY a smyčka končící o 1 dříve („krok < 3" místo „krok <= 3").
-- **Část 2 — „vyber":** nabídka 2 variant téhož subproblému (smyčka vs. 3× kopie) → žák vybere efektivnější a krátce česky zdůvodní (textové pole, není hodnoceno XP).
-- **Část 3 — „tvorba":** žák navrhne vlastní drobné řešení (1 blok AKCE) pro předem daný úkol.
-- **Test (3 vektory)** přes plné schéma:
-  ```
-  Vektor A: [cervena, zluta, modra] → "OK: zpracováno 3"
-  Vektor B: [cervena]               → "OK: zpracováno 1"   (hraniční — krok=1)
-  Vektor C: [cervena, zluta, modra, zelena] → "OK: zpracováno 4"   (cyklus nesmí předčasně skončit)
-  ```
-- **Kompas (2 fáze — protože boss):** fáze 1 = oprava (Cíl → Háček → Postup), fáze 2 = výběr (Cíl = „Hledej, co se opakuje" → „Smyčka běží krok<=n" → vzor). Léčí pozitivně, nikdy neřekne „špatně si nevybral".
-- **XP:** zaklad 300; bonusy dle §16.x.
+**Příběh:** Obě linky vyrábějí správně, ale jedna stále znovu načítá stejný plán.
+
+- **Cíl:** „Porovnej dva algoritmy a odstraň zbytečné opakování." (≤ 15 slov)
+- **Varianty:** A — načtení neměnného plánu uvnitř cyklu; B — načtení jednou před cyklem. Zadání výslovně uvádí, že plán je pro celou zakázku stejný.
+- **Postup:** žák spustí obě varianty pro 1 a 5 kusů, porovná **počet vykonaných operací na stejných datech** a zdůvodní volbu; poté přesune načtení plánu před cyklus.
+- **Malá změna:** pokud má každý kus jiný plán, žák rozhodne, zda stejná úprava zůstává správná.
+- **Počet bloků není měřítko efektivity** — poznámky nejsou operace; nezavádět formální teorii složitosti.
+- **Kompas:** Cíl: „Stejná zakázka, méně zbytečné práce." → Háček: „Kolikrát se plán čte v variantě A pro 5 kusů?" → Postup: „Přesuň načtení plánu mimo cyklus a porovnej spočtené operace."
+
+---
+
+### m08 — Vlastní servisní zakázka
+
+**Typ:** tvorba + cti · **Bloom:** tvorba → hodnocení · **Učivo:** samostatný návrh, testy, předání · **Profil:** H (plná), E/J (menší rozsah).
+
+**Příběh:** Kapitán předává poslední zakázku. Tentokrát k ní není hotový diagram.
+
+**Volba jedné zakázky:**
+
+| Zakázka | Princip |
+|---|---|
+| Balíčky pro posádku | Opakovat balení podle zadaného počtu. |
+| Kontrola náhradních dílů | Rozhodnout podle rozměrové meze. |
+| Materiál pro tisk | Vypočítat spotřebu podle počtu výrobků. |
+
+- **H:** určit vstup a výstup, vybrat kartičky, sestavit tok a navrhnout **alespoň dva vhodné testy**.
+- **E/J:** START a KONEC připravené, úzký výběr kartiček, postupné vedení — přesto zachovat vlastní rozhodnutí žáka.
+- **Předání:** spolužák řešení vyzkouší; autor doplní stručný návod, autorství a jednoduché podmínky sdílení.
+- **H:** navázat na uloženou opravenou verzi a stručně rozlišit spuštění webového programu, instalaci a aktualizaci (bez dlouhé teorie).
+- **Samostatná tvorba podle omezeného zadání patří do povinné cesty**; neomezená dílna zůstává dobrovolná.
+- **Kompas:** Cíl: „Nakresli řešení své zakázky a otestuj ho." → Háček: „Co je vstup a co výstup?" → Vzor: vzorové dílčí schéma (základní tok) → Postup: „Vyber zakázku, urči vstup/výstup, sestav a navrhni 2 testy."
+
+---
+
+### E/J — Varianty podpůrné cesty (mise 1–6 bez mezer)
+
+Podpůrná cesta E/J má **6 souvisle očíslovaných misí (1–6)** — odpovídá m01, m02, m03, m04, m06, m08 z tabulky §3 (m05 a m07 v E/J nejsou). Číslování E/J **navazuje bez mezer** (mise 1–6, interně stabilní značení); algoritmus zůstává, rozdíl tvoří **opory**:
+
+- **m01/m02 (E/J 1–2):** stejné jako H — jen potřebné kartičky, možnost přehrát kroky; u m02 je správná podmínka připravená a žák připojuje větve.
+- **m03 (E/J 3):** skládání výrazu pomocí polí „počet × spotřeba"; výchozí částečně propojený základ.
+- **m04 (E/J 4):** počet průchodů se mění přímo v kartičce (bez ručního počítadla).
+- **m06 (E/J 5):** konkrétní vstup + dvě možnosti opravy + hlášení z nabídek.
+- **m08 (E/J 6):** menší rozsah — START/KONEC připravené, úzký výběr kartiček, postupné vedení; vlastní rozhodnutí žáka zůstává.
+
+> E/J zobrazení: výběry hodnot/operátorů, větší vizuální opora, méně textové syntaxe; v 16.x platí pro oba profily.
+
+### Dobrovolná dílna (kartičky s cílem, bez hotového řešení)
+
+Volné plochy + kartičky s cílem a příklady vstupů/výstupů (bez předem hotového řešení):
+
+- Balení výbavy pro zadaný počet členů posádky.
+- Kontrola dílu podle zvolené délkové meze.
+- Výpočet spotřeby materiálu nebo ceny zakázky.
+- Třídění dobrých a vadných kusů.
+- Zastavení výroby po dosažení požadovaného počtu výrobků.
+- Úprava již vyřešené mise pro jiný stroj či zakázku.
+
+**Nenutit žáka k obsahu nad rámec povinné cesty**; dílna nesmí nahrazovat povinnou m08.
+
+### Pořadí realizace obsahu (doplňuje §13)
+
+1. Opravit kontrolní mechanismus, vzory a shodu režimů běhu (F2).
+2. Zavést bezpečné stavy misí, neinvazivní modal zadání a restart (F1/F4).
+3. Upravit automatické ukládání, export/import a nabídku JSON po dokončení (F4).
+4. Připravit a ověřit **m01–m04 jako společný základ** (F5).
+5. Doplnit **m05–m08 a podpůrné varianty E/J** (F6).
+6. Navázat motivaci a výsledky na skutečné činnosti žáka (F8).
+7. Pilotně ověřit časovou dotaci a srozumitelnost; podporu upravit bez neodůvodněného přidávání obsahu (F9).

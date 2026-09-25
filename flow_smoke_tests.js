@@ -325,6 +325,45 @@ check('filtr export → 2 položky (SVG + JSON)', App.dom.paletteList.children.l
 App.closePalette();
 check('paleta zavřená Esc/closePalette', !App.dom.paletteModal.classList.contains('show'));
 
+console.log('\n[přepínač ploch = filmový pás (jedna role, ne každá plocha zvlášť)]');
+const trackEl = el('ws-track');
+['campaign', 'space1', 'space2', 'space3', 'space4', 'space5'].forEach(ws => {
+    const c = el('ws-cell-' + ws);
+    c.className = 'ws-cell';
+    c.setAttribute('data-ws', ws);
+    trackEl.appendChild(c);
+});
+const wsPrevBtn = el('ws-prev');
+const wsNextBtn = el('ws-next');
+check('zdroj: plochy jsou v jedné roli #ws-track (6 buněk)', (html.match(/class="ws-cell"/g) || []).length === 6 && html.includes('id="ws-track"'));
+check('zdroj: už žádná tlačítka ws-tab jednotlivě', !html.includes('class="ws-tab"') && html.includes('onclick="App.wsStep(1)"'));
+App.activeWorkspace = 'space3';
+App.updateWsSwitch();
+check('film posunul střed na SPACE 3', trackEl.style.transform === 'translateX(-200px)', trackEl.style.transform);
+check('film označil aktivní buňku (SPACE 3)', trackEl.children[3]._cls.has('active'));
+check('šipky uprostřed povolené', wsPrevBtn.disabled === false && wsNextBtn.disabled === false);
+App.wsStep(-1);
+check('wsStep(-1) přehrál roli → space2', App.activeWorkspace === 'space2', App.activeWorkspace);
+App.activeWorkspace = 'campaign';
+App.updateWsSwitch();
+check('šipka ‹ na kraji role zamčená (MISE)', wsPrevBtn.disabled === true && wsNextBtn.disabled === false);
+
+console.log('\n[modaly: Esc zavírá, klik mimo jen informační (princip hry = potvrzení zůstává)]');
+const mkCls = (init) => { const s = new Set(init || []); return { add: c => s.add(c), remove: c => s.delete(c), toggle: (c, on) => { if (on === undefined) { s.has(c) ? s.delete(c) : s.add(c); } else if (on) s.add(c); else s.delete(c); }, contains: c => s.has(c) }; };
+const aboutOv = { id: 'about-modal', classList: mkCls(['modal-overlay', 'show']), hasAttribute: a => a === 'data-dismiss' };
+App.onModalBackdropClick({ target: aboutOv });
+check('klik mimo zavře O programu', !aboutOv.classList.contains('show'));
+const resetOv = { id: 'reset-confirm-modal', classList: mkCls(['modal-overlay', 'show']), hasAttribute: () => false };
+App.onModalBackdropClick({ target: resetOv });
+check('klik mimo NEzavře potvrzení RESETu (princip hry)', resetOv.classList.contains('show'));
+const modalBox = { classList: mkCls(['modal-box']), hasAttribute: () => true };
+App.onModalBackdropClick({ target: modalBox });
+check('klik dovnitř modal-boxu nic nezavře', modalBox.classList.contains('modal-box'));
+const dismissed = ['svg-export-modal', 'json-export-modal', 'check-result-modal', 'level-result-modal', 'level-modal', 'help-modal', 'palette-modal', 'samples-modal', 'about-modal', 'author-modal'];
+const confined = ['edit-modal', 'sim-input-modal', 'sim-decision-modal', 'sim-output-modal', 'clear-confirm-modal', 'name-modal', 'reset-confirm-modal', 'confirm-modal', 'import-review-modal'];
+check('source: 10 informačních modalů má data-dismiss', dismissed.every(id => new RegExp('id="' + id + '" class="modal-overlay"[^>]*data-dismiss').test(html)));
+check('source: potvrzovací/editační modaly data-dismiss NEMAJÍ', confined.every(id => !new RegExp('id="' + id + '" class="modal-overlay"[^>]*data-dismiss').test(html)));
+
 console.log('\n[potvrzení v herním designu]');
 let confirmed = false;
 App.openConfirm({ title: 'Test', text: 'Opravdu?', onConfirm: () => { confirmed = true; } });
@@ -515,7 +554,7 @@ check('O programu bez gymnázií (RVP G není cíl)', !html.includes('RVP G') &&
 check('O programu pokrývá SOŠ obory H a E/J', html.includes('SOŠ') && html.includes('obory H a E/J'));
 check('help nadpis „Co si osvojíš" bez RVP G', !html.includes('Co si osvojíš (RVP G + SOŠ)') && html.includes('Co si osvojíš (SOŠ'));
 check('O programu uvádí SPA + MIT', html.includes('SINGLE PAGE APPLICATION') && html.includes('MIT © 2026 Luděk Sušický'));
-check('O programu má na PC šířku 546 px (o 30 % širší)', /#about-modal \.modal-box\s*\{[^}]*width:\s*min\(546px,\s*97vw\)/.test(html));
+check('O programu má na PC šířku 655 px (o 20 % širší)', /#about-modal \.modal-box\s*\{[^}]*width:\s*min\(655px,\s*97vw\)/.test(html));
 check('autor má fungující mailto (spustí klienta)', html.includes('href="mailto:ludek.susicky@gmail.com"') && html.includes('ludek.susicky@gmail.com'));
 check('autor má X', html.includes('https://x.com/ludeksusicky'));
 check('autor má LinkedIn', html.includes('https://www.linkedin.com/in/ludek-susicky/'));

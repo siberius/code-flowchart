@@ -206,18 +206,39 @@
         .top-btn.top-icon svg { width: 18px; height: 18px; }
         .top-btn.top-icon:disabled svg { opacity: 0.7; }
 
-        #ws-tabs { display: flex; gap: 4px; align-items: center; overflow-x: auto; max-width: 46vw; }
-        .ws-tab {
-            height: 36px; padding: 0 10px;
+        #ws-switch { display: flex; align-items: center; gap: 4px; }
+        .ws-arrow {
+            width: 26px; height: 36px; flex-shrink: 0;
             border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.05);
-            color: #94a3b8; font-size: 11px; cursor: pointer; white-space: nowrap;
-            font-family: 'JetBrains Mono', monospace; font-weight: 700; letter-spacing: 1px;
-            transition: all 0.2s;
+            color: var(--accent); font-size: 16px; line-height: 1; cursor: pointer;
+            font-family: 'JetBrains Mono', monospace; transition: all 0.2s;
             clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
         }
-        .ws-tab:hover { color: var(--text); border-color: var(--accent); }
-        .ws-tab.active { color: var(--accent); border-color: var(--accent); background: rgba(0,229,255,0.08); box-shadow: inset 0 0 10px rgba(0,229,255,0.35); }
-        @media (max-width: 900px) { #ws-tabs { max-width: 38vw; } .ws-tab { padding: 0 7px; font-size: 10px; } }
+        .ws-arrow:hover { color: var(--text); border-color: var(--accent); background: rgba(0,229,255,0.08); }
+        .ws-arrow:disabled { opacity: 0.25; cursor: default; }
+        #ws-film { position: relative; width: 186px; height: 36px; overflow: hidden; }
+        .ws-film-mask {
+            position: absolute; top: 0; bottom: 0; width: 10px; pointer-events: none; z-index: 2;
+        }
+        #ws-track {
+            display: flex; height: 100%; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .ws-cell {
+            width: 62px; flex: 0 0 62px; height: 36px; padding: 0; border: 0; background: transparent;
+            color: #94a3b8; font-size: 11px; cursor: pointer; white-space: nowrap;
+            font-family: 'JetBrains Mono', monospace; font-weight: 700; letter-spacing: 1px;
+            display: flex; align-items: center; justify-content: center; gap: 4px;
+            transition: color 0.2s, opacity 0.2s;
+        }
+        .ws-cell:hover { color: var(--text); }
+        .ws-cell.active { color: var(--accent); }
+        .ws-cell.active .ws-cell-dot { background: var(--accent); box-shadow: 0 0 8px rgba(0,229,255,0.8); }
+        .ws-cell-dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(148,163,184,0.5); }
+        .ws-cell-frame {
+            position: absolute; inset: 0; pointer-events: none; border: 1px solid rgba(255,255,255,0.12);
+            clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+        }
+        @media (max-width: 900px) { #ws-film { width: 150px; } .ws-cell { width: 50px; flex-basis: 50px; font-size: 10px; } }
 
         #main {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -632,7 +653,7 @@
         #help-modal .modal-box { width: min(1040px, 94vw); }
 
         /* O programu: na PC o 30 % širší (546 px) a vyšší, na dotykovém zařízení zbývá užší (420 px / 33vh) */
-        #about-modal .modal-box { max-height: 72vh; width: min(546px, 97vw); }
+        #about-modal .modal-box { max-height: 72vh; width: min(655px, 97vw); }
         @media (hover: none), (pointer: coarse) { #about-modal .modal-box { max-height: 33vh; width: min(420px, 90vw); } }
 
         /* Paleta (Ctrl+K): spustitelný seznam příkazů se zkratkami */
@@ -851,13 +872,22 @@
         <button class="top-btn top-icon" id="btn-undo" onclick="App.undo()" title="Zpět (Ctrl+Z)" aria-label="Zpět (Ctrl+Z)" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5 5.5 5.5 0 0 1-5.5 5.5H11"/></svg></button>
         <button class="top-btn top-icon" id="btn-redo" onclick="App.redo()" title="Vpřed (Ctrl+Y)" aria-label="Vpřed (Ctrl+Y)" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5 5.5 5.5 0 0 0 9.5 20H13"/></svg></button>
         <div style="width: 16px;"></div>
-        <div id="ws-tabs">
-            <button class="ws-tab" data-ws="campaign" onclick="App.selectWorkspace('campaign')" title="Mise — úlohy, jméno, XP">MISE</button>
-            <button class="ws-tab" data-ws="space1" onclick="App.selectWorkspace('space1')" title="Plocha 1 — jablka demo">SPACE 1</button>
-            <button class="ws-tab" data-ws="space2" onclick="App.selectWorkspace('space2')" title="Prázdná plocha 2">SPACE 2</button>
-            <button class="ws-tab" data-ws="space3" onclick="App.selectWorkspace('space3')" title="Prázdná plocha 3">SPACE 3</button>
-            <button class="ws-tab" data-ws="space4" onclick="App.selectWorkspace('space4')" title="Prázdná plocha 4">SPACE 4</button>
-            <button class="ws-tab" data-ws="space5" onclick="App.selectWorkspace('space5')" title="Prázdná plocha 5">SPACE 5</button>
+        <div id="ws-switch" aria-label="Přepínač ploch (filmový pás)">
+            <button class="ws-arrow" id="ws-prev" onclick="App.wsStep(-1)" title="Předchozí plocha">‹</button>
+            <div id="ws-film">
+                <div class="ws-film-mask" style="left:0;background:linear-gradient(to right, var(--bg), transparent);"></div>
+                <div class="ws-film-mask" style="right:0;background:linear-gradient(to left, var(--bg), transparent);"></div>
+                <div id="ws-track">
+                    <button class="ws-cell" data-ws="campaign" onclick="App.selectWorkspace('campaign')" title="Mise — úlohy, jméno, XP">MISE<span class="ws-cell-dot"></span></button>
+                    <button class="ws-cell" data-ws="space1" onclick="App.selectWorkspace('space1')" title="Plocha 1 — jablka demo">SPACE 1<span class="ws-cell-dot"></span></button>
+                    <button class="ws-cell" data-ws="space2" onclick="App.selectWorkspace('space2')" title="Prázdná plocha 2">SPACE 2<span class="ws-cell-dot"></span></button>
+                    <button class="ws-cell" data-ws="space3" onclick="App.selectWorkspace('space3')" title="Prázdná plocha 3">SPACE 3<span class="ws-cell-dot"></span></button>
+                    <button class="ws-cell" data-ws="space4" onclick="App.selectWorkspace('space4')" title="Prázdná plocha 4">SPACE 4<span class="ws-cell-dot"></span></button>
+                    <button class="ws-cell" data-ws="space5" onclick="App.selectWorkspace('space5')" title="Prázdná plocha 5">SPACE 5<span class="ws-cell-dot"></span></button>
+                </div>
+                <div class="ws-cell-frame"></div>
+            </div>
+            <button class="ws-arrow" id="ws-next" onclick="App.wsStep(1)" title="Další plocha">›</button>
         </div>
         <div style="width: 16px;"></div>
         <button class="top-btn top-icon" id="btn-import" onclick="document.getElementById('json-upload').click()" title="Importovat postup z PC (JSON)" aria-label="Importovat postup z PC (JSON)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
@@ -1021,7 +1051,7 @@
     </div>
 
     <!-- Modál pro dotaz ohledně exportu SVG s názvem souboru -->
-    <div id="svg-export-modal" class="modal-overlay" style="z-index: 600;">
+    <div id="svg-export-modal" class="modal-overlay" style="z-index: 600;" data-dismiss>
         <div class="modal-box">
             <h3 style="color: var(--accent);">Exportovat Schéma (SVG)</h3>
             
@@ -1042,7 +1072,7 @@
     </div>
 
     <!-- F4: Modál pro uložení postupu do JSON (úplný snímek) s názvem souboru -->
-    <div id="json-export-modal" class="modal-overlay" style="z-index: 700;">
+    <div id="json-export-modal" class="modal-overlay" style="z-index: 700;" data-dismiss>
         <div class="modal-box">
             <h3 style="color: var(--accent);">Uložit Postup (JSON)</h3>
             
@@ -1126,7 +1156,7 @@
     </div>
 
     <!-- F2: Výsledek AUTO-kontroly (Checker) -->
-    <div id="check-result-modal" class="modal-overlay" style="z-index: 720;">
+    <div id="check-result-modal" class="modal-overlay" style="z-index: 720;" data-dismiss>
         <div class="modal-box" style="border-color: rgba(245,158,11,0.35);">
             <h3 id="check-title" style="color: var(--accent3); text-shadow: 0 0 10px rgba(245,158,11,0.4);">Kontrola mise</h3>
             <div id="check-body" style="text-align: left;"></div>
@@ -1137,7 +1167,7 @@
     </div>
 
     <!-- F1: Výsledek mise (hvězdy, XP, hodnost) -->
-    <div id="level-result-modal" class="modal-overlay" style="z-index: 720;">
+    <div id="level-result-modal" class="modal-overlay" style="z-index: 720;" data-dismiss>
         <div class="modal-box" style="border-color: rgba(16,185,129,0.35);">
             <h3 id="result-title" style="color: #10b981; text-shadow: 0 0 12px rgba(16,185,129,0.45);">Mise splněna!</h3>
             <div id="result-stars" style="font-size: 42px; letter-spacing: 6px; color: var(--accent3); margin: 6px 0 2px; text-shadow: 0 0 18px rgba(245,158,11,0.5);">★★★</div>
@@ -1152,7 +1182,7 @@
     </div>
 
     <!-- F1: Detail mise (zadání levelu) -->
-    <div id="level-modal" class="modal-overlay" style="z-index: 700;">
+    <div id="level-modal" class="modal-overlay" style="z-index: 700;" data-dismiss>
         <div class="modal-box wide" style="border-color: rgba(0,229,255,0.3);">
             <h3 id="level-title" style="color: var(--accent); text-shadow: 0 0 10px rgba(0,229,255,0.4);">Mise</h3>
             <div id="level-body" style="text-align: left; font-size: 14px; line-height: 1.6;"></div>
@@ -1166,7 +1196,7 @@
     </div>
 
     <!-- Modální okna pro Hamburger Menu -->
-    <div id="help-modal" class="modal-overlay" style="z-index: 600;">
+    <div id="help-modal" class="modal-overlay" style="z-index: 600;" data-dismiss>
         <div class="modal-box wide">
             <h3><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Nápověda</h3>
             <div class="help-content-wrapper">
@@ -1252,7 +1282,7 @@
     </div>
 
     <!-- Paleta (Ctrl+K): spustitelné příkazy + seznam klávesových zkratek -->
-    <div id="palette-modal" class="modal-overlay" style="z-index: 640;">
+    <div id="palette-modal" class="modal-overlay" style="z-index: 640;" data-dismiss>
         <div class="modal-box" style="padding: 18px; border-color: rgba(0,229,255,0.35);">
             <div class="palette-top">
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
@@ -1265,7 +1295,7 @@
     </div>
 
     <!-- Výběr ukázky (Alt+S): hotové diagramy mimo hamburger menu -->
-    <div id="samples-modal" class="modal-overlay" style="z-index: 610;">
+    <div id="samples-modal" class="modal-overlay" style="z-index: 610;" data-dismiss>
         <div class="modal-box" style="border-color: rgba(139,92,246,0.4);">
             <h3><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>Výběr ukázky</h3>
             <div style="color: var(--text-dim); font-size: 13px; line-height: 1.5;">Hotové diagramy pro prohlédnutí a úpravu — načtou se do aktivní plochy.</div>
@@ -1276,7 +1306,7 @@
         </div>
     </div>
 
-    <div id="about-modal" class="modal-overlay" style="z-index: 600;">
+    <div id="about-modal" class="modal-overlay" style="z-index: 600;" data-dismiss>
         <div class="modal-box">
             <h3><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>O programu</h3>
             <p style="color: var(--text-dim); line-height: 1.6; font-size: 14px; margin-bottom: 10px;">CodeFlowChart EDU je moderní, plně interaktivní výukový nástroj pro vizuální pochopení algoritmů, logických struktur a stavových proměnných. Spojuje návrh vývojových diagramů s krokovacím enginem a Visual RAM pamětí v reálném čase.</p>
@@ -1292,7 +1322,7 @@
         </div>
     </div>
 
-    <div id="author-modal" class="modal-overlay" style="z-index: 600;">
+    <div id="author-modal" class="modal-overlay" style="z-index: 600;" data-dismiss>
         <div class="modal-box" style="border-color: rgba(245, 158, 11, 0.3);">
             <h3 style="color: var(--accent3); text-shadow: 0 0 10px rgba(245, 158, 11, 0.4);"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>O autorovi</h3>
             <h4 style="font-size: 18px; margin-bottom: 5px;">Luděk Sušický</h4>
@@ -2028,6 +2058,7 @@
         ];
         const APPLES_SLOT = 'space1';
         const CAMPAIGN_SLOTS = MISSIONS.H.map(m => m.id).concat(MISSIONS.E_J.map(m => m.id));
+        const WS_ORDER = ['campaign', 'space1', 'space2', 'space3', 'space4', 'space5'];
         const CONTENT_VERSION = 'm01-m08/e1-e6-2026-09-25'; // verze obsahu misí (PLAN §8.4)
 
         // ==== F1: Game (learning mode) — jméno, XP, hodnost, stupně, certifikáty ====
@@ -2376,6 +2407,14 @@
 
             openHelp() { this.closeMenu(); document.getElementById('help-modal').classList.add('show'); },
             closeHelp() { document.getElementById('help-modal').classList.remove('show'); },
+            onModalBackdropClick(e) {
+                const m = e.target;
+                if (!m || !m.classList || !m.classList.contains('modal-overlay')) return;
+                if (!m.classList.contains('show') || !m.hasAttribute('data-dismiss')) return;
+                if (m.id === 'palette-modal') { this.closePalette(); return; }
+                if (m.id === 'samples-modal') { this.closeSamples(); return; }
+                m.classList.remove('show');
+            },
             openAbout() { this.closeMenu(); document.getElementById('about-modal').classList.add('show'); },
             closeAbout() { document.getElementById('about-modal').classList.remove('show'); },
             openAuthor() { this.closeMenu(); document.getElementById('author-modal').classList.add('show'); },
@@ -2476,6 +2515,7 @@
             init() {
                 this.setupPointerEvents();
                 this.setupKeyboard();
+                document.addEventListener('click', (e) => this.onModalBackdropClick(e));
                 if (this.dom.nameInput) {
                     this.dom.nameInput.addEventListener('keydown', (e) => {
                         if (e.key === 'Enter') this.submitName();
@@ -2747,13 +2787,32 @@
                 }
             },
 
+            updateWsSwitch() {
+                const track = document.getElementById('ws-track');
+                if (!track) return;
+                const cells = Array.prototype.slice.call(track.children);
+                let idx = WS_ORDER.indexOf(this.activeWorkspace);
+                if (idx === -1 && this.modeOf(this.activeWorkspace) === 'campaign') idx = 0;
+                if (idx < 0) idx = 0;
+                const w = (cells[0] && cells[0].getBoundingClientRect().width) || 62;
+                track.style.transform = 'translateX(' + ((1 - idx) * w) + 'px)';
+                cells.forEach((c, i) => c.classList.toggle('active', i === idx));
+                const prev = document.getElementById('ws-prev');
+                const next = document.getElementById('ws-next');
+                if (prev) prev.disabled = idx === 0;
+                if (next) next.disabled = idx === cells.length - 1;
+            },
+            wsStep(dir) {
+                let idx = WS_ORDER.indexOf(this.activeWorkspace);
+                if (idx < 0) idx = 0;
+                const ni = Math.max(0, Math.min(WS_ORDER.length - 1, idx + dir));
+                if (ni === idx) return;
+                const target = WS_ORDER[ni];
+                if (target === 'campaign') this.selectWorkspace('campaign');
+                else this.switchWorkspace(target);
+            },
             updateWorkspaceUI() {
-                const mode = this.modeOf(this.activeWorkspace);
-                document.querySelectorAll('#ws-tabs .ws-tab').forEach(tab => {
-                    const ws = tab.getAttribute('data-ws');
-                    const active = (ws === 'campaign') ? (mode === 'campaign') : (this.activeWorkspace === ws);
-                    tab.classList.toggle('active', active);
-                });
+                this.updateWsSwitch();
                 this.updateGameUI();
             },
 

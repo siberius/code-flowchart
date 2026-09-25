@@ -91,7 +91,10 @@ Pro vzdělávací obsah navíc: `md-skills/vzdelavaci-metodiky.md` (RVP/ŠVP, CZ
     start = SPACE 1 (obnova rozehraného levelu), expirace na PC (90 min nečinnosti, mobil nikdy), O autorovi/O programu/nápověda (zdroj HTML), MIT licence,
     ukázky v samostatném modalu (Alt+S, mimo menu, mimo hamburger), paleta (Ctrl+K, spustitelná s hledáním,
     20 příkazů = všechny zkratky kromě cheatu + Ctrl+Alt+H/I/A/J/O/W/M a Ctrl+Alt+1–5, plochy SPACE v jedné
-    položce s rozbalením), výsledkový modal: SVG řešení s OVĚŘENO/testy/jméno + POKRAČOVAT → další mise.
+    položce s rozbalením), výsledkový modal: SVG řešení s OVĚŘENO/testy/jméno + POKRAČOVAT → další mise,
+    O programu na PC 655 px (+20 %), standardní/informační modaly zavíratelné klávesou Esc i klikem mimo
+    (`data-dismiss`, potvrzovací a editační modaly NIKOLI), plochy v topbaru = filmový pás `#ws-track`
+    (role MISE + 5× SPACE, `wsStep`, animovaný posun, šipky ‹ ›, zkratky Ctrl+Alt+1–5).
   - Sdílený `flow_test_utils.js` (načtení `App` + `Game` + `MISSIONS` + `SAMPLES` z inline `<script>` v Node).
   - **Dev cheat:** `Ctrl+Alt+C` s aktivním CapsLockem v MISE vyřeší aktuální
     level krok za krokem ze vzorového řešení (per-mise `solution` v `MISSIONS`); jen pro testování.

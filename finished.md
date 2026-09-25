@@ -2,6 +2,33 @@
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
+## 2026-09-25 — O programu +20 % šířky, modaly zavíratelné Esc/klikem mimo, plochy = filmový pás v topbaru (nezakomitováno)
+
+- **O programu na PC o 20 % širší:** `#about-modal .modal-box` → `width: min(655px, 97vw)`
+  (546 → 655 px); mobil zůstává `min(420px, 90vw)`/`33vh` beze změny.
+- **Informační modaly zavíratelné klávesou Esc a kliknutím mimo** (jinak „princip hry" to zakazuje):
+  delegovaná obsluha `App.onModalBackdropClick` reaguje jen na klik na samotné pozadí
+  (`e.target` = `.modal-overlay`) a jen u modalů s `data-dismiss` (help, o programu, o autorovi,
+  paleta, ukázky, zadání mise, výsledky OVĚŘENO/dokončení, export SVG/JSON).
+  Potvrzovací a editační modaly (edit, sim-*, clear/RESET/restart-confirm, jméno, import-review)
+  `data-dismiss` NEMAJÍ → klik mimo je nezavře (vyžadují vědomý výběr); Esc dál ruší vše.
+  Paleta/ukázky zavírá jejich vlastní metody (`closePalette` resetuje scope, `closeSamples`).
+- **Plochy v topbaru = jedna „role" filmového pásu namísto 6 tlačítek:** `#ws-switch`
+  s šipkami `‹ ›`, `#ws-film` (overflow hidden, okénko = 3× buňka) a `#ws-track` se 6 buňkami
+  (MISE + SPACE 1–5); aktuální plocha je středem, animovaný posun `transform` s
+  `transition cubic-bezier` (role se „přetočí"), sousední buňky vykukují, aktivní má tečku
+  „perforace filmu" + zvýraznění; šipky na krajích se zamknou (`disabled`). Buňky zůstávají
+  klikatelnými přepínači, zkratky `Ctrl+Alt+1–5` a paletová položka „Plochy" fungují dál.
+- **Nové metody:** `wsStep(dir)`, `updateWsSwitch()` (+ konstanta `WS_ORDER`) — posun se čte ze
+  skutečné šířky buňky (`getBoundingClientRect`), takže zůstává správný i na mobilu (50 px);
+  `updateWorkspaceUI()` nově volá `updateWsSwitch()` místo cyklu `#ws-tabs .ws-tab`.
+- **Testy:** `flow_smoke_tests.js` → **194** (z 182): +12 (šířka O programu 655 px, filmový pás:
+  zdroj `ws-cell`×6 bez `ws-tab`, `wsStep(-1)` → space2, zámek šipek na kraji, posun
+  `translateX(-200px)`, aktivní buňka; modaly: klik mimo zavře O programu / NEzavře RESET /
+  klik do boxu nic, zdroj: 10× `data-dismiss` informačních, potvrzovací bez něj).
+- **Ověření:** syntax OK · flow_tests 39 · flow_check 70 · flow_game 90 · flow_storage 55 ·
+  flow_ui 6 · flow_smoke 194 (celkem **454** kontrol, 0 FAIL).
+
 ## 2026-09-25 — Paleta = přehled všech zkratek (bez cheatu), plochy souhrnně, menu bez odkazů na paletu/ukázky (nezakomitováno)
 
 - **Paleta a Ukázky pryč z hamburger menu** (žádné „openPalette"/„openSamples" odkazy v NÁSTROJE).

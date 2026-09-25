@@ -2,6 +2,34 @@
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
+## 2026-09-25 — KONEC u větvených ukázek vyhozen do vlastního sloupce (nezakomitováno)
+
+- **Kalkulačka, Třídění odpadu a BMI:** bloky `KONEC` už nevisí pod výstupem ve stejném
+  sloupci jako bloky sousední větve (splývaly s nimi a křížily cesty), ale jsou **vysunuty
+  vpravo do vlastního sloupce** (x 880 / 780 / 760) a **zarovnány na řádek výstupu**;
+  šipka vede PRAVO z výstupu do KONEC (`[o,'right',e,'left']`), NE-návaznosti u podmínek
+  zůstávají čistě svislé vlevo. Kalkulačka: rozestup větví 240 px (žádné prolínání `KONEC₁`
+  s `VÝSLEDEK₂`), výchozí `Konec (neznámý operátor)` dole.
+- **Testy:** beze změny počtu (data jen přearanžována — stále 0 FAIL).
+- **Ověření:** syntax OK · flow_tests 39 · flow_check 70 · flow_game 91 · flow_storage 55 ·
+  flow_ui 6 · flow_smoke 213 (celkem **474** kontrol, 0 FAIL).
+
+## 2026-09-25 — Čitelnost výběru ukázek a menu, schémata ukázek roztáhnuta (nezakomitováno)
+
+- **Text ve výběru ukázek +10 %:** popisek (`hint`) 11 px → **12 px** a jasnější (`opacity 0.55 → 0.7`).
+- **Menu zvětšeno a nataženo na mobil:** `#side-menu` šířka 260 → `min(320px, calc(100vw − 12px))`
+  (na mobilu zabere skoro celou šířku); skrytí `left: calc(-100% − 12px)` se přizpůsobí libovolné šířce.
+  Texty menu: `.menu-mission` a `.side-menu-link` 13 → **14 px**, `.menu-section-title` 13 → **14 px**,
+  `.mm-tag` 11 → **12 px**; padding položek 30 → 26 px.
+- **Schémata ukázek roztáhnuta do šíře (bez překryvů):** Kalkulačka, Třídění odpadu a BMI měly
+  větve/sousledné „KONEC" moc blízko (překrývaly se panely). Roztaženo: vedlejší sloupec větví
+  x 400/380/360 → **560/460/440**, poznámky → −440/−460, svislé rozestupy řádků 160–200 → **220–260**;
+  start/branky přepočítány, indexy šipek beze změny (stále 0 FAIL).
+- **Testy:** `flow_smoke_tests.js` 212 → **213** (+1: menu `min(320px, calc(100vw − 12px))`,
+  velikosti 14 px, hint 12 px/0.7).
+- **Ověření:** syntax OK · flow_tests 39 · flow_check 70 · flow_game 91 · flow_storage 55 ·
+  flow_ui 6 · flow_smoke 213 (celkem **474** kontrol, 0 FAIL).
+
 ## 2026-09-25 — Ukázky napříč předměty (8 nových, s poznámkami) (nezakomitováno)
 
 - **SAMPLES rozšířeny ze 4 na 12** — „read + remix" i pro jiné předměty (RVP H/E_J):

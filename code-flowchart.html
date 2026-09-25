@@ -109,7 +109,8 @@
 
         /* BOČNÍ MENU - Drawer */
         #side-menu {
-            position: fixed; top: 56px; left: -300px; width: 260px; height: fit-content;
+            position: fixed; top: 56px; left: calc(-100% - 12px);
+            width: min(320px, calc(100vw - 12px)); height: fit-content;
             background: linear-gradient(135deg, rgba(15, 18, 26, 0.6), rgba(13, 15, 20, 0.4));
             -webkit-backdrop-filter: blur(20px) saturate(140%);
             backdrop-filter: blur(20px) saturate(140%);
@@ -123,7 +124,7 @@
         }
         #side-menu.open { left: 0; }
         .side-menu-link {
-            padding: 16px 30px; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700;
+            padding: 16px 30px; font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700;
             color: var(--text-dim); text-transform: uppercase; letter-spacing: 2px;
             cursor: pointer; transition: all 0.2s; border-left: 3px solid transparent;
             display: flex; align-items: center; gap: 12px;
@@ -803,12 +804,12 @@
         #side-menu { max-height: calc(100vh - 56px); overflow-y: auto; }
         .menu-section-title {
             padding: 14px 30px 6px; font-family: 'JetBrains Mono', monospace;
-            font-size: 13px; letter-spacing: 2px; color: var(--accent);
+            font-size: 14px; letter-spacing: 2px; color: var(--accent);
             opacity: 0.7; text-transform: uppercase; font-weight: 700;
         }
 
         .menu-mission {
-            padding: 12px 30px; cursor: pointer; font-size: 13px; color: var(--text-dim);
+            padding: 12px 26px; cursor: pointer; font-size: 14px; color: var(--text-dim);
             transition: all 0.15s; border-left: 3px solid transparent;
         }
         .menu-mission:hover { color: var(--accent); background: rgba(0,229,255,0.05); border-left-color: var(--accent); }
@@ -816,7 +817,7 @@
         .menu-mission.done { color: #10b981; }
         .menu-mission .mm-top { display: flex; justify-content: space-between; gap: 8px; }
         .menu-mission .mm-stars { color: var(--accent3); }
-        .menu-mission .mm-tag { font-size: 11px; opacity: 0.75; margin-top: 2px; color: var(--accent); }
+        .menu-mission .mm-tag { font-size: 12px; opacity: 0.75; margin-top: 2px; color: var(--accent); }
 
         #name-modal .modal-box { border-color: rgba(0,229,255,0.3); }
         #name-input {
@@ -2062,52 +2063,52 @@
             {
                 id: 'calculator', name: 'Kalkulačka', hint: 'Větvení a počítání: + − × ÷ ^ √',
                 blocks: [
-                    { type: 'start', label: 'Start', x: 0, y: -540 },
-                    { type: 'io', label: 'a', ioType: 'input', x: 0, y: -360 },
-                    { type: 'io', label: 'op', ioType: 'input', x: 0, y: -190 },
+                    { type: 'start', label: 'Start', x: 0, y: -560 },
+                    { type: 'io', label: 'a', ioType: 'input', x: 0, y: -380 },
+                    { type: 'io', label: 'op', ioType: 'input', x: 0, y: -200 },
                     { type: 'io', label: 'b', ioType: 'input', x: 0, y: -20 },
-                    { type: 'note', label: 'KALKULAČKA:\nZadáme číslo a, operátor (text)\na číslo b (pro ÷ a mocninu).\n√ používá jen číslo a.', x: -380, y: -120 },
-                    { type: 'decision', label: 'op == "soucet"', yesPort: 'right', noPort: 'bottom', x: 0, y: 150 },
-                    { type: 'process', label: 'vysledek = a + b', x: 400, y: 150 },
-                    { type: 'io', label: 'Výsledek: {vysledek}', ioType: 'output', x: 400, y: 310 },
-                    { type: 'end', label: 'Konec', x: 400, y: 470 },
-                    { type: 'decision', label: 'op == "rozdil"', yesPort: 'right', noPort: 'bottom', x: 0, y: 350 },
-                    { type: 'process', label: 'vysledek = a - b', x: 400, y: 350 },
-                    { type: 'io', label: 'Výsledek: {vysledek}', ioType: 'output', x: 400, y: 510 },
-                    { type: 'end', label: 'Konec', x: 400, y: 670 },
-                    { type: 'note', label: 'VĚTVENÍ:\nPodmínka op == "…" pustí\njen tu správnou větev,\nostatní se přeskočí.', x: -380, y: 480 },
-                    { type: 'decision', label: 'op == "soucin"', yesPort: 'right', noPort: 'bottom', x: 0, y: 550 },
-                    { type: 'process', label: 'vysledek = a * b', x: 400, y: 550 },
-                    { type: 'io', label: 'Výsledek: {vysledek}', ioType: 'output', x: 400, y: 710 },
-                    { type: 'end', label: 'Konec', x: 400, y: 870 },
-                    { type: 'decision', label: 'op == "podil"', yesPort: 'right', noPort: 'bottom', x: 0, y: 750 },
-                    { type: 'process', label: 'vysledek = a / b', x: 400, y: 750 },
-                    { type: 'io', label: 'Výsledek: {vysledek}', ioType: 'output', x: 400, y: 910 },
-                    { type: 'end', label: 'Konec', x: 400, y: 1070 },
-                    { type: 'decision', label: 'op == "mocnina"', yesPort: 'right', noPort: 'bottom', x: 0, y: 950 },
-                    { type: 'process', label: 'vysledek = a ** b', x: 400, y: 950 },
-                    { type: 'io', label: 'Výsledek: {vysledek}', ioType: 'output', x: 400, y: 1110 },
-                    { type: 'end', label: 'Konec', x: 400, y: 1270 },
-                    { type: 'decision', label: 'op == "odmocnina"', yesPort: 'right', noPort: 'bottom', x: 0, y: 1150 },
-                    { type: 'note', label: 'ODMOCNINA:\n√(a² + b²) i √(a) jde přes\nMath.sqrt(a) — nepotřebuje b.', x: -380, y: 1080 },
-                    { type: 'process', label: 'vysledek = Math.sqrt(a)', x: 400, y: 1150 },
-                    { type: 'io', label: 'Výsledek: {vysledek}', ioType: 'output', x: 400, y: 1310 },
-                    { type: 'end', label: 'Konec', x: 400, y: 1470 },
-                    { type: 'end', label: 'Konec (neznámý operátor)', x: 0, y: 1350 }
+                    { type: 'note', label: 'KALKULAČKA:\nZadáme číslo a, operátor (text)\na číslo b (pro ÷ a mocninu).\n√ používá jen číslo a.', x: -440, y: -160 },
+                    { type: 'decision', label: 'op == "soucet"', yesPort: 'right', noPort: 'bottom', x: 0, y: 160 },
+                    { type: 'process', label: 'vysledek = a + b', x: 560, y: 160 },
+                    { type: 'io', label: 'Výsledek: {vysledek}', ioType: 'output', x: 560, y: 340 },
+                    { type: 'end', label: 'Konec', x: 880, y: 340 },
+                    { type: 'decision', label: 'op == "rozdil"', yesPort: 'right', noPort: 'bottom', x: 0, y: 400 },
+                    { type: 'process', label: 'vysledek = a - b', x: 560, y: 400 },
+                    { type: 'io', label: 'Výsledek: {vysledek}', ioType: 'output', x: 560, y: 580 },
+                    { type: 'end', label: 'Konec', x: 880, y: 580 },
+                    { type: 'note', label: 'VĚTVENÍ:\nPodmínka op == "…" pustí\njen tu správnou větev,\nostatní se přeskočí.', x: -440, y: 520 },
+                    { type: 'decision', label: 'op == "soucin"', yesPort: 'right', noPort: 'bottom', x: 0, y: 640 },
+                    { type: 'process', label: 'vysledek = a * b', x: 560, y: 640 },
+                    { type: 'io', label: 'Výsledek: {vysledek}', ioType: 'output', x: 560, y: 820 },
+                    { type: 'end', label: 'Konec', x: 880, y: 820 },
+                    { type: 'decision', label: 'op == "podil"', yesPort: 'right', noPort: 'bottom', x: 0, y: 880 },
+                    { type: 'process', label: 'vysledek = a / b', x: 560, y: 880 },
+                    { type: 'io', label: 'Výsledek: {vysledek}', ioType: 'output', x: 560, y: 1060 },
+                    { type: 'end', label: 'Konec', x: 880, y: 1060 },
+                    { type: 'decision', label: 'op == "mocnina"', yesPort: 'right', noPort: 'bottom', x: 0, y: 1120 },
+                    { type: 'process', label: 'vysledek = a ** b', x: 560, y: 1120 },
+                    { type: 'io', label: 'Výsledek: {vysledek}', ioType: 'output', x: 560, y: 1300 },
+                    { type: 'end', label: 'Konec', x: 880, y: 1300 },
+                    { type: 'decision', label: 'op == "odmocnina"', yesPort: 'right', noPort: 'bottom', x: 0, y: 1360 },
+                    { type: 'note', label: 'ODMOCNINA:\n√(a² + b²) i √(a) jde přes\nMath.sqrt(a) — nepotřebuje b.', x: -440, y: 1360 },
+                    { type: 'process', label: 'vysledek = Math.sqrt(a)', x: 560, y: 1360 },
+                    { type: 'io', label: 'Výsledek: {vysledek}', ioType: 'output', x: 560, y: 1540 },
+                    { type: 'end', label: 'Konec', x: 880, y: 1540 },
+                    { type: 'end', label: 'Konec (neznámý operátor)', x: 0, y: 1660 }
                 ],
                 arrows: [
                     [0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'], [2, 'bottom', 3, 'top'], [3, 'bottom', 5, 'top'],
-                    [5, 'right', 6, 'left'], [6, 'bottom', 7, 'top'], [7, 'bottom', 8, 'top'],
+                    [5, 'right', 6, 'left'], [6, 'bottom', 7, 'top'], [7, 'right', 8, 'left'],
                     [5, 'bottom', 9, 'top'],
-                    [9, 'right', 10, 'left'], [10, 'bottom', 11, 'top'], [11, 'bottom', 12, 'top'],
+                    [9, 'right', 10, 'left'], [10, 'bottom', 11, 'top'], [11, 'right', 12, 'left'],
                     [9, 'bottom', 14, 'top'],
-                    [14, 'right', 15, 'left'], [15, 'bottom', 16, 'top'], [16, 'bottom', 17, 'top'],
+                    [14, 'right', 15, 'left'], [15, 'bottom', 16, 'top'], [16, 'right', 17, 'left'],
                     [14, 'bottom', 18, 'top'],
-                    [18, 'right', 19, 'left'], [19, 'bottom', 20, 'top'], [20, 'bottom', 21, 'top'],
+                    [18, 'right', 19, 'left'], [19, 'bottom', 20, 'top'], [20, 'right', 21, 'left'],
                     [18, 'bottom', 22, 'top'],
-                    [22, 'right', 23, 'left'], [23, 'bottom', 24, 'top'], [24, 'bottom', 25, 'top'],
+                    [22, 'right', 23, 'left'], [23, 'bottom', 24, 'top'], [24, 'right', 25, 'left'],
                     [22, 'bottom', 26, 'top'],
-                    [26, 'right', 28, 'left'], [28, 'bottom', 29, 'top'], [29, 'bottom', 30, 'top'],
+                    [26, 'right', 28, 'left'], [28, 'bottom', 29, 'top'], [29, 'right', 30, 'left'],
                     [26, 'bottom', 31, 'top']
                 ]
             },
@@ -2181,62 +2182,61 @@
             {
                 id: 'waste', name: 'Třídění odpadu', hint: 'Kaskádové větvení (ekologie)',
                 blocks: [
-                    { type: 'start', label: 'Start', x: 0, y: -420 },
-                    { type: 'io', label: 'material', ioType: 'input', x: 0, y: -260 },
-                    { type: 'note', label: 'TŘÍDĚNÍ:\nDo které popelnice materiál\npatří? Jeden směr = jedna\nVĚTEV podmínky.', x: -380, y: -300 },
-                    { type: 'decision', label: 'material == "plast"', yesPort: 'right', noPort: 'bottom', x: 0, y: -100 },
-                    { type: 'io', label: 'Plast → žlutý kontejner', ioType: 'output', x: 380, y: -100 },
-                    { type: 'end', label: 'Konec', x: 380, y: 60 },
-                    { type: 'decision', label: 'material == "papir"', yesPort: 'right', noPort: 'bottom', x: 0, y: 100 },
-                    { type: 'io', label: 'Papír → modrý kontejner', ioType: 'output', x: 380, y: 100 },
-                    { type: 'end', label: 'Konec', x: 380, y: 260 },
-                    { type: 'note', label: 'KASKÁDA PODMÍNEK:\nSrovnáváme postupně,\ndokud není materiál vhodný\n(nebo neznámý).', x: -380, y: 260 },
-                    { type: 'decision', label: 'material == "sklo"', yesPort: 'right', noPort: 'bottom', x: 0, y: 300 },
-                    { type: 'io', label: 'Sklo → zelený kontejner', ioType: 'output', x: 380, y: 300 },
-                    { type: 'end', label: 'Konec', x: 380, y: 460 },
-                    { type: 'decision', label: 'material == "bio"', yesPort: 'right', noPort: 'bottom', x: 0, y: 500 },
-                    { type: 'io', label: 'Bio → hnědý kontejner', ioType: 'output', x: 380, y: 500 },
-                    { type: 'end', label: 'Konec', x: 380, y: 660 },
-                    { type: 'io', label: 'Neznámý materiál: {material}', ioType: 'output', x: 0, y: 700 },
-                    { type: 'end', label: 'Konec', x: 0, y: 860 }
+                    { type: 'start', label: 'Start', x: 0, y: -480 },
+                    { type: 'io', label: 'material', ioType: 'input', x: 0, y: -300 },
+                    { type: 'note', label: 'TŘÍDĚNÍ:\nDo které popelnice materiál\npatří? Jeden směr = jedna\nVĚTEV podmínky.', x: -460, y: -330 },
+                    { type: 'decision', label: 'material == "plast"', yesPort: 'right', noPort: 'bottom', x: 0, y: -110 },
+                    { type: 'io', label: 'Plast → žlutý kontejner', ioType: 'output', x: 460, y: -110 },
+                    { type: 'end', label: 'Konec', x: 780, y: -110 },
+                    { type: 'decision', label: 'material == "papir"', yesPort: 'right', noPort: 'bottom', x: 0, y: 130 },
+                    { type: 'io', label: 'Papír → modrý kontejner', ioType: 'output', x: 460, y: 130 },
+                    { type: 'end', label: 'Konec', x: 780, y: 130 },
+                    { type: 'note', label: 'KASKÁDA PODMÍNEK:\nSrovnáváme postupně,\ndokud není materiál vhodný\n(nebo neznámý).', x: -460, y: 500 },
+                    { type: 'decision', label: 'material == "sklo"', yesPort: 'right', noPort: 'bottom', x: 0, y: 370 },
+                    { type: 'io', label: 'Sklo → zelený kontejner', ioType: 'output', x: 460, y: 370 },
+                    { type: 'end', label: 'Konec', x: 780, y: 370 },
+                    { type: 'decision', label: 'material == "bio"', yesPort: 'right', noPort: 'bottom', x: 0, y: 610 },
+                    { type: 'io', label: 'Bio → hnědý kontejner', ioType: 'output', x: 460, y: 610 },
+                    { type: 'end', label: 'Konec', x: 780, y: 610 },
+                    { type: 'io', label: 'Neznámý materiál: {material}', ioType: 'output', x: 0, y: 850 },
+                    { type: 'end', label: 'Konec', x: 0, y: 1010 }
                 ],
                 arrows: [
                     [0, 'bottom', 1, 'top'], [1, 'bottom', 3, 'top'],
-                    [3, 'right', 4, 'left'], [4, 'bottom', 5, 'top'], [3, 'bottom', 6, 'top'],
-                    [6, 'right', 7, 'left'], [7, 'bottom', 8, 'top'], [6, 'bottom', 10, 'top'],
-                    [10, 'right', 11, 'left'], [11, 'bottom', 12, 'top'], [10, 'bottom', 13, 'top'],
-                    [13, 'right', 14, 'left'], [14, 'bottom', 15, 'top'], [13, 'bottom', 16, 'top'],
+                    [3, 'right', 4, 'left'], [4, 'right', 5, 'left'], [3, 'bottom', 6, 'top'],
+                    [6, 'right', 7, 'left'], [7, 'right', 8, 'left'], [6, 'bottom', 10, 'top'],
+                    [10, 'right', 11, 'left'], [11, 'right', 12, 'left'], [10, 'bottom', 13, 'top'],
+                    [13, 'right', 14, 'left'], [14, 'right', 15, 'left'], [13, 'bottom', 16, 'top'],
                     [16, 'bottom', 17, 'top']
                 ]
             },
             {
                 id: 'bmi', name: 'BMI', hint: 'Vzorec a vyhodnocení (zdravověda)',
                 blocks: [
-                    { type: 'start', label: 'Start', x: 0, y: -420 },
-                    { type: 'io', label: 'vaha', ioType: 'input', x: 0, y: -260 },
+                    { type: 'start', label: 'Start', x: 0, y: -460 },
+                    { type: 'io', label: 'vaha', ioType: 'input', x: 0, y: -280 },
                     { type: 'io', label: 'vyska', ioType: 'input', x: 0, y: -100 },
-                    { type: 'note', label: 'VÝŠKA V METRECH:\nNapíšeme 1,75, ne 175.\nBMI = hmotnost ÷ výška².', x: -380, y: -140 },
-                    { type: 'process', label: 'bmi = Math.round(vaha / (vyska * vyska) * 10) / 10', x: 0, y: 60 },
-                    { type: 'decision', label: 'bmi < 18.5', yesPort: 'right', noPort: 'bottom', x: 0, y: 220 },
-                    { type: 'io', label: 'Podváha (BMI {bmi})', ioType: 'output', x: 360, y: 220 },
-                    { type: 'end', label: 'Konec', x: 360, y: 380 },
-                    { type: 'decision', label: 'bmi <= 25', yesPort: 'right', noPort: 'bottom', x: 0, y: 420 },
-                    { type: 'io', label: 'Norma (BMI {bmi})', ioType: 'output', x: 360, y: 420 },
-                    { type: 'end', label: 'Konec', x: 360, y: 580 },
-                    { type: 'note', label: 'ROZSAHY (orientačně):\npod 18,5 podváha · 18,5–25\nnorma · 25–30 nadváha ·\nnad 30 obezita.', x: -380, y: 480 },
-                    { type: 'decision', label: 'bmi <= 30', yesPort: 'right', noPort: 'bottom', x: 0, y: 620 },
-                    { type: 'io', label: 'Nadváha (BMI {bmi})', ioType: 'output', x: 360, y: 620 },
-                    { type: 'end', label: 'Konec', x: 360, y: 780 },
-                    { type: 'io', label: 'Obezita (BMI {bmi})', ioType: 'output', x: 0, y: 820 },
-                    { type: 'end', label: 'Konec', x: 0, y: 980 }
+                    { type: 'note', label: 'VÝŠKA V METRECH:\nNapíšeme 1,75, ne 175.\nBMI = hmotnost ÷ výška².', x: -460, y: -160 },
+                    { type: 'process', label: 'bmi = Math.round(vaha / (vyska * vyska) * 10) / 10', x: 0, y: 80 },
+                    { type: 'decision', label: 'bmi < 18.5', yesPort: 'right', noPort: 'bottom', x: 0, y: 270 },
+                    { type: 'io', label: 'Podváha (BMI {bmi})', ioType: 'output', x: 440, y: 270 },
+                    { type: 'end', label: 'Konec', x: 760, y: 270 },
+                    { type: 'decision', label: 'bmi <= 25', yesPort: 'right', noPort: 'bottom', x: 0, y: 530 },
+                    { type: 'io', label: 'Norma (BMI {bmi})', ioType: 'output', x: 440, y: 530 },
+                    { type: 'end', label: 'Konec', x: 760, y: 530 },
+                    { type: 'note', label: 'ROZSAHY (orientačně):\npod 18,5 podváha · 18,5–25\nnorma · 25–30 nadváha ·\nnad 30 obezita.', x: -460, y: 560 },
+                    { type: 'decision', label: 'bmi <= 30', yesPort: 'right', noPort: 'bottom', x: 0, y: 790 },
+                    { type: 'io', label: 'Nadváha (BMI {bmi})', ioType: 'output', x: 440, y: 790 },
+                    { type: 'end', label: 'Konec', x: 760, y: 790 },
+                    { type: 'io', label: 'Obezita (BMI {bmi})', ioType: 'output', x: 0, y: 1050 },
+                    { type: 'end', label: 'Konec', x: 0, y: 1210 }
                 ],
                 arrows: [
                     [0, 'bottom', 1, 'top'], [1, 'bottom', 2, 'top'], [2, 'bottom', 4, 'top'],
-                    [4, 'bottom', 5, 'top'], [5, 'bottom', 8, 'top'],
-                    [5, 'right', 6, 'left'], [6, 'bottom', 7, 'top'],
-                    [8, 'right', 9, 'left'], [9, 'bottom', 10, 'top'], [8, 'bottom', 12, 'top'],
-                    [12, 'right', 13, 'left'], [13, 'bottom', 14, 'top'], [12, 'bottom', 15, 'top'],
-                    [15, 'bottom', 16, 'top']
+                    [4, 'bottom', 5, 'top'], [5, 'right', 6, 'left'], [6, 'right', 7, 'left'],
+                    [5, 'bottom', 8, 'top'], [8, 'right', 9, 'left'], [9, 'right', 10, 'left'],
+                    [8, 'bottom', 12, 'top'], [12, 'right', 13, 'left'], [13, 'right', 14, 'left'],
+                    [12, 'bottom', 15, 'top'], [15, 'bottom', 16, 'top']
                 ]
             },
             {
@@ -3109,7 +3109,7 @@
                     row.className = 'menu-mission';
                     row.innerHTML =
                         '<div class="mm-top"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fde047" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px; margin-right:6px;" aria-hidden="true"><path d="M13.2 2.6c-1 1.5-2 3.4-2.4 5.2-1.7 0-4.9 1.6-6.1 4.2C3 15 3.8 19 6.7 21c3 2 6.5.6 8.9-1.4 2.2-1.9 3.6-4.7 3.6-7.6 2.7-.8 4.4-2.6 4.8-4.3"/><path d="M9.5 15.5 14.5 9"/></svg>' + s.name + '</div>' +
-                        '<div style="font-size:11px;opacity:0.55;">' + s.hint + '</div>';
+                        '<div style="font-size:12px;opacity:0.7;">' + s.hint + '</div>';
                     row.addEventListener('click', () => this.loadSample(s.id));
                     list.appendChild(row);
                 });

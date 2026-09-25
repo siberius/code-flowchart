@@ -112,6 +112,7 @@ check('8 misí H v menu', App.dom.menuMissions.children.length === 8, 'got ' + A
 check('space1 má obsah (jablka)', App.blocks.length > 0, 'bloky=' + App.blocks.length);
 check('jmenný modal se při startu neotevřel', !App.dom.nameModal.classList.contains('show'));
 check('menu = semiprůhledné sklo (blur + saturate + nižší alfa)', /\-webkit-backdrop-filter\s*:\s*blur\(20px\)\s*saturate\(140%\)/.test(html) && /rgba\(13,\s*15,\s*20,\s*0\.4\)/.test(html) && /rgba\(15,\s*18,\s*26,\s*0\.6\)/.test(html) && /backdrop-filter\s*:\s*blur\(20px\)\s*saturate\(140%\)/.test(html), 'menu bez skla');
+check('menu na mobilu = max šířka, text větší, ukázky čitelnější', /#side-menu\s*\{[^}]*width:\s*min\(320px,\s*calc\(100vw - 12px\)\)/.test(html) && /\.menu-mission\s*\{[^}]*font-size:\s*14px/.test(html) && /font-size:12px;opacity:0\.7;/.test(html) && /\.menu-section-title\s*\{[^}]*font-size:\s*14px/.test(html));
 check('šedý text zesvětlen o 20 % (#64748b → #8390a2)', html.includes('--text-dim: #8390a2') && !html.includes('--text-dim: #64748b'));
 check('modaly, terminál i prompt průhlednější než dřív', /\.modal-box\s*\{[^}]*rgba\(30,\s*34,\s*48,\s*0\.28\)/.test(html) && /#console-panel\s*\{[^}]*rgba\(13,\s*15,\s*20,\s*0\.7\)[\s\S]*?backdrop-filter: blur\(20px\)/.test(html) && /\.sim-prompt\s*\{[^}]*rgba\(13,\s*15,\s*20,\s*0\.75\)/.test(html), 'sklo bez úprav');
 

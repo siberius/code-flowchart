@@ -1254,10 +1254,10 @@
 
                     <div class="help-section">
                         <h4>Práce se Vstupy a Výstupy</h4>
-                        <div class="help-item"><strong>VSTUP:</strong> Napiš název proměnné (např. <span class="help-code">vek</span>). Po spuštění se zobrazí okno pro zadání. Typ určíš i výslovně: <span class="help-code">n = vstup číslo</span> (vynutí číslo) nebo <span class="help-code">jmeno = vstup text</span>.</div>
+                        <div class="help-item"><strong>VSTUP:</strong> Napiš název proměnné (např. <span class="help-code">vek</span>). Po spuštění se zobrazí okno pro zadání. Typ určíš i výslovně: <span class="help-code">n = vstup číslo</span> (vynutí číslo) nebo <span class="help-code">jmeno = vstup text</span>. Rychleji typ přepneš kolečkem <span class="help-code">Aa/123</span> vpravo dole na bloku — kolečko má přednost před zápisem v popisku.</div>
                         <div class="help-item"><strong>Když dáš do číselného vstupu znak, ne číslo:</strong> u typu „číslo" tě program nepustí dál, dokud nezadáš číslo; bez určení typu se hodnota uloží a při počítání s textem program jasně zahlásí chybu (např. <span class="help-code">abc</span>). Desetinnou čárku zadej jako tečku.</div>
                         <div class="help-item"><strong>VÝSTUP:</strong> Můžeš psát text a vkládat proměnné do složených závorek. Např.: <span class="help-code">Máš {skore} bodů.</span></div>
-                        <div class="help-item"><em>Přepínání Vstup/Výstup:</em> Klikni na malou ikonku kolečka přímo uvnitř fialového bloku.</div>
+                        <div class="help-item"><em>Kolečka na fialovém bloku:</em> vlevo nahoře přepíná VSTUP/VÝSTUP, vpravo dole typ vstupu TEXT (<span class="help-code">Aa</span>) / ČÍSLO (<span class="help-code">123</span>).</div>
                     </div>
 
                     <div class="help-section">
@@ -1290,7 +1290,13 @@
                     </div>
 
                     <div class="help-section">
-                        <h4>Co si osvojíš (SOŠ — obory H a E/J)</h4>
+                        <h4>Terminál a běh programu</h4>
+                        <div class="help-item">Po <strong>správném doběhu</strong> se lišta terminálu po chvilce sama pomalu stáhne; šipkou vpravo na liště ji stáhneš i vysuneš ručně.</div>
+                        <div class="help-item">Na PC lišta modulů plave nad staženým terminálem, aby se nepřekrývaly.</div>
+                    </div>
+
+                    <div class="help-section">
+                        <h4>Co si osvojíš (SOŠ — H, E/J a úvod M/L)</h4>
                         <div class="help-item">Zápis algoritmu vývojovým diagramem, proměnné a datové typy, vstup/výstup, větvení, cykly (fixní i podmíněné), podprogramy a dekompozice, ověření a oprava řešení, vlastní tvorba.</div>
                     </div>
 
@@ -1342,7 +1348,7 @@
         <div class="modal-box">
             <h3><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>O programu</h3>
             <p style="color: var(--text-dim); line-height: 1.6; font-size: 14px; margin-bottom: 10px;">CodeFlowChart EDU je moderní, plně interaktivní výukový nástroj pro vizuální pochopení algoritmů, logických struktur a stavových proměnných. Spojuje návrh vývojových diagramů s krokovacím enginem a Visual RAM pamětí v reálném čase.</p>
-            <p style="color: var(--text-dim); line-height: 1.6; font-size: 14px; margin-bottom: 10px;">Obsahuje <strong style="color: var(--text);">14 misí</strong> (MISE — 8 pro profil H + 6 pro E/J) od sekvence přes větvení a cykly až po podprogramy, <strong style="color: var(--text);">hodnosti, hvězdy, značky a certifikát</strong>, volné plochy SPACE 1–5 a ukázkové diagramy. Pokrývá učivo <strong style="color: var(--text);">SOŠ — učebních oborů H a E/J (RVP SOV, neprogramátorské obory)</strong>: zápis algoritmu, proměnné, vstup/výstup, větvení, cykly, podprogramy, ověření a tvorba.</p>
+            <p style="color: var(--text-dim); line-height: 1.6; font-size: 14px; margin-bottom: 10px;">Obsahuje <strong style="color: var(--text);">14 misí</strong> (MISE — 8 pro profil H + 6 pro E/J) od sekvence přes větvení a cykly až po podprogramy, <strong style="color: var(--text);">hodnosti, hvězdy, značky a certifikát</strong>, volné plochy SPACE 1–5 a ukázkové diagramy. Pokrývá učivo <strong style="color: var(--text);">SOŠ — oborů H a E/J a úvodní algoritmizaci maturitních oborů (RVP SOV, kategorie M/L mimo G)</strong>: zápis algoritmu, proměnné a datové typy vstupu (TEXT/ČÍSLO), vstup/výstup, větvení, cykly, podprogramy, ověření a tvorba.</p>
             <div style="background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.35); border-radius: 10px; padding: 12px 14px; margin-bottom: 10px;">
                 <div style="color: #10b981; font-weight: 800; letter-spacing: 1px; font-size: 13px; margin-bottom: 6px;">UKÁZKA SPA (SINGLE PAGE APPLICATION)</div>
                 <div style="color: var(--text); font-size: 14px; line-height: 1.6; margin-bottom: 8px;">Kompletní aplikace v jediném HTML souboru — offline, bez serveru a bez sbírání dat žáka.</div>
@@ -3509,7 +3515,7 @@
                 this.vy = 0;
 
                 const cx = 0;
-                const cy = -230; // posun celého diagramu jablek o cca 20 % výš
+                const cy = -345; // posun celého diagramu jablek o cca 30 % výš
 
                 const b1 = this.addBlockSilent('start', 'Začátek Sběru', cx - 250, cy - 140);
                 const b_note1 = this.addBlockSilent('note', 'ÚVOD:\nNejprve zadáme jméno a definujeme\ndvě barvy, které chceme sbírat.\nPak vynulujeme počítadla a krok.', cx + 320, cy - 20);

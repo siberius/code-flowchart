@@ -2,6 +2,30 @@
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
+## 2026-09-27 — Diagram jablek o dalších 10 % výš (nezakomitováno)
+
+- **Oblast:** výchozí šablona SPACE 1 (`buildDefaultGameLoop` v `index.html`).
+- **Změna:** `cy: -230 → -345` (celkem cca 30 % výšky diagramu); rozložení beze změny.
+- **Ověření:** inline `<script>` syntax OK (1/1).
+
+## 2026-09-27 — Nápověda + O programu k novinkám; RVP maturitní bez G (nezakomitováno)
+
+- **Oblast:** texty v `index.html` (help-modal, about-modal).
+- **Změna:** nápověda: kolečko `Aa/123` (přednost před zápisem typu v popisku),
+  nová pravidla koleček na fialovém bloku, nová sekce „Terminál a běh programu"
+  (auto-stažení po úspěchu, ruční šipka, lišta modulů nad terminálem na PC).
+  O programu + „Co si osvojíš": rozsah přeformulován na „H, E/J a úvodní
+  algoritmizaci maturitních oborů (RVP SOV, M/L mimo G)" + datové typy vstupu.
+- **RVP verdikt (ověřeno na revize.rvp.cz / edu.cz):** aktualizované informatické
+  kurikulum RVP SOV platí od 1. 9. 2025 pro všechny kategorie J/E/H/M/L. ANO pro
+  úvodní algoritmizaci maturitních ne-IT oborů (sekvence, proměnné a datové typy,
+  I/O, větvení, cykly, volání podprogramu, testování) — NE jako plné pokrytí
+  maturitní informatiky: chybí pole, funkce s parametry, soubory, OOP a rekurze,
+  tj. pro IT obory (např. 18-20-M/01) jen přípravný stupeň před reálným jazykem.
+- **Ověření:** inline `<script>` syntax OK (1/1); regex PASS (4/4); podmínka
+  smoke testu na nadpis „Co si osvojíš (SOŠ" PASS; plné Node testy nelze spustit
+  (pre-existing ENOENT po přejmenování `code-flowchart.html → index.html`).
+
 ## 2026-09-27 — Přepínač typu vstupu TEXT/ČÍSLO na bloku (nezakomitováno)
 
 - **Oblast:** IO blok v `index.html` (render, engine, checker, persistence).

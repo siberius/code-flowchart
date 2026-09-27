@@ -1,3 +1,13 @@
+# Lokální testovací sada (veřejný repozitář obsahuje jen aplikaci a dokumenty)
+syntax_check.js
+flow_tests.js
+flow_check_tests.js
+flow_storage_tests.js
+flow_game_tests.js
+flow_smoke_tests.js
+flow_ui_tests.js
+flow_test_utils.js
+
 # Lokální a dočasné soubory
 node_modules/
 *.log

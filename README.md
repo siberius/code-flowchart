@@ -53,22 +53,12 @@ Hra je jediný HTML soubor, nepotřebuje build ani závislosti:
 | `Ctrl+S` | Export SVG |
 | `Esc` | Zavřít dialog |
 
-## Vývoj a testy
+## Vývoj
 
 Celá aplikace je vanilla JS a CSS přímo v `index.html` — žádný module systém,
 žádný build, žádné závislosti. Podrobný plán přestavby je v `PLAN.md`.
-
-Testy běží v Node.js bez prohlížeče:
-
-```sh
-node syntax_check.js      # syntaxe inline <script> bloků
-node flow_tests.js        # jádro: parser, VÝSTUP {var}, porty, smyčky
-node flow_check_tests.js  # Checker: evaluátor podmínek, testovací vektory
-node flow_storage_tests.js # ukládání, migrace, restart mise, export/import
-node flow_game_tests.js   # herní vrstva: mise, profily, značky, certifikát
-node flow_smoke_tests.js  # UI smoke nad DOM mockem
-node flow_ui_tests.js     # viewport a responzivní breakpointy
-```
+Repozitář obsahuje záměrně jen aplikaci a dokumenty; vývojové testy zůstávají
+mimo veřejný repozitář.
 
 ## Licence
 

@@ -2,6 +2,18 @@
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
+## 2026-09-27 — Veřejný repozitář bez testů (commit `96a03c2`)
+
+- **Oblast:** obsah repozitáře `siberius/code-flowchart`.
+- **Změna:** z veřejného repozitáře vyjmuta testovací sada (8 souborů
+  `syntax_check.js` + `flow_*_tests.js` + `flow_test_utils.js`) — zůstávají jen
+  lokálně na disku a jsou v `.gitignore`, takže se znovu nenacommitují.
+  Na GitHubu je nově jen aplikace a dokumenty: `index.html`, `README.md`
+  (sekce testů odebrána — po klonu testy nejsou k dispozici), `LICENSE`,
+  `PLAN.md`, `AGENTS.md`, `finished.md`, `.gitignore`.
+- **Ověření:** lokální soubory testů na disku zůstaly a procházejí
+  (smoke 215 OK, 0 FAIL); `git ls-tree origin/main` potvrzuje 7 souborů.
+
 ## 2026-09-27 — Publikace na GitHub: README, LICENSE, odkaz na Git (commit `d0bb02b`)
 
 - **Oblast:** repozitář `siberius/code-flowchart` (README, licence, O programu, testy).

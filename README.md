@@ -67,6 +67,6 @@ Dílo můžeš svobodně používat, upravovat i šířit včetně školní výu
 
 ## Autor
 
-**Luděk Sušický** — učitel informatiky na SŠ a VŠ (AI ve vzdělávání, vibecoding).
+**Luděk Sušický** — biolog, středoškolský a vysokoškolský učitel informatických předmětů.
 Kontakt: ludek.susicky@gmail.com · X: [@ludeksusicky](https://x.com/ludeksusicky) ·
 LinkedIn: [ludek-susicky](https://www.linkedin.com/in/ludek-susicky/)

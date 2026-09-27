@@ -2,6 +2,21 @@
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
+## 2026-09-27 — Publikace na GitHub: README, LICENSE, odkaz na Git (commit `d0bb02b`)
+
+- **Oblast:** repozitář `siberius/code-flowchart` (README, licence, O programu, testy).
+- **Změna:** nové `README.md` (česky: spuštění, mise, soukromí, zkratky, testy,
+  licence, autor), `LICENSE` (MIT © 2026 Luděk Sušický), `.gitignore`
+  (node_modules, logy, exporty JSON/SVG). Modal O programu má řádek
+  „Zdrojový kód" s odkazem na `github.com/siberius/code-flowchart`.
+  Testovací harness přesměrován z `code-flowchart.html` na `index.html`
+  (`syntax_check.js`, `flow_test_utils.js`, `flow_smoke_tests.js`,
+  `flow_ui_tests.js`) — sady předtím končily ENOENT. Opraveno zastaralé
+  očekávání smoke testu („obory" → „oborů H a E/J" dle aktuálního textu)
+  a přidán test na git odkaz. Repozitář přepnut na veřejný (public).
+- **Ověření:** syntax OK · flow_tests 39 · flow_check 70 · flow_game 93 ·
+  flow_storage 55 · flow_ui 6 · flow_smoke 215 (celkem **478** kontrol, 0 FAIL).
+
 ## 2026-09-27 — Metodika (PDF), verze 1.0, profil E/J pod zkratku (nezakomitováno)
 
 - **Oblast:** menu, O programu, přepínání profilu v `index.html`.

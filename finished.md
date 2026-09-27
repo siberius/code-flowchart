@@ -2,6 +2,18 @@
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
+## 2026-09-27 — Sbalený terminál nad lištou modulů na PC (nezakomitováno)
+
+- **Oblast:** UI/CSS v `index.html` — sbalený `#console-panel` (`translateY(calc(100% - 46px))`)
+  překrýval středovou `#toolbar` (bottom 20 px).
+- **Změna:** jen PC (`@media (hover:hover) and (pointer:fine) and (min-width:769px)`)
+  zvedne sbalený panel na `bottom:96px` s plným `border-radius:16px` + rámečkem;
+  otevřený stav (`bottom:0`) a mobil beze změny. `#toast` posunut na `bottom:158px`,
+  aby ho plovoucí lišta nezakrývala.
+- **Ověření:** regex kontroly PASS (docked 46px + open stav + dockConsole zachovány,
+  nové pravidlo jen pro PC); plné Node testy nelze spustit — repo po přejmenování
+  `code-flowchart.html → index.html` nenačte `flow_*_tests.js` (pre-existing ENOENT).
+
 ## 2026-09-25 — Svod: víc cest → jeden KONEC (fan-out, ukázky s jedním koncem) (nezakomitováno)
 
 - **Systémově osvětleno a schváleno (rozhodnutí zadavatele):** konců může být více (pro

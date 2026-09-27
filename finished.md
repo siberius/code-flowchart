@@ -2,6 +2,15 @@
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
+## 2026-09-27 — Nápověda bez O aplikaci, O programu s Gitem ke stažení (nezakomitováno)
+
+- **Oblast:** texty v `index.html` (help-modal, about-modal).
+- **Změna:** z nápovědy odebrána sekce „O aplikaci" (SPA + licence zůstávají
+  v O programu); v O programu přejmenován řádek „Zdrojový kód" na
+  „Git ke stažení" se stejným odkazem na `github.com/siberius/code-flowchart`.
+- **Ověření:** inline `<script>` syntax OK (1/1); smoke testy aktualizovány
+  (bez `<h4>O aplikaci</h4>`, „Git ke stažení" v O programu) — 215 OK, 0 FAIL.
+
 ## 2026-09-27 — Diagram jablek o dalších 10 % výš (nezakomitováno)
 
 - **Oblast:** výchozí šablona SPACE 1 (`buildDefaultGameLoop` v `index.html`).

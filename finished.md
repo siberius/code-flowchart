@@ -2,16 +2,37 @@
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
-## 2026-09-27 — Sbalený terminál nad lištou modulů na PC (nezakomitováno)
+## 2026-09-27 — Terminál se po úspěšném běhu pomalu stáhne + SVG šipka (nezakomitováno)
 
-- **Oblast:** UI/CSS v `index.html` — sbalený `#console-panel` (`translateY(calc(100% - 46px))`)
-  překrýval středovou `#toolbar` (bottom 20 px).
-- **Změna:** jen PC (`@media (hover:hover) and (pointer:fine) and (min-width:769px)`)
-  zvedne sbalený panel na `bottom:96px` s plným `border-radius:16px` + rámečkem;
-  otevřený stav (`bottom:0`) a mobil beze změny. `#toast` posunut na `bottom:158px`,
-  aby ho plovoucí lišta nezakrývala.
-- **Ověření:** regex kontroly PASS (docked 46px + open stav + dockConsole zachovány,
-  nové pravidlo jen pro PC); plné Node testy nelze spustit — repo po přejmenování
+- **Oblast:** `#console-panel` v `index.html` (hlavička + `startSimulation`/`stopSimulation`).
+- **Změna:** křížek `✖` a znak `▼` nahrazeny SVG šipkou (chevron); po úspěšném běhu
+  (`lastSimStatus === 'success'`) se po 2,5 s lišta pomalu stáhne (`slow-dock`,
+  přechod 1,4 s). Nový `dockTimer` se ruší při novém běhu, ručním zavření i přepnutí
+  lišty, aby uživatele nepřekvapil.
+- **Ověření:** inline `<script>` syntax OK (1/1); regex PASS (slow-dock, dockTimer,
+  SVG šipka, křížek pryč, docked 46 px + toggle handler zachovány); plné Node testy
+  nelze spustit (pre-existing ENOENT po přejmenování `code-flowchart.html → index.html`).
+
+## 2026-09-27 — Diagram jablek o 20 % výš (nezakomitováno)
+
+- **Oblast:** výchozí šablona SPACE 1 (`buildDefaultGameLoop` v `index.html`).
+- **Změna:** `cy: 0 → -230` (≈20 % výšky diagramu ~1160 px); všechny bloky se posunou
+  rovnoměrně o 230 px výš, relativní rozložení beze změny.
+- **Ověření:** inline `<script>` syntax OK (1/1); žádné testy na souřadnice šablony
+  neexistují; plné Node testy nelze spustit (pre-existing ENOENT po přejmenování
+  `code-flowchart.html → index.html`).
+
+## 2026-09-27 — Lišta modulů nad sbaleným terminálem na PC (nezakomitováno)
+
+- **Oblast:** UI/CSS v `index.html` — sbalený `#console-panel` (46 px, `bottom:0`) překrýval
+  středovou `#toolbar` (`bottom:20px`).
+- **Oprava napodruhé (správně):** první pokus zvedl terminál (`bottom:96px`), ale kvůli
+  `translateY(calc(100%-46px))` tím naopak zakryl ještě víc (0–142 px) — vráceno.
+  Místo toho se na PC (`@media (hover:hover) and (pointer:fine) and (min-width:769px)`)
+  zvedá **lišta modulů** na `bottom:62px` (46 px terminál + 16 px mezera); otevřený stav
+  a mobil beze změny. `#toast` posunut na `bottom:142px`, aby ho lišta nezakrývala.
+- **Ověření:** regex kontroly PASS (docked 46px + bottom:0 + toolbar 20px base + PC 62px
+  zachovány); plné Node testy nelze spustit — repo po přejmenování
   `code-flowchart.html → index.html` nenačte `flow_*_tests.js` (pre-existing ENOENT).
 
 ## 2026-09-25 — Svod: víc cest → jeden KONEC (fan-out, ukázky s jedním koncem) (nezakomitováno)

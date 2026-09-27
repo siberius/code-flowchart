@@ -533,14 +533,10 @@
             z-index: 200; display: flex; flex-direction: column; box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
         }
         #console-panel.open { transform: translateY(0); }
-        /* PC: sbalený terminál plave nad spodní lištou modulů, aby se nepřekrývaly */
+        /* PC: spodní lišta modulů plave nad sbaleným terminálem (46 px), aby se nepřekrývaly */
         @media (hover: hover) and (pointer: fine) and (min-width: 769px) {
-            #console-panel:not(.open) {
-                bottom: 96px;
-                border: 1px solid var(--border);
-                border-radius: 16px;
-            }
-            #toast { bottom: 158px; }
+            #toolbar { bottom: 62px; }
+            #toast { bottom: 142px; }
         }
         .console-header {
             height: 46px; flex-shrink: 0; display: flex; justify-content: space-between; align-items: center;
@@ -554,6 +550,10 @@
         #console-panel.open .console-dock-hint .caret { transform: rotate(180deg); }
         .close-console { cursor: pointer; color: var(--text); font-size: 20px; transition: color 0.2s; }
         .close-console:hover { color: #ef4444; }
+        .close-console svg { display: block; transition: transform 0.3s; }
+        #console-panel:not(.open) .close-console svg { transform: rotate(180deg); }
+        #console-panel.slow-dock { transition: transform 1.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .console-dock-hint svg { vertical-align: -2px; }
         
         .sim-controls { display: flex; gap: 12px; align-items: center; }
         #sim-speed-select {
@@ -1010,7 +1010,7 @@
         <div class="console-header" onclick="App.toggleConsolePanel(event)">
             <div style="display: flex; gap: 16px; align-items: center; min-width: 0;">
                 <span class="tit"><b>Terminal</b> // CodeFlowChart Execution Engine v1.1</span>
-                <span class="console-dock-hint"><span class="caret">▼</span> konzole</span>
+                <span class="console-dock-hint"><svg class="caret" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg> konzole</span>
                 <div class="sim-controls" onclick="event.stopPropagation()">
                     <select id="sim-speed-select" onchange="App.setSpeed(this.value)" title="Rychlost simulace">
                         <option value="1">Rychlost 1x</option>
@@ -1020,7 +1020,7 @@
                     <button id="btn-next-step" onclick="App.nextStep()" style="display:none;">Další krok ⏭</button>
                 </div>
             </div>
-            <span class="close-console" onclick="event.stopPropagation(); App.stopSimulation(true)">✖</span>
+            <span class="close-console" title="Stáhnout lištu" onclick="event.stopPropagation(); App.stopSimulation(true)"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span>
         </div>
         <div class="console-layout">
             <div class="console-left">
@@ -2522,6 +2522,7 @@
             isSimulating: false,
             isStepping: false,
             simAbortController: null,
+            dockTimer: null,
             resolveStep: null, 
             visualRAM: {}, 
             runtimeTypeError: false,
@@ -3498,7 +3499,7 @@
                 this.vy = 0;
 
                 const cx = 0;
-                const cy = 0;
+                const cy = -230; // posun celého diagramu jablek o cca 20 % výš
 
                 const b1 = this.addBlockSilent('start', 'Začátek Sběru', cx - 250, cy - 140);
                 const b_note1 = this.addBlockSilent('note', 'ÚVOD:\nNejprve zadáme jméno a definujeme\ndvě barvy, které chceme sbírat.\nPak vynulujeme počítadla a krok.', cx + 320, cy - 20);
@@ -5060,13 +5061,17 @@
 
             toggleConsolePanel(e) {
                 if (e && e.target && e.target.closest && e.target.closest('select,button,.close-console,.sim-controls')) return;
+                if (this.dockTimer) { clearTimeout(this.dockTimer); this.dockTimer = null; }
                 const p = this.dom.consolePanel;
+                if (p) p.classList.remove('slow-dock');
                 if (!p) return;
                 if (p.classList.contains('open')) p.classList.remove('open');
                 else p.classList.add('open');
             },
             dockConsole() {
+                if (this.dockTimer) { clearTimeout(this.dockTimer); this.dockTimer = null; }
                 const p = this.dom.consolePanel;
+                if (p) p.classList.remove('slow-dock');
                 if (p && p.classList.contains('open')) p.classList.remove('open');
             },
 
@@ -5179,6 +5184,8 @@
 
             async startSimulation(stepMode) {
                 this.isSimulating = true;
+                if (this.dockTimer) { clearTimeout(this.dockTimer); this.dockTimer = null; }
+                if (this.dom.consolePanel) this.dom.consolePanel.classList.remove('slow-dock');
                 this.isStepping = stepMode;
                 this.visualRAM = {};
                 this.runtimeTypeError = false;
@@ -5447,11 +5454,25 @@
                         this.logConsole('Běh OK — spouštím automatickou kontrolu...', 'info');
                         this.runCheck(false);
                     }
+                    if (this.lastSimStatus === 'success') {
+                        if (this.dockTimer) clearTimeout(this.dockTimer);
+                        const panel = this.dom.consolePanel;
+                        if (panel) {
+                            panel.classList.add('slow-dock');
+                            this.dockTimer = setTimeout(() => {
+                                if (!this.isSimulating && panel.classList.contains('open')) panel.classList.remove('open');
+                                setTimeout(() => panel.classList.remove('slow-dock'), 1600);
+                                this.dockTimer = null;
+                            }, 2500);
+                        }
+                    }
                 }
             },
 
             stopSimulation(closePanel = true) {
                 this.isSimulating = false;
+                if (this.dockTimer) { clearTimeout(this.dockTimer); this.dockTimer = null; }
+                if (this.dom.consolePanel) this.dom.consolePanel.classList.remove('slow-dock');
                 if (this.simAbortController) {
                     this.simAbortController.abort();
                     this.lastSimStatus = 'untested';

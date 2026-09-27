@@ -1,4 +1,4 @@
-# CodeFlowChart HEFAISTOS
+# CodeFlowChart 
 
 Výukový editor a simulátor vývojových diagramů v jediném souboru `index.html`.
 Žák staví diagram z bloků, krokuje běh programu, sleduje proměnné ve Visual RAM

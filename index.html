@@ -623,6 +623,13 @@
         
         .io-switch:hover { transform: rotate(90deg) scale(1.15); color: #fff; }
 
+        /* Přepínač datového typu vstupu (TEXT ↔ ČÍSLO) — pravý dolní roh bloku */
+        .glass-wheel.data-switch {
+            left: auto; right: -15px; top: auto; bottom: -15px;
+            font-size: 12px; font-weight: 800; font-family: 'JetBrains Mono', monospace;
+        }
+        .glass-wheel.data-switch:hover { transform: scale(1.15); color: #fff; }
+
         .port-label {
             position: absolute; font-size: 11px; font-weight: 800; pointer-events: none; opacity: 0.9;
             font-family: 'JetBrains Mono', monospace; text-shadow: 0 2px 4px rgba(0,0,0,0.8);
@@ -2966,6 +2973,7 @@
                     const jy = Math.round((Math.random() - 0.5) * 90);
                     const b = this.addBlockSilent(def.type, def.label, cell.x + jx, cell.y + jy);
                     if (def.ioType) b.ioType = def.ioType;
+                    if (def.dataType) b.dataType = def.dataType;
                     if (def.yesPort) b.yesPort = def.yesPort;
                     if (def.noPort) b.noPort = def.noPort;
                 });
@@ -2998,6 +3006,7 @@
                     const def = sol.blocks[i];
                     const b = this.addBlockSilent(def.type, def.label, def.x, def.y);
                     if (def.ioType) b.ioType = def.ioType;
+                    if (def.dataType) b.dataType = def.dataType;
                     if (def.yesPort) b.yesPort = def.yesPort;
                     if (def.noPort) b.noPort = def.noPort;
                     created.push(b);
@@ -3150,6 +3159,7 @@
                 const created = s.blocks.map(def => {
                     const b = this.addBlockSilent(def.type, def.label, def.x, def.y);
                     if (def.ioType) b.ioType = def.ioType;
+                    if (def.dataType) b.dataType = def.dataType;
                     if (def.yesPort) b.yesPort = def.yesPort;
                     if (def.noPort) b.noPort = def.noPort;
                     return b;
@@ -3560,6 +3570,7 @@
                     yesPort: (type === 'decision' || type === 'loop') ? 'bottom' : null,
                     noPort: (type === 'decision' || type === 'loop') ? 'right' : null,
                     ioType: type === 'io' ? 'input' : null,
+                    dataType: null,
                     isBreakpoint: false
                 };
                 this.blocks.push(block);
@@ -3776,6 +3787,14 @@
                     const title = isInput ? 'Režim: VSTUP DAT' : 'Režim: VÝSTUP DAT';
                     const color = isInput ? '#10b981' : '#ec4899';
                     specialUI = `<div class="glass-wheel io-switch" onclick="App.toggleIOType('${b.id}', event)" title="${title}" style="color: ${color}; border-color: ${color}; text-shadow: 0 0 10px ${color}80;">${icon}</div>`;
+                    if (isInput) {
+                        b.dataType = b.dataType || this.inputExpect(b.label) || 'text';
+                        const isNum = b.dataType === 'number';
+                        const dIcon = isNum ? '123' : 'Aa';
+                        const dTitle = isNum ? 'Typ: ČÍSLO — povolí jen čísla' : 'Typ: TEXT — povolí cokoliv';
+                        const dColor = isNum ? '#00e5ff' : '#8b5cf6';
+                        specialUI += `<div class="glass-wheel data-switch" onclick="App.toggleDataType('${b.id}', event)" title="${dTitle}" style="color: ${dColor}; border-color: ${dColor}; text-shadow: 0 0 10px ${dColor}80;">${dIcon}</div>`;
+                    }
                 }
 
                 let portsHTML = '';
@@ -4291,6 +4310,23 @@
                 this.noteCampaignEdit();
                 
                 this.toast(`Režim bloku přepnut na: ${b.ioType === 'input' ? 'VSTUP' : 'VÝSTUP'}`, 2500);
+                const el = document.getElementById(b.id);
+                if (el) {
+                    el.style.transform = "scale(1.1)";
+                    setTimeout(() => el.style.transform = "translateZ(0)", 150);
+                }
+            },
+
+            toggleDataType(blockId, event) {
+                event.stopPropagation();
+                if (this.isSimulating && !this.isStepping) return;
+                const b = this.blocks.find(x => x.id === blockId);
+                if (!b || b.type !== 'io' || b.ioType !== 'input') return;
+                b.dataType = (b.dataType || 'text') === 'number' ? 'text' : 'number';
+                this.renderBlock(b); this.saveState();
+                this.noteCampaignEdit();
+
+                this.toast(`Typ vstupu přepnut na: ${b.dataType === 'number' ? 'ČÍSLO' : 'TEXT'}`, 2500);
                 const el = document.getElementById(b.id);
                 if (el) {
                     el.style.transform = "scale(1.1)";
@@ -4910,6 +4946,11 @@
                                 const raw = takeInput(name);
                                 if (raw === EXHAUSTED) { cur = null; break; }
                                 const value = (raw === undefined || raw === null || raw === '') ? 0 : raw;
+                                const expectNum = (cur.dataType || this.inputExpect(cur.label)) === 'number';
+                                if (expectNum && String(value).trim() !== '' && isNaN(Number(value))) {
+                                    error = 'Vstup „' + name + '“ očekává číslo, ve vektoru je text.';
+                                    errorBlock = cur.id; cur = null; break;
+                                }
                                 const num = Number(value);
                                 ram[name] = (String(value).trim() !== '' && !isNaN(num)) ? num : String(value);
                                 execCounts[labelKey] = (execCounts[labelKey] || 0) + 1;
@@ -5109,6 +5150,7 @@
                     this.dom.simInputTitle.innerText = textLabel;
                     this.pendingInputType = expectType || null;
                     this.dom.simInputField.value = '';
+                    if (this.dom.simInputField) this.dom.simInputField.inputMode = this.pendingInputType === 'number' ? 'decimal' : 'text';
                     if (this.dom.simInputError) {
                         this.dom.simInputError.style.display = 'none';
                         this.dom.simInputError.textContent = 'Hodnota nesmí být prázdná.';
@@ -5324,7 +5366,7 @@
                                 }
 
                                 this.logConsole(`[VSTUP] Čekám na vstup dat pro: '${varName}'...`, "warning");
-                                const inputVal = await this.promptInput(promptText, signal, this.inputExpect(currentBlock.label));
+                                const inputVal = await this.promptInput(promptText, signal, currentBlock.dataType || this.inputExpect(currentBlock.label));
                                 if (inputVal === null || signal.aborted) break;
                                 this.logConsole(`[VSTUP] Uloženo: '${inputVal}' -> [${varName}]`, "success");
                                 

@@ -2,6 +2,22 @@
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
+## 2026-09-27 — Přepínač typu vstupu TEXT/ČÍSLO na bloku (nezakomitováno)
+
+- **Oblast:** IO blok v `index.html` (render, engine, checker, persistence).
+- **Změna:** vstupní blok má druhé skleněné kolečko vpravo dole (`.data-switch`):
+  `Aa` (TEXT, fialová) ↔ `123` (ČÍSLO, azurová), přepíná `App.toggleDataType`
+  (stejný vzor jako `toggleIOType`: toast + `saveState` + `noteCampaignEdit`).
+  Nové pole `b.dataType`; staré uložené plochy se při renderu domigrují heuristikou
+  (`dataType || inputExpect(label) || 'text'`), takže dosavadní validace podle popisku
+  zůstává. Engine má prioritu `dataType`, modal přepíná `inputmode` (decimal/text),
+  checker vrací chybu „očekává číslo, ve vektoru je text". Kopie `dataType` doplněna
+  i do přenosu vzorových/cheat řešení (`def.dataType`).
+- **Ověření:** inline `<script>` syntax OK (1/1); regex PASS (kolečko, toggle, priorita,
+  inputmode, checker, kopie); plné Node testy nelze spustit (pre-existing ENOENT po
+  přejmenování `code-flowchart.html → index.html`). Zbývá: hromadně nastavit
+  `dataType:'number'` u číselných vstupů v MISSIONS/SAMPLES (fallback je zatím kryje).
+
 ## 2026-09-27 — Terminál se po úspěšném běhu pomalu stáhne + SVG šipka (nezakomitováno)
 
 - **Oblast:** `#console-panel` v `index.html` (hlavička + `startSimulation`/`stopSimulation`).

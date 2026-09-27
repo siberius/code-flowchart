@@ -2,6 +2,18 @@
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
+## 2026-09-27 — Metodika (PDF), verze 1.0, profil E/J pod zkratku (nezakomitováno)
+
+- **Oblast:** menu, O programu, přepínání profilu v `index.html`.
+- **Změna:** hamburger menu má položku „Metodika (PDF)" stahující lokální
+  `codeflowchart.pdf` (soubor zatím v repozitáři chybí — nutno přiložit vedle
+  `index.html`); O programu uvádí „Verze: 1.0"; tlačítko profilu ⚙/🛠 z topbaru
+  odstraněno — přepnutí H/E_J je nově jen zkratkou `Ctrl+Alt+P` a nenápadným
+  odkazem v nápovědě (sekce Mise). Funkce `toggleProfile`/`setProfile` beze změny.
+- **Ověření:** inline `<script>` syntax OK (1/1); regex PASS (9/9); paleta zůstává
+  na 20 příkazech; plné Node testy nelze spustit (pre-existing ENOENT po
+  přejmenování `code-flowchart.html → index.html`).
+
 ## 2026-09-27 — Diagram jablek o dalších 10 % výš (nezakomitováno)
 
 - **Oblast:** výchozí šablona SPACE 1 (`buildDefaultGameLoop` v `index.html`).

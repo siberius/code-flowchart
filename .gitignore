@@ -17,3 +17,6 @@ Thumbs.db
 # Exporty a certifikáty stažené při testování
 hefaistos-*.json
 *-reseni.svg
+
+# Lokální testy a dokumentace (neuploaduje se na GitHub)
+testing/

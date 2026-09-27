@@ -1,10 +1,10 @@
-// Sdílené načtení App z inline <script> v code-flowchart.html pro Node testy.
+// Sdílené načtení App z inline <script> v index.html pro Node testy.
 // Vytváří minimální mock DOM/localStorage a vrací App + sandbox (kvůli localStorage).
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 
-const FILE = path.join(__dirname, 'code-flowchart.html');
+const FILE = path.join(__dirname, 'index.html');
 
 function createLocalStorageMock() {
     const store = new Map();
@@ -34,7 +34,7 @@ function createElementMock() {
 function loadApp() {
     const html = fs.readFileSync(FILE, 'utf8');
     const match = html.match(/<script\b[^>]*>([\s\S]*?)<\/script>/i);
-    if (!match) throw new Error('inline <script> nenalezen v code-flowchart.html');
+    if (!match) throw new Error('inline <script> nenalezen v index.html');
 
     const sandbox = {
         window: {},
@@ -58,7 +58,7 @@ function loadApp() {
     vm.createContext(sandbox);
 
     const code = match[1] + '\n;globalThis.__App = App; globalThis.__Game = (typeof Game !== "undefined") ? Game : null; globalThis.__MISSIONS = (typeof MISSIONS !== "undefined") ? MISSIONS : null; globalThis.__SAMPLES = (typeof SAMPLES !== "undefined") ? SAMPLES : null;';
-    new vm.Script(code, { filename: 'code-flowchart.html:inline-script' }).runInContext(sandbox);
+    new vm.Script(code, { filename: 'index.html:inline-script' }).runInContext(sandbox);
 
     if (!sandbox.__App) throw new Error('App se nepodařilo načíst');
     return { App: sandbox.__App, Game: sandbox.__Game, MISSIONS: sandbox.__MISSIONS, SAMPLES: sandbox.__SAMPLES, sandbox };

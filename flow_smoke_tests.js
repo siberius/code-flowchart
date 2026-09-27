@@ -5,7 +5,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 
-const FILE = path.join(__dirname, 'code-flowchart.html');
+const FILE = path.join(__dirname, 'index.html');
 
 const store = new Map();
 const localStorage = {
@@ -87,7 +87,7 @@ const html = fs.readFileSync(FILE, 'utf8');
 const match = html.match(/<script\b[^>]*>([\s\S]*?)<\/script>/i);
 vm.createContext(sandbox);
 const code = match[1] + '\n;globalThis.__App = App; globalThis.__Game = Game; globalThis.__MISSIONS = MISSIONS;';
-new vm.Script(code, { filename: 'code-flowchart.html:inline-script' }).runInContext(sandbox);
+new vm.Script(code, { filename: 'index.html:inline-script' }).runInContext(sandbox);
 
 const App = sandbox.__App;
 const Game = sandbox.__Game;
@@ -582,7 +582,7 @@ App.dockConsole();
 console.log('\n[UX O programu / O autorovi / nápověda — zdroj HTML]');
 check('O programu bez verzování', !html.includes('Verze jádra') && !html.includes('Codename: CyberCanvas'));
 check('O programu bez gymnázií (RVP G není cíl)', !html.includes('RVP G') && !html.includes('gymnáz'));
-check('O programu pokrývá SOŠ obory H a E/J', html.includes('SOŠ') && html.includes('obory H a E/J'));
+check('O programu pokrývá SOŠ obory H a E/J', html.includes('SOŠ') && html.includes('oborů H a E/J'));
 check('help nadpis „Co si osvojíš" bez RVP G', !html.includes('Co si osvojíš (RVP G + SOŠ)') && html.includes('Co si osvojíš (SOŠ'));
 check('O programu uvádí SPA + MIT', html.includes('SINGLE PAGE APPLICATION') && html.includes('MIT © 2026 Luděk Sušický'));
 check('O programu má na PC šířku 655 px (o 20 % širší)', /#about-modal \.modal-box\s*\{[^}]*width:\s*min\(655px,\s*97vw\)/.test(html));
@@ -594,6 +594,7 @@ check('nápověda má O aplikaci + 90 minut', html.includes('O aplikaci') && htm
 check('nápověda uvádí Ctrl+K (zobrazení palety zkratek) i Alt+S', html.includes('Ctrl + K') && html.includes('paletu zkratek') && html.includes('Alt + S'));
 check('patička plátna je MIT', /id="copyright-footer"[\s\S]{0,80}MIT © 2026/.test(html));
 check('SVG export = MIT', html.includes('MIT © 2026 Luděk Sušický | CodeFlowChart EDU'));
+check('O programu odkazuje na Git repozitář', html.includes('https://github.com/siberius/code-flowchart'));
 check('mobil: O programu zůstává 33vh', /@media\s*\(hover:\s*none\),\s*\(pointer:\s*coarse\)\s*\{\s*#about-modal\s*\.modal-box\s*\{\s*max-height:\s*33vh/.test(html));
 
 console.log(`\nVýsledek: ${pass} OK, ${fail} FAIL`);

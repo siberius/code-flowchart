@@ -1,0 +1,9 @@
+# Lokální a dočasné soubory
+node_modules/
+*.log
+.DS_Store
+Thumbs.db
+
+# Exporty a certifikáty stažené při testování
+hefaistos-*.json
+*-reseni.svg

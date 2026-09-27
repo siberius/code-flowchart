@@ -2,7 +2,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 
-const file = 'code-flowchart.html';
+const file = 'index.html';
 const content = fs.readFileSync(path.join(__dirname, file), 'utf8');
 const scriptRegex = /<script\b[^>]*>([\s\S]*?)<\/script>/gi;
 

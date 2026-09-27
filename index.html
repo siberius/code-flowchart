@@ -942,7 +942,7 @@
         <div class="side-menu-link" onclick="App.openHelp()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> Nápověda</div>
         <div class="side-menu-link" onclick="App.openAbout()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg> O programu</div>
         <div class="side-menu-link" onclick="App.openAuthor()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> O autorovi</div>
-        <a class="side-menu-link" href="codeflowchart.pdf" download="codeflowchart.pdf" onclick="App.closeMenu()" style="text-decoration: none;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Metodika (PDF)</a>
+        <a class="side-menu-link" href="codeflowchart.pdf" download="codeflowchart.pdf" onclick="App.closeMenu()" style="text-decoration: none;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Metodika</a>
         <div class="side-menu-link" onclick="App.promptReset()" style="color:#ef4444; border-top:1px solid rgba(239,68,68,0.25); margin-top:6px;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg> RESET</div>
     </div>
 
@@ -3513,7 +3513,7 @@
                 this.vy = 0;
 
                 const cx = 0;
-                const cy = -460; // posun celého diagramu jablek o cca 40 % výš
+                const cy = -575; // posun celého diagramu jablek o cca 50 % výš
 
                 const b1 = this.addBlockSilent('start', 'Začátek Sběru', cx - 250, cy - 140);
                 const b_note1 = this.addBlockSilent('note', 'ÚVOD:\nNejprve zadáme jméno a definujeme\ndvě barvy, které chceme sbírat.\nPak vynulujeme počítadla a krok.', cx + 320, cy - 20);
@@ -3537,9 +3537,9 @@
                 
                 const b8 = this.addBlockSilent('decision', 'nalezena_barva == barva1', cx, cy + 860);
                 
-                const b9 = this.addBlockSilent('process', 'skore1++\nkrok++', cx + 300, cy + 860);
-                const b10 = this.addBlockSilent('process', 'skore2++\nkrok++', cx, cy + 1020);
-                const b_note3 = this.addBlockSilent('note', 'ROZHODOVÁNÍ:\nZkontrolujeme, zda se nalezené\njablko shoduje s 1. barvou.\nPodle toho zvedneme správné skóre.', cx + 350, cy + 1020);
+                const b9 = this.addBlockSilent('process', 'skore1++\nkrok++', cx + 320, cy + 860);
+                const b10 = this.addBlockSilent('process', 'skore2++\nkrok++', cx - 320, cy + 860);
+                const b_note3 = this.addBlockSilent('note', 'ROZHODOVÁNÍ:\nZkontrolujeme, zda se nalezené\njablko shoduje s 1. barvou.\nPodle toho zvedneme správné skóre.', cx + 620, cy + 860);
 
                 const b11 = this.addBlockSilent('io', 'Díky jméno!\nMáš skore1 x barva1\na skore2 x barva2 jablek.', cx + 380, cy + 560);
                 b11.ioType = 'output';
@@ -3547,7 +3547,7 @@
                 const b12 = this.addBlockSilent('end', 'Konec Hry', cx + 700, cy + 560);
 
                 b6.yesPort = 'bottom'; b6.noPort = 'right';
-                b8.yesPort = 'right';  b8.noPort = 'bottom';
+                b8.yesPort = 'right';  b8.noPort = 'left';
 
                 this.addArrowSilent(b1.id, 'bottom', b2.id, 'top');
                 this.addArrowSilent(b2.id, 'bottom', b3.id, 'top');
@@ -3559,7 +3559,7 @@
                 this.addArrowSilent(b7.id, 'bottom', b8.id, 'top');
                 
                 this.addArrowSilent(b8.id, 'right', b9.id, 'left');   
-                this.addArrowSilent(b8.id, 'bottom', b10.id, 'top');  
+                this.addArrowSilent(b8.id, 'left', b10.id, 'right');  
                 
                 this.addArrowSilent(b9.id, 'bottom', b6.id, 'left');  
                 this.addArrowSilent(b10.id, 'bottom', b6.id, 'left'); 

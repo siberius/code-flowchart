@@ -2,6 +2,30 @@
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
+## 2026-09-27 — Menu: položka Metodika bez „(PDF)" (nezakomitováno)
+
+- **Oblast:** hamburger menu v `index.html` (odkaz na `codeflowchart.pdf`).
+- **Změna:** text položky „Metodika (PDF)" → „Metodika"; odkaz i stahování beze změny.
+- **Ověření:** inline `<script>` syntax OK (1/1); smoke 215 OK, 0 FAIL.
+
+## 2026-09-27 — Spodek jablek do šíře: obě větve vedle sebe (nezakomitováno)
+
+- **Oblast:** výchozí šablona SPACE 1 (`buildDefaultGameLoop` v `index.html`).
+- **Změna:** větev NE (`skore2++`) přesunuta zpodmínky vedle ní —
+  `b10: (cx, cy+1020) → (cx−320, cy+860)`, symetricky k ANO větvi
+  (`b9: cx+300 → cx+320`); poznámka ROZHODOVÁNÍ doprava (`cx+620, cy+860`).
+  Spodek diagramu se zkrátil o ~160 px (končí řadou `cy+860`), takže karty
+  nezajíždějí pod spodní lištu. Větev NE vede nově portem `left`
+  (`b8.noPort`, šipka `left → right`); sémantika ANO/NE beze změny.
+- **Ověření:** inline `<script>` syntax OK (1/1); větvení ANO→vpravo / NE→vlevo
+  ověřeno zkušebním během v Node; smoke 215 OK, 0 FAIL.
+
+## 2026-09-27 — Diagram jablek o dalších 10 % výš (nezakomitováno)
+
+- **Oblast:** výchozí šablona SPACE 1 (`buildDefaultGameLoop` v `index.html`).
+- **Změna:** `cy: -460 → -575` (celkem cca 50 % výšky diagramu); rozložení beze změny.
+- **Ověření:** inline `<script>` syntax OK (1/1).
+
 ## 2026-09-27 — LICENSE: doložka o generativní AI (commit `3eb7d6d`, push origin main)
 
 - **Oblast:** `LICENSE` v `siberius/code-flowchart`.

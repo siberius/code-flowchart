@@ -2,6 +2,15 @@
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
+## 2026-09-27 — LICENSE: doložka o generativní AI (commit `3eb7d6d`, push origin main)
+
+- **Oblast:** `LICENSE` v `siberius/code-flowchart`.
+- **Změna:** doplněna česká doložka: při vývoji byly využity nástroje
+  generativní AI; návrh výukového obsahu, úpravy a odpovědnost za výslednou
+  podobu náleží autorovi. Všechny projekty jsou české, proto česká verze.
+- **Ověření:** push po rebase s tvou úpravou titulku v README (HEFAISTOS pryč
+  z nadpisu — respektováno); pracovní strom čistý.
+
 ## 2026-09-27 — Nápověda bez O aplikaci, O programu s Gitem ke stažení (nezakomitováno)
 
 - **Oblast:** texty v `index.html` (help-modal, about-modal).

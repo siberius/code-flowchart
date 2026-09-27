@@ -22,7 +22,7 @@ Hra je jediný HTML soubor, nepotřebuje build ani závislosti:
 
 - **MISE** — 14 misí: 8 pro profil H (m01–m08) + 6 pro podpůrnou cestu E/J.
   Témata: posloupnost, větvení, vstup → výpočet → výstup, cykly, ladění,
-  efektivita a vlastní tvorba. Každá mise je na jednu vyučovací hodinu.
+  efektivita a vlastní tvorba.
 - **SPACE 1–5** — volné plochy pro vlastní tvorbu (SPACE 1 obsahuje ukázku
   „Sbírání jablek").
 - **Kompas a Ladička** — nápověda nic nestojí, hodnocení se nikdy nesnižuje.

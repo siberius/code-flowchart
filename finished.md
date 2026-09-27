@@ -2,6 +2,11 @@
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
+## 2026-09-27 — LICENSE: doložka o AI anglicky (nezakomitováno)
+
+- **Změna:** „Poznámka k autorství" v `LICENSE` přeložena do angličtiny
+  („Authorship note: Generative AI tools were used…"); platí pro všechny projekty.
+
 ## 2026-09-27 — Menu: položka Metodika bez „(PDF)" (nezakomitováno)
 
 - **Oblast:** hamburger menu v `index.html` (odkaz na `codeflowchart.pdf`).

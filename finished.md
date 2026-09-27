@@ -2,6 +2,12 @@
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
+## 2026-09-27 — Diagram jablek o dalších 10 % výš (nezakomitováno)
+
+- **Oblast:** výchozí šablona SPACE 1 (`buildDefaultGameLoop` v `index.html`).
+- **Změna:** `cy: -345 → -460` (celkem cca 40 % výšky diagramu); rozložení beze změny.
+- **Ověření:** inline `<script>` syntax OK (1/1).
+
 ## 2026-09-27 — Veřejný repozitář bez testů (commit `96a03c2`)
 
 - **Oblast:** obsah repozitáře `siberius/code-flowchart`.

@@ -2,6 +2,13 @@
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
+## 2026-09-28 — Bio bez koncové tečky (nezakomitováno)
+
+- **Oblast:** `index.html` (O autorovi) + `README.md` (Autor).
+- **Změna:** popisek „biolog, středoškolský a vysokoškolský učitel informatických předmětů" bez tečky na konci (master pravidlo).
+- **Ověření:** cílená kontrola řádků.
+- **FTP:** `index.html` nahrán na `vibemaker.cz/codeflowchart/`.
+
 ## 2026-09-28 — Kosočtverec nad toolbar: šablona výš + rezerva ve fitu (FTP nahráno)
 
 - **Oblast:** šablona SPACE 1 (`buildDefaultGameLoop`) + `fitToScreen` v `index.html`.

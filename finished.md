@@ -2,7 +2,7 @@
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
-## 2026-09-28 — Bio bez koncové tečky (nezakomitováno)
+## 2026-09-28 — Bio bez koncové tečky (commit `8268f8a`, auto-backup 10:30)
 
 - **Oblast:** `index.html` (O autorovi) + `README.md` (Autor).
 - **Změna:** popisek „biolog, středoškolský a vysokoškolský učitel informatických předmětů" bez tečky na konci (master pravidlo).

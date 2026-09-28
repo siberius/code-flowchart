@@ -2,6 +2,22 @@
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
+## 2026-09-28 — Test + audit + diagram jablek o 10 % výš (nezakomitováno)
+
+- **Oblast:** výchozí šablona SPACE 1 (`buildDefaultGameLoop` v `index.html`).
+- **Změna:** `cy: -575 → -690` (celkem cca 60 % výšky diagramu); relativní rozložení beze změny.
+- **FTP:** `index.html` nahrán na `vibemaker.cz/codeflowchart/` a ověřen (remote `cy = -690`, velikost shodná).
+- **Test:** syntax OK (1/1); flow 39, check 70, game 93, storage 55, ui 6, smoke 214 OK + 1 pre-existing FAIL
+  (`flow_smoke_tests.js:592` čeká staré „SŠ a VŠ učitel Informatiky", aplikace správně uvádí kanonické
+  „biolog, středoškolský a vysokoškolský učitel informatických předmětů" dle MASTER-AGENTS).
+  Testovací harness vyžaduje `index.html` vedle testů (`testing/FILE` → `../index.html`), jinak ENOENT.
+- **Bezpečnost (audit bez změn kódu):** žádný `eval`/`new Function`/`fetch`/`XHR` — výrazy se parsují ručně,
+  aplikace je plně offline; toast/HUD/log/RAM přes `textContent`; bloky a SVG escapují `<`/`>`/`&`;
+  `innerHTML` jen pro interní texty (mise/kompas/menu); import JSON s try/catch + potvrzovacím modalem,
+  neplatný soubor práci nepoškodí; localStorage namespaced `blockflow_v3_*` s guardy quota.
+  Zbytkové riziko: `checkBody`/`levelBody` vkládají řetězce, které mohou obsahovat žákem psané popisky
+  (self-XSS v rámci vlastní offline plochy, bez dopadu na jiné) — ponecháno, neopravováno bez zadání.
+
 ## 2026-09-27 — LICENSE: doložka o AI anglicky (nezakomitováno)
 
 - **Změna:** „Poznámka k autorství" v `LICENSE` přeložena do angličtiny

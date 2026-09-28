@@ -2,6 +2,20 @@
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
+## 2026-09-28 — Kosočtverec nad toolbar: šablona výš + rezerva ve fitu (FTP nahráno)
+
+- **Oblast:** šablona SPACE 1 (`buildDefaultGameLoop`) + `fitToScreen` v `index.html`.
+- **Změna:** `cy: -690 → -805` (celkem cca 70 %); `fitToScreen` nově počítá se spodními lištami
+  (`bottomReserve = 70`: sbalený terminál 46 px + plovoucí toolbar) — fitovaný střed je
+  `(wrapH − 70) / 2` a měřítko se počítá z výšky zmenšené o rezervu. Spodek diagramu má nově
+  nad lištami rezervu 190 px (desktop) / 130 px (mobil), předtím 120 / 60.
+- **Poznámka:** samotné `cy` čerstvý pohled nehne (fit centroval) — proto i rezerva ve fitu.
+  Uložená plocha SPACE 1 se změnou nepohne (chrání práci); čerstvou šablonu načte
+  `localStorage.removeItem('blockflow_v3_ws_space1')` + reload.
+- **Ověření:** syntax OK; flow 39, check 70, game 93, storage 55, ui 6, smoke 214 OK + 1 pre-existing FAIL
+  (zastaralý test bio `flow_smoke_tests.js:592`).
+- **FTP:** `index.html` nahrán na `vibemaker.cz/codeflowchart/` a ověřen (remote `cy = -805`, `bottomReserve` 3×, velikost shodná).
+
 ## 2026-09-28 — Test + audit + diagram jablek o 10 % výš (nezakomitováno)
 
 - **Oblast:** výchozí šablona SPACE 1 (`buildDefaultGameLoop` v `index.html`).

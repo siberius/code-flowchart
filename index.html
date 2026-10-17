@@ -4068,6 +4068,10 @@
             },
 
             renderBlock(b) {
+                if (!b) return;
+                b.id = String(b.id || '').replace(/[^a-zA-Z0-9_-]/g, '');
+                if (!b.id) b.id = 'b' + (this.nextId++);
+
                 let el = document.getElementById(b.id);
                 if (!el) {
                     el = document.createElement('div'); el.id = b.id;
@@ -4080,7 +4084,12 @@
                 
                 el.style.left = b.x + 'px'; el.style.top = b.y + 'px';
 
-                const safeLabel = b.label.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                const safeLabel = String(b.label == null ? '' : b.label)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
                 
                 let typeName = b.type.toUpperCase();
                 if (b.type === 'end') typeName = 'KONEC';
@@ -4333,11 +4342,30 @@
                     if (!this.drawingArrow) return;
                     this.drawingArrow = false; this.dom.tempPath.setAttribute('d', '');
 
-                    const el = document.elementFromPoint(e.clientX, e.clientY);
-                    if (el && el.classList.contains('port')) {
-                        const toBlockId = el.closest('.block').id; const toPort = el.dataset.port;
-                        if (toBlockId !== this.arrowFrom) {
-                            const exists = this.arrows.find(a => a.from === this.arrowFrom && a.fromPort === this.arrowFromPort && a.to === toBlockId && a.toPort === toPort);
+                    let el = document.elementFromPoint(e.clientX, e.clientY);
+                    let portEl = el ? (el.classList.contains('port') ? el : el.closest('.port')) : null;
+                    if (!portEl && document.elementsFromPoint) {
+                        const els = document.elementsFromPoint(e.clientX, e.clientY);
+                        portEl = els.find(item => item.classList && item.classList.contains('port'));
+                    }
+                    if (!portEl) {
+                        let minDist = 28;
+                        document.querySelectorAll('.port').forEach(p => {
+                            const r = p.getBoundingClientRect();
+                            const dist = Math.hypot(e.clientX - (r.left + r.width / 2), e.clientY - (r.top + r.height / 2));
+                            if (dist < minDist) {
+                                minDist = dist;
+                                portEl = p;
+                            }
+                        });
+                    }
+
+                    if (portEl) {
+                        const toBlock = portEl.closest('.block');
+                        if (toBlock) {
+                            const toBlockId = toBlock.id; const toPort = portEl.dataset.port;
+                            if (toBlockId !== this.arrowFrom) {
+                                const exists = this.arrows.find(a => a.from === this.arrowFrom && a.fromPort === this.arrowFromPort && a.to === toBlockId && a.toPort === toPort);
                             if (!exists) {
                                 // --- INJEKCE: Prevence vícenásobného odchozího vlákna (Replacement) ---
                                 const existingOutgoingIndex = this.arrows.findIndex(a => a.from === this.arrowFrom && a.fromPort === this.arrowFromPort);
@@ -4357,8 +4385,9 @@
                             }
                         }
                     }
-                    this.arrowFrom = null;
-                });
+                }
+                this.arrowFrom = null;
+            });
 
                 this.dom.canvasWrap.addEventListener('pointerdown', e => {
                     if (e.target.closest('.block') || e.target.closest('.arrow-hit')) return;
@@ -5125,11 +5154,14 @@
                                 } catch(e) {}
                             } else {
                                 try {
-                                    const toEval = this.substituteVars(rightSide, this.visualRAM,
-                                        v => typeof v === 'string' ? JSON.stringify(v) : String(v));
-                                    evaluated = Function(`"use strict"; return (${toEval})`)();
+                                    evaluated = this.safeEval(rightSide, this.visualRAM);
                                 } catch(e) {
-                                    this.logConsole(`[CHYBA VÝRAZU] Nešlo vyhodnotit: '${rightSide}'`, "error");
+                                    if (e && e.message === 'Dělení nulou') {
+                                        this.logConsole(`[CHYBA BĚHU] Dělení nulou není povoleno.`, "error");
+                                        this.runtimeTypeError = true;
+                                    } else {
+                                        this.logConsole(`[CHYBA VÝRAZU] Nešlo vyhodnotit: '${rightSide}'`, "error");
+                                    }
                                 }
                             }
 
@@ -5144,8 +5176,24 @@
                                 }
                                 else if (op === '-=') this.visualRAM[varName] = this.requireNumber(this.visualRAM[varName], `Proměnná '${varName}'`, 'odečíst') - this.toNumber(evaluated, `Výraz '${rightSide}'`, 'odečíst');
                                 else if (op === '*=') this.visualRAM[varName] = this.requireNumber(this.visualRAM[varName], `Proměnná '${varName}'`, 'vynásobit') * this.toNumber(evaluated, `Výraz '${rightSide}'`, 'vynásobit');
-                                else if (op === '/=') this.visualRAM[varName] = this.requireNumber(this.visualRAM[varName], `Proměnná '${varName}'`, 'vydělit') / this.toNumber(evaluated, `Výraz '${rightSide}'`, 'vydělit');
-                                else if (op === '%=') this.visualRAM[varName] = this.requireNumber(this.visualRAM[varName], `Proměnná '${varName}'`, 'spočítat zbytek') % this.toNumber(evaluated, `Výraz '${rightSide}'`, 'spočítat zbytek');
+                                else if (op === '/=') {
+                                    const divisor = this.toNumber(evaluated, `Výraz '${rightSide}'`, 'vydělit');
+                                    if (divisor === 0) {
+                                        this.logConsole(`[CHYBA BĚHU] Dělení nulou není povoleno.`, "error");
+                                        this.runtimeTypeError = true;
+                                    } else {
+                                        this.visualRAM[varName] = this.requireNumber(this.visualRAM[varName], `Proměnná '${varName}'`, 'vydělit') / divisor;
+                                    }
+                                }
+                                else if (op === '%=') {
+                                    const divisor = this.toNumber(evaluated, `Výraz '${rightSide}'`, 'spočítat zbytek');
+                                    if (divisor === 0) {
+                                        this.logConsole(`[CHYBA BĚHU] Dělení nulou (modulo 0) není povoleno.`, "error");
+                                        this.runtimeTypeError = true;
+                                    } else {
+                                        this.visualRAM[varName] = this.requireNumber(this.visualRAM[varName], `Proměnná '${varName}'`, 'spočítat zbytek') % divisor;
+                                    }
+                                }
                             }
                         }
                     }
@@ -5184,9 +5232,8 @@
             // VÝSTUP se zachytí a porovná s očekáváním. Ruční běh zůstává pro krokování.
             evalCondition(label, ram) {
                 try {
-                    const toEval = this.substituteVars(label, ram,
-                        v => typeof v === 'string' ? JSON.stringify(v) : String(v));
-                    return !!Function(`"use strict"; return (${toEval});`)();
+                    const res = this.safeEval(label, ram);
+                    return typeof res === 'boolean' ? res : !!res;
                 } catch (e) {
                     return null;
                 }
@@ -6162,14 +6209,49 @@
                 let parsed;
                 try { parsed = JSON.parse(text); } catch (e) { return { type: 'invalid' }; }
                 if (!parsed || typeof parsed !== 'object') return { type: 'invalid' };
+
+                const sanitizeBlock = b => {
+                    if (!b || typeof b !== 'object') return b;
+                    if (b.id != null) b.id = String(b.id).replace(/[^a-zA-Z0-9_-]/g, '');
+                    if (b.label != null) b.label = String(b.label);
+                    return b;
+                };
+                const sanitizeArrow = a => {
+                    if (!a || typeof a !== 'object') return a;
+                    if (a.id != null) a.id = String(a.id).replace(/[^a-zA-Z0-9_-]/g, '');
+                    if (a.from != null) a.from = String(a.from).replace(/[^a-zA-Z0-9_-]/g, '');
+                    if (a.to != null) a.to = String(a.to).replace(/[^a-zA-Z0-9_-]/g, '');
+                    return a;
+                };
+                const sanitizeWorkspace = ws => {
+                    if (!ws || typeof ws !== 'object') return ws;
+                    if (Array.isArray(ws.blocks)) ws.blocks = ws.blocks.map(sanitizeBlock);
+                    if (Array.isArray(ws.arrows)) ws.arrows = ws.arrows.map(sanitizeArrow);
+                    return ws;
+                };
+
                 if (parsed.schemaVersion === 3 && parsed.workspaces && typeof parsed.workspaces === 'object') {
+                    Object.keys(parsed.workspaces).forEach(slot => {
+                        parsed.workspaces[slot] = sanitizeWorkspace(parsed.workspaces[slot]);
+                    });
                     return { type: 'full', snapshot: parsed };
                 }
                 if (parsed.workspaces && typeof parsed.workspaces === 'object') {
+                    Object.keys(parsed.workspaces).forEach(slot => {
+                        parsed.workspaces[slot] = sanitizeWorkspace(parsed.workspaces[slot]);
+                    });
                     return { type: 'legacy', workspaces: parsed.workspaces, active: parsed.active };
                 }
                 if (Array.isArray(parsed.blocks) && Array.isArray(parsed.arrows)) {
-                    return { type: 'diagram', blocks: parsed.blocks, arrows: parsed.arrows, nextId: parsed.nextId, vx: parsed.vx, vy: parsed.vy, vscale: parsed.vscale };
+                    return {
+                        type: 'diagram',
+                        blocks: parsed.blocks.map(sanitizeBlock),
+                        arrows: parsed.arrows.map(sanitizeArrow),
+                        nextId: parsed.nextId,
+                        vx: parsed.vx,
+                        vy: parsed.vy,
+                        vscale: parsed.vscale
+                    };
                 }
                 return { type: 'invalid' };
             },

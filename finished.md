@@ -2,6 +2,25 @@
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
+## 2026-10-17 — Implementace P1 a P2: Bezpečný parser, ošetření dělení nulou, mobilní UX a sanitizace
+
+- **Oblast:** `index.html` (bezpečnost jádra, výrazy, layout mobilu, porty) + `testing/flow_smoke_tests.js` + `testing/flow_tests.js`.
+- **P1 Bezpečnost:**
+  - Odstraněno dynamické spouštění kódu přes `Function(...)` v přiřazení (`parseVariable`) a podmínkách (`evalCondition`).
+  - Implementován bezpečný recursive-descent parser `App.safeEval(exprStr, scope)` s prioritami operátorů (`||`, `&&`, `==/!=/===/!==`, `</<=/>/>=`, `+/-`, `*///%`, `**`, unární `+/-/!`), závorkami, bezpečnými Math funkcemi (`Math.sqrt`, `Math.round`, `Math.floor`, `Math.ceil`, `Math.abs`, `Math.min`, `Math.max`, `Math.pow`) a čtením proměnných ze scope bez možnosti průniku do globálního kontextu.
+  - Sanitizace ID bloků na povolené znaky `/[^a-zA-Z0-9_-]/g` při importu JSON i renderování `renderBlock` (ochrana proti breakoutu v inline event atributech).
+  - Sanitizace `safeLabel` s úplným HTML entity kódováním (`&`, `<`, `>`, `"`, `'`).
+- **P1 Mobilní UX:**
+  - Opraveno překrývání `#toolbar` dokovací lištou `#console-panel`: nastaven výchozí `bottom: 58px` (nad 46px terminálem) a responzivní `bottom: max(58px, calc(48px + env(safe-area-inset-bottom, 8px)))` pro dotyková zařízení.
+  - Na `#canvas-wrap` přidáno `touch-action: none;` pro plynulý touch drag bez interferencí prohlížeče.
+  - Zvětšena dotyková zóna portů `.port::after` na 36×36 px a v `pointerup` doplněno toleranční hledání portu v okruhu 28 px.
+- **P2 Chyby a mobilní přizpůsobení:**
+  - Ošetřeno dělení a modulo nulou ve výrazech (`/ 0`, `% 0`) i operátorech (`/= 0`, `%= 0`) s českým hlášením `[CHYBA BĚHU] Dělení nulou není povoleno.` a nastavením `runtimeTypeError = true`.
+  - Opraven smoke test `flow_smoke_tests.js:592` pro kanonický popis autora.
+  - `#topbar` získal horizontální skrolování (`overflow-x: auto`, skrytý scrollbar, `flex-shrink: 0`) zabraňující ořezu tlačítek na displejích < 768 px.
+  - Přidána responzivní typografie modálů `@media (max-width: 600px)` pro optimální čitelnost bez vertikálního přetečení.
+- **Ověření:** Plná testovací sada 100 % pass (syntax OK, flow 46 OK, check 70 OK, storage 55 OK, game 93 OK, ui 6 OK, smoke 215 OK).
+
 ## 2026-09-28 — Bio bez koncové tečky (commit `8268f8a`, auto-backup 10:30)
 
 - **Oblast:** `index.html` (O autorovi) + `README.md` (Autor).

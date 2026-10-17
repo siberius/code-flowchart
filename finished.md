@@ -2,6 +2,18 @@
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
+## 2026-10-17 — Implementace P3 a P4: Filmový pás v misi, kolize scaffoldu a modulární architektura
+
+- **Oblast:** `index.html` (krokování pásu, rozmisťování scaffoldu, modulární bridge, JSDoc typy) + `testing/flow_tests.js`.
+- **P3 Opravy chování (Edge Cases & Bugs):**
+  - V `wsStep(dir)` ošetřen index aktivní plochy pro režim mise (`if (idx === -1 && this.modeOf(this.activeWorkspace) === 'campaign') idx = 0;`), sjednoceno s `updateWsSwitch`. Krokování filmového pásu šipkami ‹ a › z mise spolehlivě přepíná na SPACE 1 a drží zamčenou levou šipku.
+  - V `buildLevelScaffold(level)` přidáno volání `this.resolveCollisions()` po náhodném rozmístění bloků scaffoldu — zamezeno náhodnému překrývání modulů při aplikaci jitteru.
+- **P4 Architektura a udržitelnost (Architecture & Clean Code):**
+  - Implementovány modulární jmenné bridge na objektu `App`: `App.Engine` (vyhodnocovací jádro a typy), `App.Checker` (validátor testovacích vektorů), `App.Graph` (plátno, geometrie, bloky, šipky, kolize), `App.Storage` (snapshoty, localStorage, migrace a export/import) a `App.UI` (navigace ploch, modály, notifikace).
+  - Přidána kompletní JSDoc typová dokumentace (`@typedef BlockDef`, `TestVector`, `MissionDef`) definující schéma misí a datových bloků.
+  - Zachována 100% zpětná kompatibilita pro stávající API i testy.
+- **Ověření:** Plná testovací sada 100 % pass (syntax OK, flow 53 OK, check 70 OK, storage 55 OK, game 93 OK, ui 6 OK, smoke 215 OK).
+
 ## 2026-10-17 — Implementace P1 a P2: Bezpečný parser, ošetření dělení nulou, mobilní UX a sanitizace
 
 - **Oblast:** `index.html` (bezpečnost jádra, výrazy, layout mobilu, porty) + `testing/flow_smoke_tests.js` + `testing/flow_tests.js`.

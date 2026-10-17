@@ -1512,6 +1512,42 @@
         // Každá mise: stabilní id, typ, cíl ≤ 15 slov, příběh, povolené bloky, kompas,
         // minimální scaffolding (rozhozené bloky — loader mixuje pozice), vzorové řešení
         // pro cheat a testovací vektory. Plný obsah misí se dokončí ve F5/F6.
+
+        /**
+         * @typedef {Object} BlockDef
+         * @property {string} type - Typ bloku (start|end|process|decision|loop|io|call|note)
+         * @property {string} label - Textový obsah nebo výraz bloku
+         * @property {number} [x] - Horizontální pozice na plátně
+         * @property {number} [y] - Vertikální pozice na plátně
+         * @property {('input'|'output')} [ioType] - Režim I/O bloku
+         * @property {('text'|'number')} [dataType] - Datový typ vstupu
+         * @property {('top'|'bottom'|'left'|'right')} [yesPort] - Výstupní port ANO / TĚLO
+         * @property {('top'|'bottom'|'left'|'right')} [noPort] - Výstupní port NE / KONEC
+         */
+
+        /**
+         * @typedef {Object} TestVector
+         * @property {string} id - Identifikátor testu (např. 'A', 'B')
+         * @property {Object<string, any>} [inputs] - Vstupní hodnoty pro test
+         * @property {Array<string|number>} expected - Očekávané výstupy nebo logy
+         * @property {boolean} [requireLoop] - Povinnost vykonání cyklu
+         * @property {number} [maxOps] - Maximální počet operací
+         */
+
+        /**
+         * @typedef {Object} MissionDef
+         * @property {string} id - Unikátní stabilní ID mise (m01–m08, e1–e6)
+         * @property {string} name - Název mise
+         * @property {('sestav'|'oprav'|'dopln'|'algoritmus')} type - Typ úlohy
+         * @property {string} goal - Stručný cíl mise (<= 15 slov)
+         * @property {string} story - Kontext servisní lodi HEFAISTOS a robota ŠROUB
+         * @property {Array<string>} blocks - Povolené typy bloků
+         * @property {number} xpBase - Základní bodové ohodnocení (XP)
+         * @property {{cil: string, hacek: string, vzor: string, postup: string}} kompas - 4 stupně nápovědy
+         * @property {{blocks: Array<BlockDef>}} scaffold - Výchozí bloky rozházené po ploše
+         * @property {{blocks: Array<BlockDef>, arrows: Array<Array>}} [solution] - Vzorové řešení pro kontrolu a dev cheat
+         * @property {Array<TestVector>} tests - Testovací vektory pro automatické ověření
+         */
         const MISSIONS = {
             H: [
                 {
@@ -3299,6 +3335,7 @@
                     if (def.noPort) b.noPort = def.noPort;
                 });
                 // Spojení se záměrně nekreslí — žák si zapojení vytváří sám.
+                this.resolveCollisions();
             },
             cheatSolveStep() {
                 if (this.isSimulating) { this.toast('Cheat nejde během simulace.'); return; }
@@ -3359,6 +3396,7 @@
             },
             wsStep(dir) {
                 let idx = WS_ORDER.indexOf(this.activeWorkspace);
+                if (idx === -1 && this.modeOf(this.activeWorkspace) === 'campaign') idx = 0;
                 if (idx < 0) idx = 0;
                 const ni = Math.max(0, Math.min(WS_ORDER.length - 1, idx + dir));
                 if (ni === idx) return;
@@ -6384,6 +6422,54 @@
                 };
                 reader.readAsText(file);
             }
+        };
+
+        // ==== ARCHITEKTURA A SUBSYSTÉMY (Modular Subsystem Bridges) ====
+        // Logické rozčlenění monolitického App do 5 jmenných subsystémů se sdíleným kontextem
+        App.Engine = {
+            safeEval: (expr, scope) => App.safeEval(expr, scope),
+            parseVariable: (expr) => App.parseVariable(expr),
+            evalCondition: (label, ram) => App.evalCondition(label, ram),
+            replaceVars: (text) => App.replaceVars(text),
+            substituteVars: (expr, ram, format) => App.substituteVars(expr, ram, format),
+            requireNumber: (val, what, ctx) => App.requireNumber(val, what, ctx),
+            toNumber: (val, what, ctx) => App.toNumber(val, what, ctx)
+        };
+        App.Checker = {
+            runCheck: (headless) => App.runCheck(headless),
+            runCheckVector: (vector, solution) => App.runCheckVector(vector, solution),
+            checkStep: (maxOps, requireLoop) => App.checkStep(maxOps, requireLoop)
+        };
+        App.Graph = {
+            addBlock: (type, label, x, y) => App.addBlock(type, label, x, y),
+            addBlockSilent: (type, label, x, y) => App.addBlockSilent(type, label, x, y),
+            deleteBlock: (id) => App.deleteBlock(id),
+            renderBlock: (b) => App.renderBlock(b),
+            renderAll: () => App.renderAll(),
+            addArrow: (fromId, fromPort, toId, toPort) => App.addArrow(fromId, fromPort, toId, toPort),
+            addArrowSilent: (fromId, fromPort, toId, toPort) => App.addArrowSilent(fromId, fromPort, toId, toPort),
+            deleteArrow: (id) => App.deleteArrow(id),
+            renderArrows: () => App.renderArrows(),
+            resolveCollisions: () => App.resolveCollisions()
+        };
+        App.Storage = {
+            saveWorkspace: (slot) => App.saveWorkspace(slot),
+            loadWorkspace: (slot) => App.loadWorkspace(slot),
+            buildSnapshot: () => App.buildSnapshot(),
+            parseImportData: (text) => App.parseImportData(text),
+            applySnapshot: (snap) => App.applySnapshot(snap),
+            applyLegacyWorkspaces: (ws, active) => App.applyLegacyWorkspaces(ws, active),
+            migrateLegacyKeys: () => App.migrateLegacyKeys()
+        };
+        App.UI = {
+            wsStep: (dir) => App.wsStep(dir),
+            updateWsSwitch: () => App.updateWsSwitch(),
+            toast: (msg) => App.toast(msg),
+            openHelp: () => App.openHelp(),
+            openAbout: () => App.openAbout(),
+            openAuthor: () => App.openAuthor(),
+            openPalette: () => App.openPalette(),
+            closePalette: () => App.closePalette()
         };
 
         window.onload = () => App.init();

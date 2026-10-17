@@ -257,9 +257,15 @@ a m05 (podmíněný cyklus s počítadly). Kompletní specifikace všech misí j
 - **Ergonomie palce a side-menu:** Na mobilních zařízeních (≤ 768px) je vysouvací menu (`#side-menu`) umístěno vpravo (`right: 0`), otevírá se zprava doleva a hamburger tlačítko je přesunuto na pravý okraj topbaru do přirozené dosahové zóny palce.
 - **Dvouřadý topbar s rozbalením:** Horní panel na mobilu zobrazuje v 1. řádku logo, přepínač ploch/filmový pás, hlavní akční tlačítka (Spustit/Krok/Stop/Ověřit), rozbalovací šipku nástrojů (`#topbar-tools-toggle`) a hamburger. Druhý řádek (`#topbar-tools-row`) obsahuje sekundární nástroje (Zpět, Vpřed, Import, Export, SVG, Vyčistit, Celá obrazovka) a rozbaluje se plynulou animací na klik na šipku.
 - **Konzole jako plovoucí Widget (Bottom Sheet):** Spodní terminál na mobilu nepřekrývá spodní lištu nástrojů (`#toolbar`). V neaktivním stavu funguje jako plovoucí pill/badge widget s indikátorem stavu; při běhu simulace nebo na kliknutí se plynule vysune jako Bottom Sheet nad lištu nástrojů s respektováním `env(safe-area-inset-bottom)`.
-- **PWA instalace a Sci-Fi ikona:** Aplikace obsahuje kompletní Web App Manifest generovaný jako Data URI a vysokorozlišenou vektorovou SVG ikonu (robůtek ŠROUB / loď HEFAISTOS). V menu přibývá volba „📲 Přidat na plochu" otevírající interaktivní průvodce:
-  - Na iOS Safari: názorný krok za krokem návod na stisk tlačítka Sdílet (`⎋`) a volbu „Přidat na plochu".
-  - Na Androidu / desktopu: přímé vyvolání systémového dialogu instalace (`beforeinstallprompt`) s bezpečným fallbackem.
+- **PWA instalace, manifest a aplikační ikony (pravidlo automatického návrhu a integrace):**
+  - Kdykoliv se zavádí nebo upravuje instalace aplikace na plochu mobilu (`#menu-install-pwa`, `standalone`), je **povinné automaticky navrhnout, vygenerovat a do projektu integrovat kompletní sadu fyzických aplikačních ikon i manifest**:
+    1. Vektorové SVG: [icon.svg](icon.svg) (512×512 px) s robotickým objektivem ŠROUB v kosočtverci podmínky, bloky START–PROCESS–END a neonovými signálovými spoji; [favicon.svg](favicon.svg) (64×64 px) pro záložky prohlížečů.
+    2. Rastrové PNG: [icon-512.png](icon-512.png) (512×512 px — splash screen, store, Android PWA), [icon-192.png](icon-192.png) (192×192 px — Android plocha), [apple-touch-icon.png](apple-touch-icon.png) (180×180 px — iOS Safari plocha), [favicon.ico](favicon.ico) (multi-size 16/32/48 px — desktop a starší prohlížeče). Soubory jsou duplikovány i v adresáři `icons/`.
+    3. Fyzický [manifest.json](manifest.json) v kořeni projektu propojený v `<head>` (`<link rel="manifest" href="manifest.json">`).
+    4. Pro zachování pravidla SPA (běh z jediného staženého HTML souboru offline) zůstává v `index.html` inline Data URI záloha pro manifest i SVG ikonu.
+  - V menu je volba „📲 Přidat na plochu" otevírající interaktivní průvodce:
+    - Na iOS Safari: názorný krok za krokem návod na stisk tlačítka Sdílet (`⎋`) a volbu „Přidat na plochu".
+    - Na Androidu / desktopu: přímé vyvolání systémového dialogu instalace (`beforeinstallprompt`) s bezpečným fallbackem.
 - **Optimalizace pro iOS Safari a tablety:** Zajištěno `viewport-fit=cover`, `apple-mobile-web-app-capable`, `black-translucent` status bar, zakázán nechtěný pull-to-refresh overscroll (`overscroll-behavior: none`), ošetřeno zpoždění kliknutí (`touch-action: manipulation`) a kontextové nabídky při dlouhém podržení kartiček (`-webkit-touch-callout: none`).
 
 ---

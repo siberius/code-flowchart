@@ -253,6 +253,15 @@ a m05 (podmíněný cyklus s počítadly). Kompletní specifikace všech misí j
 - Historické dosažené dokončení zůstává; aktuální pokus se označí jako nový a musí se znovu ověřit.
 - **Celkové vymazání postupu** (pokud existuje) je jiná, samostatná akce — nezaměňovat s restartem levelu.
 
+### 7.11 Mobilní rozhraní, PWA a iOS optimalizace (2026-10)
+- **Ergonomie palce a side-menu:** Na mobilních zařízeních (≤ 768px) je vysouvací menu (`#side-menu`) umístěno vpravo (`right: 0`), otevírá se zprava doleva a hamburger tlačítko je přesunuto na pravý okraj topbaru do přirozené dosahové zóny palce.
+- **Dvouřadý topbar s rozbalením:** Horní panel na mobilu zobrazuje v 1. řádku logo, přepínač ploch/filmový pás, hlavní akční tlačítka (Spustit/Krok/Stop/Ověřit), rozbalovací šipku nástrojů (`#topbar-tools-toggle`) a hamburger. Druhý řádek (`#topbar-tools-row`) obsahuje sekundární nástroje (Zpět, Vpřed, Import, Export, SVG, Vyčistit, Celá obrazovka) a rozbaluje se plynulou animací na klik na šipku.
+- **Konzole jako plovoucí Widget (Bottom Sheet):** Spodní terminál na mobilu nepřekrývá spodní lištu nástrojů (`#toolbar`). V neaktivním stavu funguje jako plovoucí pill/badge widget s indikátorem stavu; při běhu simulace nebo na kliknutí se plynule vysune jako Bottom Sheet nad lištu nástrojů s respektováním `env(safe-area-inset-bottom)`.
+- **PWA instalace a Sci-Fi ikona:** Aplikace obsahuje kompletní Web App Manifest generovaný jako Data URI a vysokorozlišenou vektorovou SVG ikonu (robůtek ŠROUB / loď HEFAISTOS). V menu přibývá volba „📲 Přidat na plochu" otevírající interaktivní průvodce:
+  - Na iOS Safari: názorný krok za krokem návod na stisk tlačítka Sdílet (`⎋`) a volbu „Přidat na plochu".
+  - Na Androidu / desktopu: přímé vyvolání systémového dialogu instalace (`beforeinstallprompt`) s bezpečným fallbackem.
+- **Optimalizace pro iOS Safari a tablety:** Zajištěno `viewport-fit=cover`, `apple-mobile-web-app-capable`, `black-translucent` status bar, zakázán nechtěný pull-to-refresh overscroll (`overscroll-behavior: none`), ošetřeno zpoždění kliknutí (`touch-action: manipulation`) a kontextové nabídky při dlouhém podržení kartiček (`-webkit-touch-callout: none`).
+
 ---
 
 ## 8. Režimy, data, ukládání a čas (mise / 45 min / export JSON)

@@ -36,6 +36,7 @@
             background: var(--bg);
             color: var(--text);
             height: 100vh;
+            height: 100dvh;
             overflow: hidden;
             user-select: none;
         }
@@ -285,7 +286,13 @@
         }
         #canvas-wrap.sim-boot { animation: sim-boot-glow 0.7s ease-out both; }
         @media (prefers-reduced-motion: reduce) {
-            #canvas-wrap.sim-boot::after, #canvas-wrap.sim-boot { animation: none; }
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+            #canvas-wrap.sim-boot::after, #canvas-wrap.sim-boot { animation: none !important; }
         }
 
         #canvas {
@@ -688,13 +695,13 @@
             border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px;
             width: min(420px, 90vw); padding: 28px; display: flex; flex-direction: column; gap: 16px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
-            margin: auto; max-height: calc(100vh - 48px);
+            margin: auto; max-height: calc(100vh - 48px); max-height: calc(100dvh - 48px);
         }
         .modal-overlay .modal-box { overflow-y: auto; }
         .modal-box h3 { font-size: 18px; font-weight: 800; color: var(--accent); margin-bottom: 8px; text-shadow: 0 0 10px rgba(0,229,255,0.4); }
         
         /* Širší modální okna pro nápovědu a info */
-        .modal-box.wide { width: min(800px, 95vw); max-height: 90vh; overflow: hidden; padding-bottom: 28px; }
+        .modal-box.wide { width: min(800px, 95vw); max-height: 90vh; max-height: 90dvh; overflow: hidden; padding-bottom: 28px; }
 
         /* Nápověda: o 30 % širší a centrovaná (mobil se posouvá) */
         #help-modal .modal-box { width: min(1040px, 94vw); }
@@ -834,7 +841,7 @@
         #hud .hud-val { color: var(--text); font-weight: 600; }
         #hud #hud-stars { color: var(--accent3); }
 
-        #side-menu { max-height: calc(100vh - 56px); overflow-y: auto; }
+        #side-menu { max-height: calc(100vh - 56px); max-height: calc(100dvh - 56px); overflow-y: auto; }
         .menu-section-title {
             padding: 14px 30px 6px; font-family: 'JetBrains Mono', monospace;
             font-size: 14px; letter-spacing: 2px; color: var(--accent);
@@ -1852,12 +1859,36 @@
                     scaffold: {
                         blocks: [
                             { type: 'start', label: 'Start' },
-                            { type: 'note', label: 'Zakázky: balíčky, kontrola dílů, tisk.' },
+                            { type: 'io', label: 'delka', ioType: 'input' },
+                            { type: 'decision', label: 'delka >= 50' },
+                            { type: 'io', label: 'Stav: vyhovuje', ioType: 'output' },
+                            { type: 'io', label: 'Stav: vadný', ioType: 'output' },
+                            { type: 'note', label: 'Zakázka kontrola dílů: mez 50 mm.' },
                             { type: 'end', label: 'Konec' }
                         ]
                     },
-                    solution: null,
-                    tests: []
+                    solution: {
+                        blocks: [
+                            { type: 'start', label: 'Start', x: 0, y: -260 },
+                            { type: 'io', label: 'delka', ioType: 'input', x: 0, y: -120 },
+                            { type: 'decision', label: 'delka >= 50', x: 0, y: 40, yesPort: 'right', noPort: 'bottom' },
+                            { type: 'io', label: 'Stav: vyhovuje', ioType: 'output', x: 280, y: 40 },
+                            { type: 'io', label: 'Stav: vadný', ioType: 'output', x: 0, y: 180 },
+                            { type: 'end', label: 'Konec', x: 280, y: 180 }
+                        ],
+                        arrows: [
+                            [0, 'bottom', 1, 'top'],
+                            [1, 'bottom', 2, 'top'],
+                            [2, 'right', 3, 'left'],
+                            [2, 'bottom', 4, 'top'],
+                            [3, 'bottom', 5, 'top'],
+                            [4, 'right', 5, 'left']
+                        ]
+                    },
+                    tests: [
+                        { id: 'A', inputs: { delka: 55 }, expected: 'Stav: vyhovuje' },
+                        { id: 'B', inputs: { delka: 42 }, expected: 'Stav: vadný' }
+                    ]
                 }
             ],
             E_J: [
@@ -2063,12 +2094,32 @@
                     scaffold: {
                         blocks: [
                             { type: 'start', label: 'Start' },
-                            { type: 'note', label: 'Zakázky: balíčky, kontrola dílů, tisk.' },
+                            { type: 'io', label: 'pocet', ioType: 'input' },
+                            { type: 'process', label: 'material = pocet * 10' },
+                            { type: 'io', label: 'Materiál: {material} g', ioType: 'output' },
+                            { type: 'note', label: 'Materiál pro tisk: 10 g na kus.' },
                             { type: 'end', label: 'Konec' }
                         ]
                     },
-                    solution: null,
-                    tests: []
+                    solution: {
+                        blocks: [
+                            { type: 'start', label: 'Start', x: 0, y: -240 },
+                            { type: 'io', label: 'pocet', ioType: 'input', x: 0, y: -80 },
+                            { type: 'process', label: 'material = pocet * 10', x: 0, y: 80 },
+                            { type: 'io', label: 'Materiál: {material} g', ioType: 'output', x: 0, y: 240 },
+                            { type: 'end', label: 'Konec', x: 0, y: 400 }
+                        ],
+                        arrows: [
+                            [0, 'bottom', 1, 'top'],
+                            [1, 'bottom', 2, 'top'],
+                            [2, 'bottom', 3, 'top'],
+                            [3, 'bottom', 4, 'top']
+                        ]
+                    },
+                    tests: [
+                        { id: 'A', inputs: { pocet: 2 }, expected: 'Materiál: 20 g' },
+                        { id: 'B', inputs: { pocet: 5 }, expected: 'Materiál: 50 g' }
+                    ]
                 }
             ]
         };

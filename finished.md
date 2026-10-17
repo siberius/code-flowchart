@@ -2,6 +2,17 @@
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
+## 2026-10-17 — Dokončení F5 a F6 (PLAN.md) a mobilní viewport 100dvh
+
+- **Oblast:** `index.html` (mise m08 a e6, scaffolding, vzorová řešení, testovací vektory, CSS viewport) + `testing/flow_game_tests.js` + `testing/flow_check_tests.js`.
+- **Fáze F5 a F6 dle PLAN.md:**
+  - Dokončena otevřená servisní zakázka **m08** (H): zaveden scaffolding s kartičkami pro zakázku kontroly rozměru (`delka`, `delka >= 50`, `Stav: vyhovuje` / `Stav: vadný`), vzorové větvené řešení se sloučeným koncem do jednoho bloku KONEC a 2 testovací vektory (hraniční hodnoty 55 a 42).
+  - Dokončena otevřená servisní zakázka **e6** (E/J): zaveden scaffolding s kartičkami pro výpočet materiálu (`pocet`, `material = pocet * 10`, `Materiál: {material} g`), vzorové řešení a 2 testovací vektory (hodnoty 2 a 5).
+  - Tímto je všech 14 misí (8 H + 6 E/J) plně osazeno vzorovým řešením, kompasem, scaffoldingem a testovacími vektory, což umožňuje spolehlivý autotest i testovací zkratku `Ctrl+Alt+C` (dev cheat) pro kompletní kampaň.
+- **Mobilní viewport 100dvh (z auditu):**
+  - Do CSS přidána podpora dynamického viewportu `height: 100dvh;` (body), `max-height: calc(100dvh - 48px);` a `max-height: 90dvh;` (.modal-box) a `max-height: calc(100dvh - 56px);` (#side-menu) vedle `100vh` fallbacku, eliminující překryvy dynamickou lištou mobilních prohlížečů (Safari, Chrome).
+- **Ověření:** Plná testovací sada 100 % pass (syntax OK, flow 53 OK, check 70 OK — všech 14 misí úspěšně ověřeno, storage 55 OK, game 93 OK, ui 6 OK, smoke 215 OK). Celkem 493 testů.
+
 ## 2026-10-17 — Implementace P3 a P4: Filmový pás v misi, kolize scaffoldu a modulární architektura
 
 - **Oblast:** `index.html` (krokování pásu, rozmisťování scaffoldu, modulární bridge, JSDoc typy) + `testing/flow_tests.js`.

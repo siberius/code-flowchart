@@ -2,6 +2,21 @@
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
+## 2026-10-17 — Generování a export aplikačních ikon (SVG, PNG, ICO, Manifest) pro CodeFlowChart
+
+- **Oblast:** Samostatné soubory ikon v kořeni projektu i složce `icons/` + `manifest.json`.
+- **Důvod a realizace:**
+  - Původně byla ikona a manifest z důvodu pravidla „Single-file SPA bez externích souborů" vložena přímo uvnitř `index.html` jako Data URI (což zaručovalo funkčnost i při uložení jediného HTML souboru).
+  - Nyní byly vytvořeny také plnohodnotné fyzické soubory na disku pro standardní webové servery (Apache, Nginx, GitHub Pages), mobilní systémy (iOS/Android) a desktop:
+    - [icon.svg](file:///home/lu/Dokumenty/aicoding/school/codeflowchart/icon.svg) & [icons/icon.svg](file:///home/lu/Dokumenty/aicoding/school/codeflowchart/icons/icon.svg): Vektorová ikona 512×512 px s motivem lodi HEFAISTOS, robotickým objektivem Šrouba v kosočtverci podmínky, bloky START–PROCESS–END a neonovými signálovými spoji.
+    - [favicon.svg](file:///home/lu/Dokumenty/aicoding/school/codeflowchart/favicon.svg) & [icons/favicon.svg](file:///home/lu/Dokumenty/aicoding/school/codeflowchart/icons/favicon.svg): Vektorový vysokokontrastní favicon pro záložky moderních prohlížečů.
+    - [icon-512.png](file:///home/lu/Dokumenty/aicoding/school/codeflowchart/icon-512.png) & [icons/icon-512.png](file:///home/lu/Dokumenty/aicoding/school/codeflowchart/icons/icon-512.png): 512×512 px rastrová ikona pro PWA splash screen a obchody s aplikacemi.
+    - [icon-192.png](file:///home/lu/Dokumenty/aicoding/school/codeflowchart/icon-192.png) & [icons/icon-192.png](file:///home/lu/Dokumenty/aicoding/school/codeflowchart/icons/icon-192.png): 192×192 px rastrová ikona pro domovskou obrazovku Androidu.
+    - [apple-touch-icon.png](file:///home/lu/Dokumenty/aicoding/school/codeflowchart/apple-touch-icon.png) & [icons/apple-touch-icon.png](file:///home/lu/Dokumenty/aicoding/school/codeflowchart/icons/apple-touch-icon.png): 180×180 px rastrová ikona pro iPhone / iPad domovskou obrazovku.
+    - [favicon.ico](file:///home/lu/Dokumenty/aicoding/school/codeflowchart/favicon.ico) & [icons/favicon.ico](file:///home/lu/Dokumenty/aicoding/school/codeflowchart/icons/favicon.ico): Vícevrstvý formát ICO (16, 32, 48 px) pro starší i desktopové prohlížeče.
+    - [manifest.json](file:///home/lu/Dokumenty/aicoding/school/codeflowchart/manifest.json): Samostatný PWA manifest s definicemi všech velikostí ikon.
+- **Ověření:** Všechny testovací sady 100 % pass (518 testů, 0 chyb).
+
 ## 2026-10-17 — Plovoucí pohyblivý widget konzole a mobilní spodní lišta nástrojů (PLAN.md §7.11)
 
 - **Oblast:** `index.html` (pohyblivý widget konzole `#console-widget-pill` s magnetickým přichytáváním, dotyková ergonomie spodní lišty nástrojů `#toolbar`, zamezení kolizí popisků a tooltipů) + `testing/flow_ui_tests.js` + `testing/flow_smoke_tests.js`.

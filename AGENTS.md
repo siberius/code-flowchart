@@ -60,13 +60,13 @@ Pro vzdělávací obsah navíc: `md-skills/vzdelavaci-metodiky.md` (RVP/ŠVP, CZ
 - **Profil H vs E_J:** přepnutí neoznačuje profil jako horší a **nepřepisuje práci**; nezávisle
   se mění pouze prezentace. **Bez NARRATIVES toggle** (dualita streamer/operator zrušena,
   `PLAN.md` §16). Program startuje na SPACE 1.
-- **Pravidlo pro instalaci na plochu mobilu (PWA), ikony a manifest (§7.11):**
+- **Pravidlo pro instalaci na plochu mobilu (PWA), ikony a zákaz duplicit (§7.11):**
   Při vytvoření či úpravě funkce instalace aplikace na plochu mobilu (`#menu-install-pwa`, `standalone`)
   je **povinné automaticky navrhnout, vygenerovat a do projektu integrovat kompletní sadu aplikačních ikon i manifest**:
-  1. Vektorové SVG ikony (`icon.svg` 512×512 px, `favicon.svg` 64×64 px) s tématikou projektu.
-  2. Rastrové PNG ikony: `icon-512.png` (512×512 px pro splash screen / store), `icon-192.png` (192×192 px pro Android PWA), `apple-touch-icon.png` (180×180 px pro iOS Safari), `favicon.ico` (multi-size 16/32/48 px).
-  3. Fyzický soubor `manifest.json` v kořeni projektu i složce `icons/` propojený v `<head>`.
-  4. Zachování inline Data URI zálohy v `index.html` pro zajištění 100% offline funkčnosti při spuštění jediného izolovaného HTML souboru.
+  1. **Uložení výhradně ve složce `icons/`:** Všechny ikony patří do podsložky `icons/` (`icon.svg` 512×512 px, `favicon.svg` 64×64 px, `icon-512.png`, `icon-192.png`, `apple-touch-icon.png` 180×180 px pro iOS Safari, `favicon.ico`, `manifest.json`).
+  2. **Zákaz duplicit v kořeni:** V kořenovém adresáři se **neudržují žádné duplikáty PNG/SVG ikon**. Z grafických assetů smí být v kořeni pouze `favicon.ico` (pro kompatibilitu starých crawlerů a prohlížečů, které nečtou `<link>`) a autoritativní `manifest.json` (odkazující na `icons/...`).
+  3. **Propojení v HTML:** V `index.html` tagy `<link>` směřují na `icons/icon.svg`, `icons/apple-touch-icon.png`, `favicon.ico` a `manifest.json`.
+  4. **Offline záloha:** Pro zajištění 100% funkčnosti při spuštění jediného izolovaného HTML souboru z disku/flashky se v `index.html` vždy zachovává inline Data URI záloha pro manifest i SVG ikonu.
 
 ### Konvence a mantinely
 - UI texty a komentáře v aplikaci jsou česky; kód, identifikátory a názvy

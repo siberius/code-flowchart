@@ -2,6 +2,21 @@
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
+## 2026-10-17 — Plovoucí pohyblivý widget konzole a mobilní spodní lišta nástrojů (PLAN.md §7.11)
+
+- **Oblast:** `index.html` (pohyblivý widget konzole `#console-widget-pill` s magnetickým přichytáváním, dotyková ergonomie spodní lišty nástrojů `#toolbar`, zamezení kolizí popisků a tooltipů) + `testing/flow_ui_tests.js` + `testing/flow_smoke_tests.js`.
+- **Pohyblivý widget terminálu (`#console-widget-pill`):**
+  - Implementováno plynulé přetahování (drag & drop) přes univerzální pointer events (`pointerdown`, `pointermove`, `pointerup`, `pointercancel`) s `setPointerCapture`.
+  - Ošetřen dotykový vs. tahový práh (> 6 px = tah, ≤ 6 px = klepnutí pro otevření/zavření konzole). Zamezeno nechtěnému spuštění togglu po ukončení tahu (`justDraggedWidget` guard).
+  - Přidáno magnetické přichycení k levému nebo pravému okraji obrazovky (`.snapping` s kubickou bezier animací) s dodržením bezpečných zón (nahoře pod topbarem, dole nad spodní lištou nástrojů).
+  - Pozice widgetu je ukládána do `sessionStorage` (`cwp_pos`), takže zůstává zachována i při navigaci a změně ploch bez překrývání schémat.
+- **Spodní panel nástrojů (`#toolbar`) a zamezení překrývání popisků:**
+  - Všechna tlačítka bloků (`.tool-btn`) mají explicitní `flex-shrink: 0; white-space: nowrap; user-select: none;`, čímž je vyloučeno zalamování nebo vzájemné překrývání víceslovných textů (např. „Vstup/Výstup" a „Podmínka").
+  - Na dotykových zařízeních (`@media (hover: none)`) jsou plovoucí hover tooltipy `.tool-btn .tooltip` kompletně deaktivovány (`display: none !important`), takže na mobilu nepřekrývají sousední tlačítka ani plochu.
+  - Na obrazovkách < 768px a < 420px doplněn jemný neonový scrollbar a hladké vodorovné posouvání (`overflow-x: auto; -webkit-overflow-scrolling: touch;`), umožňující pohodlný výběr všech 6 bloků i na nejužších displejích (320–390 px) bez kolize s pohyblivým widgetem.
+- **Ověření a testy:**
+  - 100 % pass napříč 7 testovacími sadami: syntax OK, flow 53 OK, check 70 OK, storage 55 OK, game 99 OK, ui 18 OK, smoke 222 OK. Celkem **518 testů, 0 chyb**.
+
 ## 2026-10-17 — Dokončení mobilního rozhraní, PWA instalace na plochu a iOS optimalizace (PLAN.md §7.11)
 
 - **Oblast:** `index.html` (mobilní ergonomie, PWA manifest, SVG app ikona, iOS Safari podpora, pravostranné menu, dvouřadý topbar, plovoucí widget konzole, modál instalace) + `testing/flow_ui_tests.js` + `testing/flow_smoke_tests.js`.

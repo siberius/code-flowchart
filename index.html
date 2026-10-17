@@ -541,6 +541,7 @@
             padding: 8px 14px; border-radius: 28px; border: 1px solid transparent;
             background: transparent; color: var(--text-dim); font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700;
             cursor: pointer; transition: all 0.2s; position: relative;
+            flex-shrink: 0; white-space: nowrap; user-select: none; -webkit-user-select: none;
         }
         .tool-btn:hover { color: var(--text); background: var(--surface2); transform: translateY(-3px);}
         .tool-btn .icon { font-size: 18px; line-height: 1; font-family: 'JetBrains Mono', monospace; font-weight: 800;}
@@ -553,6 +554,9 @@
             opacity: 0; pointer-events: none; transition: all 0.2s; white-space: nowrap; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
         .tool-btn:hover .tooltip { opacity: 1; transform: translateX(-50%) translateY(-5px); }
+        @media (hover: none) {
+            .tooltip { display: none !important; }
+        }
 
         #toast {
             position: fixed; bottom: 130px; left: 50%; transform: translateX(-50%) translateY(20px);
@@ -907,17 +911,39 @@
             .menu-mission { border-left: none; border-right: 3px solid transparent; }
             .menu-mission:hover, .menu-mission.current { border-left: none; border-right-color: var(--accent); }
 
-            /* Spodní panel nástrojů - nikdy není překryt sbalenou konzolí */
+            /* Spodní panel nástrojů - nikdy není překryt sbalenou konzolí a nápisy se nepřekrývají */
             #toolbar {
                 bottom: max(10px, env(safe-area-inset-bottom, 10px));
                 left: 50%; transform: translateX(-50%);
-                width: calc(100% - 16px); max-width: 520px;
+                width: calc(100% - 16px); max-width: 540px;
                 overflow-x: auto; flex-wrap: nowrap;
-                justify-content: flex-start; padding: 8px 10px; border-radius: 20px;
+                justify-content: flex-start; padding: 6px 10px; border-radius: 20px;
+                gap: 4px;
                 z-index: 150;
                 box-shadow: 0 8px 30px rgba(0,0,0,0.7), 0 0 15px rgba(0, 229, 255, 0.15);
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: thin;
+                scrollbar-color: rgba(0, 229, 255, 0.4) transparent;
             }
-            .tool-btn { min-width: 55px; }
+            #toolbar::-webkit-scrollbar { height: 3px; }
+            #toolbar::-webkit-scrollbar-track { background: transparent; }
+            #toolbar::-webkit-scrollbar-thumb { background: rgba(0, 229, 255, 0.45); border-radius: 3px; }
+
+            .tool-btn {
+                min-width: 55px;
+                padding: 6px 8px;
+                font-size: 10px;
+                line-height: 1.15;
+                letter-spacing: -0.2px;
+                flex-shrink: 0;
+                white-space: nowrap;
+                user-select: none;
+                -webkit-user-select: none;
+            }
+            .tool-btn .icon { font-size: 16px; line-height: 1; margin-bottom: 2px; }
+            @media (max-width: 420px) {
+                .tool-btn { min-width: 48px; padding: 5px 6px; font-size: 9.5px; }
+            }
 
             /* Spodní terminál na mobilu jako výsuvný Bottom Sheet */
             #console-panel {
@@ -936,13 +962,13 @@
             .console-left { border-right: none; border-bottom: 1px solid var(--border); flex: 1; }
             .console-right { flex: 1; }
 
-            /* Plovoucí mini-widget terminálu na mobilu */
+            /* Plovoucí a pohyblivý mini-widget terminálu na mobilu */
             #console-widget-pill {
                 display: flex; align-items: center; gap: 7px;
                 position: fixed;
                 bottom: calc(max(10px, env(safe-area-inset-bottom, 10px)) + 58px);
                 right: 12px;
-                background: rgba(14, 18, 25, 0.9);
+                background: rgba(14, 18, 25, 0.92);
                 -webkit-backdrop-filter: blur(16px);
                 backdrop-filter: blur(16px);
                 border: 1px solid rgba(0, 229, 255, 0.5);
@@ -953,15 +979,30 @@
                 font-size: 11px;
                 font-weight: 800;
                 letter-spacing: 1px;
-                cursor: pointer;
+                cursor: grab;
+                touch-action: none;
                 z-index: 160;
                 box-shadow: 0 6px 20px rgba(0,0,0,0.5), 0 0 15px rgba(0, 229, 255, 0.2);
-                transition: all 0.2s;
+                transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.2s;
+                user-select: none;
+                -webkit-user-select: none;
             }
-            #console-widget-pill:active { transform: scale(0.96); }
+            #console-widget-pill.dragging {
+                cursor: grabbing;
+                transform: scale(1.08);
+                box-shadow: 0 10px 30px rgba(0, 229, 255, 0.5), 0 0 25px rgba(0, 229, 255, 0.7);
+                border-color: var(--accent);
+                z-index: 999;
+                transition: none !important;
+            }
+            #console-widget-pill.snapping {
+                transition: left 0.25s cubic-bezier(0.16, 1, 0.3, 1), top 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            }
+            #console-widget-pill:active:not(.dragging) { transform: scale(0.96); }
             #console-widget-pill .cwp-dot {
                 width: 7px; height: 7px; border-radius: 50%;
                 background: #00ffaa; box-shadow: 0 0 8px #00ffaa;
+                flex-shrink: 0;
             }
             #console-panel.open ~ #console-widget-pill,
             body.console-open #console-widget-pill {
@@ -3401,6 +3442,7 @@
             init() {
                 this.setupPointerEvents();
                 this.setupKeyboard();
+                this.initWidgetDrag();
                 document.addEventListener('click', (e) => this.onModalBackdropClick(e));
                 // Na plochu mimo otevřený terminál → terminál se zasune dolů na lištu.
                 if (this.dom.canvasWrap) {
@@ -5927,7 +5969,9 @@
                 else this.startSimulation(stepMode);
             },
 
+            justDraggedWidget: false,
             toggleConsolePanel(e) {
+                if (this.justDraggedWidget) return;
                 if (e && e.target && e.target.closest && e.target.closest('select,button,.close-console,.sim-controls')) return;
                 if (this.dockTimer) { clearTimeout(this.dockTimer); this.dockTimer = null; }
                 const p = this.dom.consolePanel;
@@ -5941,6 +5985,114 @@
                 const p = this.dom.consolePanel;
                 if (p) p.classList.remove('slow-dock');
                 if (p && p.classList.contains('open')) p.classList.remove('open');
+            },
+            initWidgetDrag() {
+                const pill = this.dom.consoleWidgetPill || document.getElementById('console-widget-pill');
+                if (!pill) return;
+
+                let isDown = false;
+                let isDragging = false;
+                let startX = 0, startY = 0;
+                let initLeft = 0, initTop = 0;
+                let totalDist = 0;
+
+                const onDown = (e) => {
+                    if (e.button !== undefined && e.button !== 0) return;
+                    isDown = true;
+                    isDragging = false;
+                    totalDist = 0;
+                    startX = e.clientX;
+                    startY = e.clientY;
+
+                    const r = pill.getBoundingClientRect();
+                    initLeft = r.left;
+                    initTop = r.top;
+
+                    try { pill.setPointerCapture(e.pointerId); } catch(err) {}
+                };
+
+                const onMove = (e) => {
+                    if (!isDown) return;
+                    const dx = e.clientX - startX;
+                    const dy = e.clientY - startY;
+                    totalDist = Math.hypot(dx, dy);
+
+                    if (!isDragging && totalDist > 6) {
+                        isDragging = true;
+                        pill.classList.add('dragging');
+                        pill.style.right = 'auto';
+                        pill.style.bottom = 'auto';
+                    }
+
+                    if (isDragging) {
+                        e.preventDefault();
+                        const maxW = window.innerWidth;
+                        const maxH = window.innerHeight;
+                        const pillW = pill.offsetWidth || 110;
+                        const pillH = pill.offsetHeight || 36;
+                        const newX = Math.max(8, Math.min(maxW - pillW - 8, initLeft + dx));
+                        const newY = Math.max(58, Math.min(maxH - pillH - 65, initTop + dy));
+                        pill.style.left = newX + 'px';
+                        pill.style.top = newY + 'px';
+                    }
+                };
+
+                const onUp = (e) => {
+                    if (!isDown) return;
+                    isDown = false;
+                    try { pill.releasePointerCapture(e.pointerId); } catch(err) {}
+
+                    if (isDragging) {
+                        isDragging = false;
+                        pill.classList.remove('dragging');
+                        pill.classList.add('snapping');
+
+                        const r = pill.getBoundingClientRect();
+                        const isLeft = (r.left + r.width / 2) < (window.innerWidth / 2);
+                        const targetLeft = isLeft ? 12 : (window.innerWidth - r.width - 12);
+                        const targetTop = Math.max(58, Math.min(window.innerHeight - r.height - 65, r.top));
+
+                        pill.style.left = targetLeft + 'px';
+                        pill.style.top = targetTop + 'px';
+
+                        try {
+                            sessionStorage.setItem('cwp_pos', JSON.stringify({ left: targetLeft, top: targetTop, isLeft }));
+                        } catch(err) {}
+
+                        setTimeout(() => {
+                            pill.classList.remove('snapping');
+                        }, 260);
+
+                        this.justDraggedWidget = true;
+                        setTimeout(() => { this.justDraggedWidget = false; }, 300);
+                    }
+                };
+
+                const onCancel = (e) => {
+                    if (!isDown) return;
+                    isDown = false;
+                    isDragging = false;
+                    pill.classList.remove('dragging');
+                    try { pill.releasePointerCapture(e.pointerId); } catch(err) {}
+                };
+
+                pill.addEventListener('pointerdown', onDown);
+                pill.addEventListener('pointermove', onMove);
+                pill.addEventListener('pointerup', onUp);
+                pill.addEventListener('pointercancel', onCancel);
+
+                try {
+                    const saved = sessionStorage.getItem('cwp_pos');
+                    if (saved) {
+                        const p = JSON.parse(saved);
+                        if (p && typeof p.top === 'number') {
+                            pill.style.right = 'auto';
+                            pill.style.bottom = 'auto';
+                            pill.style.left = (p.isLeft ? 12 : (window.innerWidth - 122)) + 'px';
+                            pill.style.top = Math.max(58, Math.min(window.innerHeight - 80, p.top)) + 'px';
+                        }
+                    }
+                } catch(err) {}
             },
 
             resolveDecisionFn: null,

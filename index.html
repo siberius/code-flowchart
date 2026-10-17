@@ -2,7 +2,16 @@
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0d0f14">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="CodeFlowChart">
+    <meta name="application-name" content="CodeFlowChart HEFAISTOS">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><defs><linearGradient id='bg' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%230d0f14'/><stop offset='100%25' stop-color='%231e2230'/></linearGradient><linearGradient id='neon' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%2300e5ff'/><stop offset='100%25' stop-color='%237c3aed'/></linearGradient><filter id='glow' x='-20%25' y='-20%25' width='140%25' height='140%25'><feGaussianBlur stdDeviation='12' result='blur'/><feMerge><feMergeNode in='blur'/><feMergeNode in='SourceGraphic'/></feMerge></filter></defs><rect width='512' height='512' rx='112' fill='url(%23bg)'/><rect width='504' height='504' x='4' y='4' rx='108' fill='none' stroke='url(%23neon)' stroke-width='6' opacity='0.7'/><g filter='url(%23glow)'><path d='M256 102 L256 160' stroke='%2300e5ff' stroke-width='10' stroke-linecap='round'/><path d='M256 260 L256 310' stroke='%2300e5ff' stroke-width='10' stroke-linecap='round'/><path d='M320 210 L395 210 L395 340 L330 340' stroke='%23f59e0b' stroke-width='8' stroke-dasharray='8 6' fill='none'/><path d='M256 390 L256 424' stroke='%2310b981' stroke-width='10' stroke-linecap='round'/><rect x='186' y='60' width='140' height='46' rx='23' fill='%2310b981' stroke='%2300ffaa' stroke-width='4'/><text x='256' y='91' font-family='monospace' font-size='22' font-weight='900' fill='%230d0f14' text-anchor='middle'>START</text><polygon points='256,160 330,210 256,260 182,210' fill='%231e2230' stroke='%2300e5ff' stroke-width='6'/><circle cx='236' cy='210' r='12' fill='%2300e5ff'/><circle cx='276' cy='210' r='12' fill='%2300e5ff'/><circle cx='238' cy='208' r='4' fill='%23ffffff'/><circle cx='278' cy='208' r='4' fill='%23ffffff'/><rect x='176' y='310' width='160' height='60' rx='12' fill='%231e2230' stroke='%238b5cf6' stroke-width='5'/><text x='256' y='348' font-family='monospace' font-size='20' font-weight='800' fill='%23c4b5fd' text-anchor='middle'>HEFAISTOS</text><rect x='196' y='424' width='120' height='44' rx='22' fill='%2300e5ff' stroke='%2338bdf8' stroke-width='4'/><text x='256' y='452' font-family='monospace' font-size='18' font-weight='900' fill='%230d0f14' text-anchor='middle'>CÍL</text></g></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><defs><linearGradient id='bg' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%230d0f14'/><stop offset='100%25' stop-color='%231e2230'/></linearGradient><linearGradient id='neon' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%2300e5ff'/><stop offset='100%25' stop-color='%237c3aed'/></linearGradient><filter id='glow' x='-20%25' y='-20%25' width='140%25' height='140%25'><feGaussianBlur stdDeviation='12' result='blur'/><feMerge><feMergeNode in='blur'/><feMergeNode in='SourceGraphic'/></feMerge></filter></defs><rect width='512' height='512' rx='112' fill='url(%23bg)'/><rect width='504' height='504' x='4' y='4' rx='108' fill='none' stroke='url(%23neon)' stroke-width='6' opacity='0.7'/><g filter='url(%23glow)'><path d='M256 102 L256 160' stroke='%2300e5ff' stroke-width='10' stroke-linecap='round'/><path d='M256 260 L256 310' stroke='%2300e5ff' stroke-width='10' stroke-linecap='round'/><path d='M320 210 L395 210 L395 340 L330 340' stroke='%23f59e0b' stroke-width='8' stroke-dasharray='8 6' fill='none'/><path d='M256 390 L256 424' stroke='%2310b981' stroke-width='10' stroke-linecap='round'/><rect x='186' y='60' width='140' height='46' rx='23' fill='%2310b981' stroke='%2300ffaa' stroke-width='4'/><text x='256' y='91' font-family='monospace' font-size='22' font-weight='900' fill='%230d0f14' text-anchor='middle'>START</text><polygon points='256,160 330,210 256,260 182,210' fill='%231e2230' stroke='%2300e5ff' stroke-width='6'/><circle cx='236' cy='210' r='12' fill='%2300e5ff'/><circle cx='276' cy='210' r='12' fill='%2300e5ff'/><circle cx='238' cy='208' r='4' fill='%23ffffff'/><circle cx='278' cy='208' r='4' fill='%23ffffff'/><rect x='176' y='310' width='160' height='60' rx='12' fill='%231e2230' stroke='%238b5cf6' stroke-width='5'/><text x='256' y='348' font-family='monospace' font-size='20' font-weight='800' fill='%23c4b5fd' text-anchor='middle'>HEFAISTOS</text><rect x='196' y='424' width='120' height='44' rx='22' fill='%2300e5ff' stroke='%2338bdf8' stroke-width='4'/><text x='256' y='452' font-family='monospace' font-size='18' font-weight='900' fill='%230d0f14' text-anchor='middle'>CÍL</text></g></svg>">
+    <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22CodeFlowChart%20HEFAISTOS%22%2C%22short_name%22%3A%22CodeFlow%22%2C%22description%22%3A%22V%C3%BDukov%C3%BD%20editor%20a%20simul%C3%A1tor%20v%C3%BDvojov%C3%BDch%20diagram%C5%AF%22%2C%22start_url%22%3A%22.%2Findex.html%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230d0f14%22%2C%22theme_color%22%3A%22%230d0f14%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%3Butf8%2C%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20512%20512%27%3E%3Cdefs%3E%3ClinearGradient%20id%3D%27bg%27%20x1%3D%270%25%27%20y1%3D%270%25%27%20x2%3D%27100%25%27%20y2%3D%27100%25%27%3E%3Cstop%20offset%3D%270%25%27%20stop-color%3D%27%230d0f14%27%2F%3E%3Cstop%20offset%3D%27100%25%27%20stop-color%3D%27%231e2230%27%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%27512%27%20height%3D%27512%27%20rx%3D%27112%27%20fill%3D%27url(%23bg)%27%2F%3E%3Ctext%20x%3D%27256%27%20y%3D%27280%27%20font-family%3D%27monospace%27%20font-size%3D%2764%27%20font-weight%3D%27900%27%20fill%3D%27%2300e5ff%27%20text-anchor%3D%27middle%27%3E%E2%96%B6%EF%B8%8E%3C%2Ftext%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22any%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D">
     <title>CodeFlowChart</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;700;800&display=swap');
@@ -39,6 +48,9 @@
             height: 100dvh;
             overflow: hidden;
             user-select: none;
+            -webkit-touch-callout: none;
+            touch-action: manipulation;
+            overscroll-behavior: none;
         }
 
         /* Cyberpunk Scrollbary (Globální Sci-Fi design posuvníků) */
@@ -216,6 +228,11 @@
         .top-btn.top-icon { width: 36px; padding: 0; }
         .top-btn.top-icon svg { width: 18px; height: 18px; }
         .top-btn.top-icon:disabled svg { opacity: 0.7; }
+
+        #topbar-tools-toggle { display: none; }
+        #topbar-tools-row { display: contents; }
+        #console-widget-pill { display: none; }
+        .bottom-sheet-handle { display: none; width: 40px; height: 4px; background: rgba(255,255,255,0.25); border-radius: 2px; margin: 6px auto 2px; }
 
         #ws-switch { display: flex; align-items: center; gap: 4px; }
         .ws-arrow {
@@ -810,24 +827,152 @@
         #temp-arrow { position: fixed; top:0; left:0; width: 100%; height: 100%; pointer-events: none; z-index: 50; }
         #temp-path { stroke: var(--accent); stroke-width: 3; stroke-dasharray: 6 4; fill: none; }
 
-        /* Responzivní úpravy pro menší displeje */
+        /* PWA Install Modal */
+        #install-modal .modal-box { max-width: 440px; border-color: rgba(0, 229, 255, 0.4); }
+        .install-guide-box { margin: 12px 0; text-align: left; }
+        .install-guide-list { list-style: none; display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+        .install-guide-item {
+            display: flex; align-items: flex-start; gap: 12px; font-size: 15px; color: var(--text);
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 8px; padding: 10px 12px;
+        }
+        .install-guide-num {
+            background: rgba(0, 229, 255, 0.15); border: 1px solid var(--accent); color: var(--accent);
+            width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 12px; flex-shrink: 0; font-family: 'JetBrains Mono', monospace;
+        }
+        .share-badge {
+            display: inline-flex; align-items: center; justify-content: center;
+            background: rgba(255,255,255,0.1); border-radius: 4px; padding: 0 5px;
+            color: var(--accent); font-weight: 700;
+        }
+
+        /* Responzivní úpravy pro mobilní displeje (ergonomie, widget terminálu, pravostranné menu) */
         @media (max-width: 768px) {
+            #topbar {
+                padding: 0 8px;
+                padding-top: max(0px, env(safe-area-inset-top, 0px));
+                gap: 6px;
+                overflow: visible;
+            }
+            #logo { font-size: 15px; }
+            #hamburger-btn {
+                order: 99;
+                margin-left: auto;
+            }
+
+            #topbar-tools-toggle {
+                display: flex; align-items: center; justify-content: center;
+                width: 32px; height: 32px; cursor: pointer;
+                background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.18);
+                color: var(--text-dim); transition: all 0.2s;
+                clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+            }
+            #topbar-tools-toggle:hover, #topbar-tools-toggle.open {
+                background: rgba(0, 229, 255, 0.15); border-color: var(--accent); color: var(--accent);
+            }
+            #topbar-tools-toggle svg { transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+            #topbar-tools-toggle.open svg { transform: rotate(180deg); }
+
+            #topbar-tools-row {
+                display: flex; position: fixed; top: 56px; left: 0; right: 0;
+                background: rgba(18, 22, 30, 0.95);
+                -webkit-backdrop-filter: blur(20px) saturate(140%);
+                backdrop-filter: blur(20px) saturate(140%);
+                border-bottom: 1px solid rgba(0, 229, 255, 0.2);
+                padding: 0 8px; gap: 6px; align-items: center; justify-content: center;
+                max-height: 0; overflow: hidden; opacity: 0; pointer-events: none;
+                transition: max-height 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, padding 0.3s ease;
+                z-index: 99; box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+            }
+            #topbar-tools-row.open {
+                max-height: 52px; opacity: 1; pointer-events: auto; padding: 6px 8px;
+            }
+
+            /* Pravostranné menu pro ergonomii palce */
+            #side-menu {
+                left: auto; right: calc(-100% - 12px);
+                border-right: none; border-left: 1px solid rgba(255, 255, 255, 0.08);
+                border-bottom-right-radius: 0; border-bottom-left-radius: 16px;
+                box-shadow: -15px 15px 30px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.06);
+                transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+            #side-menu.open { right: 0; left: auto; }
+            .side-menu-link {
+                border-left: none; border-right: 3px solid transparent;
+            }
+            .side-menu-link:hover {
+                border-left: none; border-right: 3px solid var(--accent); padding-right: 35px;
+            }
+            .menu-mission { border-left: none; border-right: 3px solid transparent; }
+            .menu-mission:hover, .menu-mission.current { border-left: none; border-right-color: var(--accent); }
+
+            /* Spodní panel nástrojů - nikdy není překryt sbalenou konzolí */
             #toolbar {
-                bottom: max(58px, calc(48px + env(safe-area-inset-bottom, 8px)));
-                width: 95%; max-width: none; overflow-x: auto; flex-wrap: nowrap;
-                justify-content: flex-start; padding: 10px; border-radius: 24px;
+                bottom: max(10px, env(safe-area-inset-bottom, 10px));
+                left: 50%; transform: translateX(-50%);
+                width: calc(100% - 16px); max-width: 520px;
+                overflow-x: auto; flex-wrap: nowrap;
+                justify-content: flex-start; padding: 8px 10px; border-radius: 20px;
+                z-index: 150;
+                box-shadow: 0 8px 30px rgba(0,0,0,0.7), 0 0 15px rgba(0, 229, 255, 0.15);
             }
             .tool-btn { min-width: 55px; }
-            #console-panel { height: 40vh; }
+
+            /* Spodní terminál na mobilu jako výsuvný Bottom Sheet */
+            #console-panel {
+                height: 40vh;
+                border-radius: 20px 20px 0 0;
+                z-index: 250;
+                box-shadow: 0 -12px 40px rgba(0,0,0,0.85);
+            }
+            #console-panel:not(.open) {
+                transform: translateY(100%);
+            }
+            #console-panel.open {
+                transform: translateY(0);
+            }
             .console-layout { flex-direction: column; }
             .console-left { border-right: none; border-bottom: 1px solid var(--border); flex: 1; }
             .console-right { flex: 1; }
-            #topbar { padding: 0 8px; gap: 6px; }
-            #logo { font-size: 16px; }
+
+            /* Plovoucí mini-widget terminálu na mobilu */
+            #console-widget-pill {
+                display: flex; align-items: center; gap: 7px;
+                position: fixed;
+                bottom: calc(max(10px, env(safe-area-inset-bottom, 10px)) + 58px);
+                right: 12px;
+                background: rgba(14, 18, 25, 0.9);
+                -webkit-backdrop-filter: blur(16px);
+                backdrop-filter: blur(16px);
+                border: 1px solid rgba(0, 229, 255, 0.5);
+                border-radius: 20px;
+                color: var(--text);
+                padding: 6px 14px;
+                font-family: 'JetBrains Mono', monospace;
+                font-size: 11px;
+                font-weight: 800;
+                letter-spacing: 1px;
+                cursor: pointer;
+                z-index: 160;
+                box-shadow: 0 6px 20px rgba(0,0,0,0.5), 0 0 15px rgba(0, 229, 255, 0.2);
+                transition: all 0.2s;
+            }
+            #console-widget-pill:active { transform: scale(0.96); }
+            #console-widget-pill .cwp-dot {
+                width: 7px; height: 7px; border-radius: 50%;
+                background: #00ffaa; box-shadow: 0 0 8px #00ffaa;
+            }
+            #console-panel.open ~ #console-widget-pill,
+            body.console-open #console-widget-pill {
+                display: none;
+            }
+
             .top-btn { width: 32px; height: 32px; font-size: 14px; }
-            #btn-simulate, #btn-step, #btn-stop { font-size: 11px; height: 32px; padding: 0 10px; }
-            #sim-text, #step-text, #stop-text { display: none; }
+            #btn-simulate, #btn-step, #btn-verify, #btn-stop { font-size: 11px; height: 32px; padding: 0 10px; }
+            #sim-text, #step-text, #verify-text, #stop-text { display: none; }
         }
+
 
         /* ==== F1: HUD operátora, menu sekce, jméno, reset, level modal ==== */
         #hud {
@@ -946,9 +1091,6 @@
             </button>
         </div>
         <div style="width: 16px;"></div>
-        <button class="top-btn top-icon" id="btn-undo" onclick="App.undo()" title="Zpět (Ctrl+Z)" aria-label="Zpět (Ctrl+Z)" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5 5.5 5.5 0 0 1-5.5 5.5H11"/></svg></button>
-        <button class="top-btn top-icon" id="btn-redo" onclick="App.redo()" title="Vpřed (Ctrl+Y)" aria-label="Vpřed (Ctrl+Y)" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5 5.5 5.5 0 0 0 9.5 20H13"/></svg></button>
-        <div style="width: 16px;"></div>
         <div id="ws-switch" aria-label="Přepínač ploch (filmový pás)">
             <button class="ws-arrow" id="ws-prev" onclick="App.wsStep(-1)" title="Předchozí plocha">‹</button>
             <div id="ws-film">
@@ -967,11 +1109,18 @@
             <button class="ws-arrow" id="ws-next" onclick="App.wsStep(1)" title="Další plocha">›</button>
         </div>
         <div style="width: 16px;"></div>
-        <button class="top-btn top-icon" id="btn-import" onclick="document.getElementById('json-upload').click()" title="Importovat postup z PC (JSON)" aria-label="Importovat postup z PC (JSON)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
-        <button class="top-btn top-icon" id="btn-export" onclick="App.promptJsonExport()" title="Exportovat postup do PC (JSON)" aria-label="Exportovat postup do PC (JSON)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></button>
-        <button class="top-btn" onclick="App.promptSvgExport()" title="Exportovat do SVG (Ctrl+S)">SVG</button>
-        <button class="top-btn top-icon" id="btn-wipe" onclick="App.promptClearCanvas()" title="Vymazat plochu" aria-label="Vymazat plochu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg></button>
-        <button class="top-btn" id="btn-fullscreen" onclick="App.toggleFullscreen()" title="Maximalizovat (Fullscreen)">⛶ MAX</button>
+        <button id="topbar-tools-toggle" class="top-btn top-icon" onclick="App.toggleMobileTools()" title="Další nástroje" aria-label="Další nástroje">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div id="topbar-tools-row">
+            <button class="top-btn top-icon" id="btn-undo" onclick="App.undo()" title="Zpět (Ctrl+Z)" aria-label="Zpět (Ctrl+Z)" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5 5.5 5.5 0 0 1-5.5 5.5H11"/></svg></button>
+            <button class="top-btn top-icon" id="btn-redo" onclick="App.redo()" title="Vpřed (Ctrl+Y)" aria-label="Vpřed (Ctrl+Y)" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5 5.5 5.5 0 0 0 9.5 20H13"/></svg></button>
+            <button class="top-btn top-icon" id="btn-import" onclick="document.getElementById('json-upload').click()" title="Importovat postup z PC (JSON)" aria-label="Importovat postup z PC (JSON)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+            <button class="top-btn top-icon" id="btn-export" onclick="App.promptJsonExport()" title="Exportovat postup do PC (JSON)" aria-label="Exportovat postup do PC (JSON)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></button>
+            <button class="top-btn" onclick="App.promptSvgExport()" title="Exportovat do SVG (Ctrl+S)">SVG</button>
+            <button class="top-btn top-icon" id="btn-wipe" onclick="App.promptClearCanvas()" title="Vymazat plochu" aria-label="Vymazat plochu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg></button>
+            <button class="top-btn" id="btn-fullscreen" onclick="App.toggleFullscreen()" title="Maximalizovat (Fullscreen)">⛶ MAX</button>
+        </div>
     </div>
 
     <!-- F1: HUD operátora (learning mode) -->
@@ -989,6 +1138,7 @@
         <div class="side-menu-link" onclick="App.openHelp()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> Nápověda</div>
         <div class="side-menu-link" onclick="App.openAbout()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg> O programu</div>
         <div class="side-menu-link" onclick="App.openAuthor()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> O autorovi</div>
+        <div class="side-menu-link" onclick="App.openInstallModal()" id="menu-install-pwa"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg> Přidat na plochu</div>
         <a class="side-menu-link" href="codeflowchart.pdf" download="codeflowchart.pdf" onclick="App.closeMenu()" style="text-decoration: none;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Metodika</a>
         <div class="side-menu-link" onclick="App.promptReset()" style="color:#ef4444; border-top:1px solid rgba(239,68,68,0.25); margin-top:6px;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg> RESET</div>
     </div>
@@ -1061,6 +1211,7 @@
     </div>
 
     <div id="console-panel">
+        <div class="bottom-sheet-handle"></div>
         <div class="console-header" onclick="App.toggleConsolePanel(event)">
             <div style="display: flex; gap: 16px; align-items: center; min-width: 0;">
                 <span class="tit"><b>Terminal</b> // CodeFlowChart Execution Engine v1.1</span>
@@ -1086,6 +1237,13 @@
             </div>
         </div>
     </div>
+
+    <!-- Mobilní plovoucí widget terminálu (FAB badge) -->
+    <button id="console-widget-pill" onclick="App.toggleConsolePanel(event)" title="Otevřít / zavřít terminál">
+        <span class="cwp-dot"></span>
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+        <span class="cwp-text">TERMINÁL</span>
+    </button>
 
     <!-- Modální okno: Editace -->
     <div id="edit-modal" class="modal-overlay">
@@ -1426,6 +1584,43 @@
             </div>
             <div class="btn-row" style="margin-top: 20px;">
                 <button class="btn btn-yes-large" onclick="App.closeAuthor()" style="width: 100%; border-color: var(--accent3); color: var(--accent3); box-shadow: inset 0 0 15px rgba(245, 158, 11, 0.2); text-shadow: 0 0 8px rgba(245, 158, 11, 0.6);">ZAVŘÍT</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PWA Install Modal: Návod na instalaci na plochu (iOS / Android / Desktop) -->
+    <div id="install-modal" class="modal-overlay" style="z-index: 750;" data-dismiss>
+        <div class="modal-box">
+            <h3 style="color: var(--accent); text-shadow: 0 0 10px rgba(0,229,255,0.4);"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>Přidat na plochu</h3>
+            <p style="color: var(--text-dim); font-size: 13px; margin-top: 4px;">Spusť CodeFlowChart přímo z plochy telefonu nebo tabletu v celoobrazovkovém režimu offline.</p>
+            
+            <div id="install-guide-ios" class="install-guide-box" style="display:none;">
+                <ul class="install-guide-list">
+                    <li class="install-guide-item">
+                        <span class="install-guide-num">1</span>
+                        <div>Klepni v dolní (nebo horní) liště Safari na tlačítko <strong>Sdílet</strong> <span class="share-badge"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;" aria-hidden="true"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg> Sdílet</span>.</div>
+                    </li>
+                    <li class="install-guide-item">
+                        <span class="install-guide-num">2</span>
+                        <div>V nabídce posuň dolů a vyber <strong>Přidat na plochu</strong> (Add to Home Screen).</div>
+                    </li>
+                    <li class="install-guide-item">
+                        <span class="install-guide-num">3</span>
+                        <div>Vpravo nahoře klepni na <strong>Přidat</strong>. Ikona HEFAISTOS se objeví na domovské obrazovce.</div>
+                    </li>
+                </ul>
+            </div>
+
+            <div id="install-guide-android" class="install-guide-box" style="display:none;">
+                <p id="install-pwa-ready-text" style="color: var(--text); font-size: 14px; margin: 10px 0;">Aplikaci lze nainstalovat na plochu jedním klepnutím:</p>
+                <button id="btn-pwa-install-action" class="btn btn-submit-large" onclick="App.triggerPwaInstall()" style="width: 100%; margin: 8px 0 14px; display:none;"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>NAINSTALOVAT APLIKACI</button>
+                <div id="install-guide-android-manual" style="font-size: 13px; color: var(--text-dim); line-height: 1.6; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08);">
+                    Pokud se dialog neotevřel automaticky, klepněte v menu prohlížeče (tři tečky <strong>⋮</strong> vpravo nahoře) na <strong>Přidat na plochu</strong> nebo <strong>Nainstalovat aplikaci</strong>.
+                </div>
+            </div>
+
+            <div class="btn-row" style="margin-top: 14px;">
+                <button class="btn btn-yes-large" onclick="App.closeInstallModal()" style="width: 100%; border-color: var(--accent); color: var(--accent); box-shadow: inset 0 0 15px rgba(0, 229, 255, 0.2); text-shadow: 0 0 8px rgba(0, 229, 255, 0.6);">ROZUMÍM</button>
             </div>
         </div>
     </div>
@@ -3015,7 +3210,11 @@
                 resultSaveBtn: document.getElementById('result-save-btn'),
                 resultOfferText: document.getElementById('result-offer-text'),
                 resultSvgBtn: document.getElementById('result-svg-btn'),
-                resultCertBtn: document.getElementById('result-cert-btn')
+                resultCertBtn: document.getElementById('result-cert-btn'),
+                topbarToolsRow: document.getElementById('topbar-tools-row'),
+                topbarToolsToggle: document.getElementById('topbar-tools-toggle'),
+                consoleWidgetPill: document.getElementById('console-widget-pill'),
+                installModal: document.getElementById('install-modal')
             },
 
             toggleMenu(e) {
@@ -3025,6 +3224,7 @@
                     this.dom.sideMenu.classList.remove('open');
                     this.dom.hamburgerBtn.classList.remove('active');
                 } else {
+                    this.closeMobileTools();
                     this.dom.sideMenu.classList.add('open');
                     this.dom.hamburgerBtn.classList.add('active');
                 }
@@ -3032,6 +3232,63 @@
             closeMenu() {
                 this.dom.sideMenu.classList.remove('open');
                 this.dom.hamburgerBtn.classList.remove('active');
+            },
+
+            toggleMobileTools(force) {
+                const row = this.dom.topbarToolsRow || document.getElementById('topbar-tools-row');
+                const btn = this.dom.topbarToolsToggle || document.getElementById('topbar-tools-toggle');
+                if (!row || !btn) return;
+                const willOpen = typeof force === 'boolean' ? force : !row.classList.contains('open');
+                if (willOpen) {
+                    this.closeMenu();
+                    row.classList.add('open');
+                    btn.classList.add('open');
+                } else {
+                    row.classList.remove('open');
+                    btn.classList.remove('open');
+                }
+            },
+            closeMobileTools() {
+                this.toggleMobileTools(false);
+            },
+
+            openInstallModal() {
+                this.closeMenu();
+                this.closeMobileTools();
+                const m = this.dom.installModal || document.getElementById('install-modal');
+                if (!m) return;
+                const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+                const iosBox = document.getElementById('install-guide-ios');
+                const androidBox = document.getElementById('install-guide-android');
+                const pwaBtn = document.getElementById('btn-pwa-install-action');
+                if (iosBox && androidBox) {
+                    if (isIos) {
+                        iosBox.style.display = 'block';
+                        androidBox.style.display = 'none';
+                    } else {
+                        iosBox.style.display = 'none';
+                        androidBox.style.display = 'block';
+                        if (pwaBtn) pwaBtn.style.display = this.deferredInstallPrompt ? 'inline-flex' : 'none';
+                    }
+                }
+                m.classList.add('show');
+            },
+            closeInstallModal() {
+                const m = this.dom.installModal || document.getElementById('install-modal');
+                if (m) m.classList.remove('show');
+            },
+            async triggerPwaInstall() {
+                if (this.deferredInstallPrompt) {
+                    this.deferredInstallPrompt.prompt();
+                    const choice = await this.deferredInstallPrompt.userChoice;
+                    if (choice && choice.outcome === 'accepted') {
+                        this.toast('CodeFlowChart byl přidán na plochu!', 3000);
+                        this.closeInstallModal();
+                    }
+                    this.deferredInstallPrompt = null;
+                } else {
+                    this.toast('V menu prohlížeče (⋮) zvolte „Přidat na plochu“', 3500);
+                }
             },
 
             openHelp() { this.closeMenu(); document.getElementById('help-modal').classList.add('show'); },
@@ -3149,8 +3406,15 @@
                 if (this.dom.canvasWrap) {
                     this.dom.canvasWrap.addEventListener('pointerdown', () => {
                         if (!this.isSimulating) this.dockConsole();
+                        this.closeMobileTools();
                     });
                 }
+                window.addEventListener('beforeinstallprompt', (e) => {
+                    e.preventDefault();
+                    this.deferredInstallPrompt = e;
+                    const btn = document.getElementById('btn-pwa-install-action');
+                    if (btn) btn.style.display = 'inline-flex';
+                });
                 if (this.dom.nameInput) {
                     this.dom.nameInput.addEventListener('keydown', (e) => {
                         if (e.key === 'Enter') this.submitName();
@@ -5072,6 +5336,8 @@
                         
                         this.closeEdit();
                         this.closeMenu();
+                        this.closeMobileTools();
+                        this.closeInstallModal();
                         if (this.resolveInputFn) { this.resolveInputFn(null); this.resolveInputFn = null; }
                         if (this.resolveDecisionFn) { this.resolveDecisionFn(null); this.resolveDecisionFn = null; }
                         document.querySelectorAll('.modal-overlay').forEach(el => el.classList.remove('show'));

@@ -2,6 +2,31 @@
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
+## 2026-10-17 — Dokončení mobilního rozhraní, PWA instalace na plochu a iOS optimalizace (PLAN.md §7.11)
+
+- **Oblast:** `index.html` (mobilní ergonomie, PWA manifest, SVG app ikona, iOS Safari podpora, pravostranné menu, dvouřadý topbar, plovoucí widget konzole, modál instalace) + `testing/flow_ui_tests.js` + `testing/flow_smoke_tests.js`.
+- **PWA a instalace na plochu mobilu:**
+  - Vytvořen a integrován kompletní Web App Manifest generovaný jako Data URI (`data:application/manifest+json,...`) se `standalone` zobrazením, dark tématem `#0d0f14` a metadaty servisní lodi HEFAISTOS.
+  - Vytvořena detailní Sci-Fi vektorová SVG ikona (512×512 px s robotem ŠROUB, vývojovým diagramem START–ROZHODNUTÍ–AKCE–CÍL a neonovou září) zakódovaná jako Data URI pro `<link rel="icon">` i `<link rel="apple-touch-icon">`.
+  - Do bočního menu zařazena nová volba „📲 Přidat na plochu" (`#menu-install-pwa`) s otevíráním průvodce `#install-modal` s automatickou detekcí zařízení:
+    - Na **iOS Safari**: názorný 3krokový vizuální návod pro stisk systémového tlačítka Sdílet (`⎋`) a volbu „Přidat na plochu".
+    - Na **Androidu / Chromiu**: přímé spuštění systémového instalátoru jedním kliknutím (`beforeinstallprompt` listener a `triggerPwaInstall()`) s fallbackem.
+- **iOS Safari a mobilní systémové úpravy:**
+  - Přidány meta tagy `apple-mobile-web-app-capable`, `apple-mobile-web-app-status-bar-style` (`black-translucent`), `apple-mobile-web-app-title` a `viewport-fit=cover`.
+  - V CSS ošetřeno `touch-action: manipulation;`, `-webkit-touch-callout: none;` a `overscroll-behavior: none;` zamezující nechtěnému pull-to-refresh overscrollu a systémovým lupám při dlouhém podržení.
+- **Ergonomie palce a pravostranné vysouvací menu:**
+  - Na mobilních zařízeních (≤ 768px) je `#side-menu` umístěno na pravé straně obrazovky (`right: 0`, vysouvání zprava) s lemem a stínem orientovaným doleva.
+  - Tlačítko hamburgeru `#hamburger-btn` je na mobilu přesunuto flexboxovým řazením (`order: 99; margin-left: auto;`) na pravý okraj horní lišty do přirozené dosahové zóny palce.
+- **Dvouřadý responzivní topbar s plynulým rozbalením:**
+  - V 1. řádku topbaru na mobilu zůstává logo, přepínač ploch (filmový pás), hlavní tlačítka běhu (Spustit, Krokovat, Ověřit, Zastavit), rozbalovací šipka `#topbar-tools-toggle` a hamburger menu.
+  - Sekundární nástroje (Undo, Redo, Import, Export, SVG, Wipe, Fullscreen) jsou sdruženy do vysouvacího řádku `#topbar-tools-row`, který se animovaně rozbalí pod topbar na klik na šipku a automaticky zatahuje při dotyku na plátno nebo klávesou Esc. Na desktopu zůstává rozložení v jednom řádku díky `display: contents;`.
+- **Konzole jako plovoucí Widget (Bottom Sheet) bez kolize s toolbarem:**
+  - Odstraněno překrývání spodního panelu nástrojů (`#toolbar` má volný prostor u spodního okraje s `env(safe-area-inset-bottom)`).
+  - V klidovém stavu je konzole na mobilu zasunuta pod spodní hranu a reprezentována kompaktním plovoucím widgetem `#console-widget-pill` (FAB pill s neonovým lemem a zelenou LED diodou).
+  - Při spuštění simulace nebo kliknutí na widget se terminál plynule vysune jako moderní mobilní Bottom Sheet s madlem `.bottom-sheet-handle`, výstupem programu a pamětí proměnných.
+- **Ověření a testy:**
+  - Všech 7 testovacích sad 100 % pass: syntax OK, flow 53 OK, check 70 OK, storage 55 OK, game 99 OK, ui 18 OK (9 nových testů pro PWA, ikonu, iOS tagy a mobilní layout), smoke 222 OK (7 nových smoke testů). Celkem **518 testů, 0 chyb**.
+
 ## 2026-10-17 — Dokončení F7, F8 a F9: Certifikát SVG, tablet UI a přístupnost
 
 - **Oblast:** `index.html` (generátor certifikátu SVG, tlačítko certifikátu, kontrastní port-label, globální prefers-reduced-motion) + `testing/flow_game_tests.js` + `testing/flow_ui_tests.js`.

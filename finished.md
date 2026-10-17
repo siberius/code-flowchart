@@ -2,6 +2,19 @@
 
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
+## 2026-10-17 — Dokončení F7, F8 a F9: Certifikát SVG, tablet UI a přístupnost
+
+- **Oblast:** `index.html` (generátor certifikátu SVG, tlačítko certifikátu, kontrastní port-label, globální prefers-reduced-motion) + `testing/flow_game_tests.js` + `testing/flow_ui_tests.js`.
+- **F8 Certifikát servisního technika (PLAN.md §9):**
+  - Implementován generátor oficiálního certifikátu `App.buildCertificateSvg(levelId)` a stahování `App.downloadCertificateSvg(levelId)` ve formátu A4 na šířku (842 × 595 px).
+  - Certifikát obsahuje sci-fi cyberpunk rám, logo lodi HEFAISTOS, jméno žáka (nebo „Servisní technik lodi HEFAISTOS"), název mise, kategorii profilu (H / E/J), hodnost, získané XP, hodnocení hvězdami, razítko „PLATNÁ KONTROLA", stav OVĚŘENO, datum a čas a MIT licenci.
+  - Do výsledkového modalu (`#level-result-modal`) doplněno zlaté tlačítko `CERTIFIKÁT` (`#result-cert-btn`), umožňující žákovi stáhnout certifikát jedním kliknutím po úspěšném ověření mise.
+- **F7 Tablet UI & kontrast větví:**
+  - Vylepšen styl štítků portů `.port-label` (ANO/NE a TĚLO/KONEC) s tmavým podkladovým filtrem (`background: rgba(13,15,20,0.7); border: 1px solid rgba(255,255,255,0.08);`) a vysokým kontrastem pro bezproblémovou čitelnost na tabletech.
+- **F9 Přístupnost a redukovaný pohyb (A11y):**
+  - Do CSS doplněno globální pravidlo `@media (prefers-reduced-motion: reduce)` tlumící systémové animace a přechody pro žáky s citlivostí na pohyb či poruchami soustředění.
+- **Ověření:** Plná testovací sada 100 % pass (syntax OK, flow 53 OK, check 70 OK, storage 55 OK, game 99 OK — 6 nových testů certifikátu, ui 9 OK — testy prefers-reduced-motion a 100dvh, smoke 215 OK). Celkem **502 testů, 0 chyb**.
+
 ## 2026-10-17 — Dokončení F5 a F6 (PLAN.md) a mobilní viewport 100dvh
 
 - **Oblast:** `index.html` (mise m08 a e6, scaffolding, vzorová řešení, testovací vektory, CSS viewport) + `testing/flow_game_tests.js` + `testing/flow_check_tests.js`.

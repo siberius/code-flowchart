@@ -654,13 +654,15 @@
         .glass-wheel.data-switch:hover { transform: scale(1.15); color: #fff; }
 
         .port-label {
-            position: absolute; font-size: 11px; font-weight: 800; pointer-events: none; opacity: 0.9;
-            font-family: 'JetBrains Mono', monospace; text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+            position: absolute; font-size: 11px; font-weight: 800; pointer-events: none; opacity: 0.95;
+            font-family: 'JetBrains Mono', monospace; text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+            padding: 1px 5px; border-radius: 4px; background: rgba(13, 15, 20, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
-        .port-label.top { top: -20px; left: calc(50% + 28px); transform: translateX(-50%); }
-        .port-label.bottom { bottom: -20px; left: calc(50% + 28px); transform: translateX(-50%); }
-        .port-label.left { top: calc(50% - 20px); left: -26px; transform: translateY(-50%); }
-        .port-label.right { top: calc(50% - 20px); right: -26px; transform: translateY(-50%); }
+        .port-label.top { top: -22px; left: calc(50% + 28px); transform: translateX(-50%); }
+        .port-label.bottom { bottom: -22px; left: calc(50% + 28px); transform: translateX(-50%); }
+        .port-label.left { top: calc(50% - 20px); left: -32px; transform: translateY(-50%); }
+        .port-label.right { top: calc(50% - 20px); right: -32px; transform: translateY(-50%); }
 
         .sim-prompt {
             position: absolute; top: -75px; left: 50%; transform: translateX(-50%);
@@ -1253,6 +1255,7 @@
             <div class="btn-row" style="flex-wrap: wrap;">
                 <button id="result-save-btn" class="btn" onclick="App.downloadSnapshotNow()" style="display:none; flex: 1; min-width: 130px; padding: 10px; font-size: 13px; background: rgba(16,185,129,0.05); color: #10b981; border-color: #10b981; box-shadow: inset 0 0 15px rgba(16,185,129,0.2);"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>STÁHNOUT JSON</button>
                 <button id="result-svg-btn" class="btn" onclick="App.downloadSolvedSvg()" style="flex: 1; min-width: 130px; padding: 10px; font-size: 13px; background: rgba(139,92,246,0.08); color: #a78bfa; border-color: #8b5cf6; box-shadow: inset 0 0 15px rgba(139,92,246,0.2);"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>SVG ŘEŠENÍ</button>
+                <button id="result-cert-btn" class="btn" onclick="App.downloadCertificateSvg()" style="flex: 1; min-width: 130px; padding: 10px; font-size: 13px; background: rgba(245,158,11,0.08); color: #fbbf24; border-color: #f59e0b; box-shadow: inset 0 0 15px rgba(245,158,11,0.2);"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>CERTIFIKÁT</button>
                 <button class="btn" onclick="App.continueAfterLevel()" style="flex: 1; min-width: 130px; padding: 10px; font-size: 13px; background: rgba(16,185,129,0.05); color: #10b981; border-color: #10b981; box-shadow: inset 0 0 15px rgba(16,185,129,0.2);"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>POKRAČOVAT</button>
             </div>
         </div>
@@ -3011,7 +3014,8 @@
                 resultBody: document.getElementById('result-body'),
                 resultSaveBtn: document.getElementById('result-save-btn'),
                 resultOfferText: document.getElementById('result-offer-text'),
-                resultSvgBtn: document.getElementById('result-svg-btn')
+                resultSvgBtn: document.getElementById('result-svg-btn'),
+                resultCertBtn: document.getElementById('result-cert-btn')
             },
 
             toggleMenu(e) {
@@ -3874,6 +3878,101 @@
                 a.click();
                 this.toast('SVG řešení exportováno: ' + a.download);
             },
+            certificateFilename(levelId) {
+                const id = levelId || (this.modeOf(this.activeWorkspace) === 'campaign' ? this.activeWorkspace : 'mise');
+                const d = new Date();
+                const ds = d.toISOString().slice(0, 10);
+                return 'hefaistos-certifikat-' + id + '-' + ds + '.svg';
+            },
+            buildCertificateSvg(levelId) {
+                const id = levelId || (this.modeOf(this.activeWorkspace) === 'campaign' ? this.activeWorkspace : (this.activeLevel || 'm01'));
+                const lvl = (typeof missionById === 'function' ? missionById(id) : null) || this.currentLevel() || { id, name: 'Servisní mise', goal: '' };
+                const num = this.missionNum ? this.missionNum(lvl.id) : 1;
+                const playerName = (Game && Game.playerName) ? Game.playerName : '';
+                const student = (playerName && playerName.trim()) ? playerName.trim() : 'Servisní technik lodi HEFAISTOS';
+                const rank = (Game && typeof Game.rank === 'function') ? Game.rank() : 'Pásový operátor';
+                const xp = (Game && typeof Game.xp === 'number') ? Game.xp : 0;
+                const cert = (Game && Game.certificates) ? (Game.certificates.find(c => c.levelId === lvl.id) || Game.certificates[Game.certificates.length - 1]) : null;
+                const stars = cert ? cert.stars : (this.lastCheck ? 3 : 2);
+                const filledStars = '★'.repeat(stars) + '☆'.repeat(3 - stars);
+                const d = new Date();
+                const dateStr = d.toLocaleDateString('cs-CZ') + ' ' + d.toLocaleTimeString('cs-CZ', { hour: '2-digit', minute: '2-digit' });
+                const profLabel = this.profile === 'E_J' ? 'Kategorie E/J (podpůrná cesta SOŠ)' : 'Kategorie H (učební obory SOŠ)';
+                const code = 'HEF-' + lvl.id.toUpperCase() + '-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+
+                return `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="842" height="595" viewBox="0 0 842 595">
+  <defs>
+    <linearGradient id="cert-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0d14"/>
+      <stop offset="50%" stop-color="#0f1420"/>
+      <stop offset="100%" stop-color="#080a0f"/>
+    </linearGradient>
+    <linearGradient id="cert-gold" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#fbbf24"/>
+    </linearGradient>
+    <filter id="cert-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="842" height="595" fill="url(#cert-bg)"/>
+  <g opacity="0.05" stroke="#00e5ff" stroke-width="1">
+    <line x1="40" y1="100" x2="802" y2="100"/>
+    <line x1="40" y1="200" x2="802" y2="200"/>
+    <line x1="40" y1="300" x2="802" y2="300"/>
+    <line x1="40" y1="400" x2="802" y2="400"/>
+    <line x1="40" y1="500" x2="802" y2="500"/>
+  </g>
+  <rect x="24" y="24" width="794" height="547" rx="16" fill="none" stroke="#1e293b" stroke-width="2"/>
+  <rect x="32" y="32" width="778" height="531" rx="12" fill="none" stroke="#00e5ff" stroke-width="1.5" stroke-opacity="0.4"/>
+  <path d="M24 60 L24 24 L60 24" fill="none" stroke="#00e5ff" stroke-width="4"/>
+  <path d="M818 60 L818 24 L782 24" fill="none" stroke="#00e5ff" stroke-width="4"/>
+  <path d="M24 535 L24 571 L60 571" fill="none" stroke="#00e5ff" stroke-width="4"/>
+  <path d="M818 535 L818 571 L782 571" fill="none" stroke="#00e5ff" stroke-width="4"/>
+  <text x="421" y="72" text-anchor="middle" fill="#00e5ff" font-family="JetBrains Mono, monospace, sans-serif" font-size="11" font-weight="700" letter-spacing="4">SERVISNÍ PRŮZKUMNÁ LOĎ HEFAISTOS • RVP SOV</text>
+  <text x="421" y="116" text-anchor="middle" fill="url(#cert-gold)" font-family="Syne, sans-serif" font-size="24" font-weight="800" letter-spacing="2" filter="url(#cert-glow)">CERTIFIKÁT SERVISNÍHO TECHNIKA</text>
+  <text x="421" y="140" text-anchor="middle" fill="#94a3b8" font-family="sans-serif" font-size="12" letter-spacing="1">OSVĚDČENÍ O ZVLÁDNUTÍ ALGORITMIZACE A VÝVOJOVÝCH DIAGRAMŮ</text>
+  <line x1="220" y1="160" x2="622" y2="160" stroke="#334155" stroke-width="1"/>
+  <text x="421" y="198" text-anchor="middle" fill="#64748b" font-family="sans-serif" font-size="13">Tento certifikát se uděluje operátorovi:</text>
+  <text x="421" y="242" text-anchor="middle" fill="#ffffff" font-family="Syne, sans-serif" font-size="28" font-weight="800" letter-spacing="1">${student}</text>
+  <text x="421" y="285" text-anchor="middle" fill="#94a3b8" font-family="sans-serif" font-size="13">za úspěšné sestavení, simulaci a automatické ověření mise:</text>
+  <text x="421" y="318" text-anchor="middle" fill="#38bdf8" font-family="Syne, sans-serif" font-size="20" font-weight="700">${num}. ${lvl.name}</text>
+  <text x="421" y="340" text-anchor="middle" fill="#64748b" font-family="sans-serif" font-size="12">${profLabel}</text>
+  <rect x="120" y="365" width="602" height="72" rx="10" fill="#0f172a" fill-opacity="0.6" stroke="#334155" stroke-width="1"/>
+  <text x="200" y="395" text-anchor="middle" fill="#64748b" font-family="sans-serif" font-size="10" letter-spacing="1">HODNOST</text>
+  <text x="200" y="418" text-anchor="middle" fill="#f59e0b" font-family="JetBrains Mono, monospace" font-size="13" font-weight="700">${rank}</text>
+  <text x="340" y="395" text-anchor="middle" fill="#64748b" font-family="sans-serif" font-size="10" letter-spacing="1">CELKOVÉ XP</text>
+  <text x="340" y="418" text-anchor="middle" fill="#00e5ff" font-family="JetBrains Mono, monospace" font-size="13" font-weight="700">${xp} XP</text>
+  <text x="480" y="395" text-anchor="middle" fill="#64748b" font-family="sans-serif" font-size="10" letter-spacing="1">HODNOCENÍ</text>
+  <text x="480" y="418" text-anchor="middle" fill="#f59e0b" font-family="sans-serif" font-size="14">${filledStars}</text>
+  <text x="620" y="395" text-anchor="middle" fill="#64748b" font-family="sans-serif" font-size="10" letter-spacing="1">STAV TOKU</text>
+  <text x="620" y="418" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono, monospace" font-size="12" font-weight="700">✓ OVĚŘENO</text>
+  <g transform="translate(690, 485)" opacity="0.85">
+    <circle r="36" fill="none" stroke="#00e5ff" stroke-width="1.5" stroke-dasharray="4 2"/>
+    <circle r="30" fill="none" stroke="#10b981" stroke-width="1"/>
+    <text y="-6" text-anchor="middle" fill="#10b981" font-family="monospace" font-size="8" font-weight="700" letter-spacing="1">KONTROLA</text>
+    <text y="8" text-anchor="middle" fill="#10b981" font-family="monospace" font-size="11" font-weight="800">PLATNÁ</text>
+    <text y="19" text-anchor="middle" fill="#00e5ff" font-family="monospace" font-size="7">HEFAISTOS</text>
+  </g>
+  <text x="54" y="500" fill="#64748b" font-family="JetBrains Mono, monospace" font-size="11">Kód záznamu: ${code}</text>
+  <text x="54" y="518" fill="#64748b" font-family="JetBrains Mono, monospace" font-size="11">Datum a čas: ${dateStr}</text>
+  <text x="54" y="544" fill="#475569" font-family="sans-serif" font-size="10">CodeFlowChart HEFAISTOS • Výukový simulátor vývojových diagramů • MIT Licence © 2026 Luděk Sušický</text>
+</svg>`;
+            },
+            downloadCertificateSvg(levelId) {
+                const svg = this.buildCertificateSvg(levelId);
+                if (!svg) return;
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml;charset=utf-8' }));
+                a.download = this.certificateFilename(levelId);
+                a.click();
+                this.toast('Certifikát exportován (SVG): ' + a.download);
+            },
             onLevelSuccess() {
                 const lvl = this.currentLevel();
                 if (!lvl) return;
@@ -3909,8 +4008,9 @@
                 const first = !!res.firstTime;
                 if (this.dom.resultSaveBtn) this.dom.resultSaveBtn.style.display = first ? 'block' : 'none';
                 if (this.dom.resultOfferText) this.dom.resultOfferText.style.display = first ? 'block' : 'none';
-                // SVG řešení je k dispozici vždy po úspěšném dokončení (i při opakování).
+                // SVG řešení i certifikát jsou k dispozici vždy po úspěšném dokončení.
                 if (this.dom.resultSvgBtn) this.dom.resultSvgBtn.style.display = 'block';
+                if (this.dom.resultCertBtn) this.dom.resultCertBtn.style.display = 'block';
             },
 
             buildDefaultGameLoop() {

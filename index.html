@@ -86,7 +86,13 @@
             padding: 0 16px; gap: 12px;
             z-index: 100;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 -1px 0 rgba(255,255,255,0.05);
+            overflow-x: auto;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
         }
+        #topbar::-webkit-scrollbar { display: none; }
+        #topbar > * { flex-shrink: 0; }
 
         /* HAMBURGER MENU - Vzhled */
         #hamburger-btn {
@@ -251,6 +257,7 @@
         #canvas-wrap {
             width: 100%; height: 100%;
             position: relative; overflow: hidden;
+            touch-action: none;
             background: var(--bg);
             background-image: radial-gradient(circle, #2a2f3d 1px, transparent 1px);
             background-size: 28px 28px;
@@ -460,6 +467,15 @@
             pointer-events: all; cursor: crosshair; transform: translate(-50%, -50%);
             transition: all 0.12s; z-index: 30; opacity: 0;
         }
+        .port::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            pointer-events: auto;
+        }
         .block:hover .port, .block.selected .port { opacity: 1; }
         /* Tablet/mobil: bez hoveru musí být porty stále vidět */
         @media (hover: none) {
@@ -483,7 +499,7 @@
         .block.dimmed { opacity: 0.3; filter: grayscale(60%); z-index: 5; transition: opacity 0.3s, filter 0.3s; pointer-events: none; }
 
         #toolbar {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            position: fixed; bottom: 58px; left: 50%; transform: translateX(-50%);
             background: rgba(30, 34, 48, 0.35); /* Zvýšená průhlednost */
             backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -515,7 +531,7 @@
         .tool-btn:hover .tooltip { opacity: 1; transform: translateX(-50%) translateY(-5px); }
 
         #toast {
-            position: fixed; bottom: 96px; left: 50%; transform: translateX(-50%) translateY(20px);
+            position: fixed; bottom: 130px; left: 50%; transform: translateX(-50%) translateY(20px);
             background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 20px;
             font-size: 13px; font-weight: 700; opacity: 0; transition: all 0.3s; z-index: 300; pointer-events: none;
             box-shadow: var(--shadow);
@@ -788,6 +804,7 @@
         /* Responzivní úpravy pro menší displeje */
         @media (max-width: 768px) {
             #toolbar {
+                bottom: max(58px, calc(48px + env(safe-area-inset-bottom, 8px)));
                 width: 95%; max-width: none; overflow-x: auto; flex-wrap: nowrap;
                 justify-content: flex-start; padding: 10px; border-radius: 24px;
             }
@@ -872,6 +889,27 @@
         .modal-box button { font-size: 19px !important; }
         .modal-box .btn-row { flex-wrap: wrap; }
         .modal-box .btn-row button { min-width: 0; }
+
+        @media (max-width: 600px) {
+            .modal-box { font-size: 15px; padding: 16px; width: 95vw; }
+            .modal-box h3 { font-size: 19px; }
+            .modal-box p,
+            .modal-box label,
+            .modal-box #level-body,
+            .modal-box #level-kompas,
+            .modal-box .help-item,
+            .modal-box .lb-goal,
+            .modal-box .lb-step,
+            .modal-box .lb-blocks,
+            .modal-box .help-code,
+            .modal-box #name-error,
+            .modal-box #sim-output-text { font-size: 15px !important; }
+            .modal-box .lb-label,
+            .modal-box .lk-label { font-size: 13px !important; }
+            .modal-box .input-dark,
+            .modal-box #name-input { font-size: 15px !important; }
+            .modal-box button { font-size: 14px !important; }
+        }
     </style>
 </head>
 <body>
@@ -2464,6 +2502,285 @@
                     }
                     return out;
                 });
+            },
+
+            // Bezpečné vyhodnocování výrazů a podmínek bez Function(...) a eval.
+            // Plná podpora aritmetiky (+ - * / % **), logiky (&& || !), porovnání (== != < > <= >=),
+            // priorit operátorů, závorek, volání Math.* funkcí a čtení proměnných z RAM.
+            safeEval(exprStr, scope) {
+                const text = String(exprStr == null ? '' : exprStr).trim();
+                if (!text) return undefined;
+
+                let pos = 0;
+                const len = text.length;
+
+                const ALLOWED_FUNCS = {
+                    'Math.sqrt': Math.sqrt, 'Math.round': Math.round, 'Math.floor': Math.floor,
+                    'Math.ceil': Math.ceil, 'Math.abs': Math.abs, 'Math.min': Math.min,
+                    'Math.max': Math.max, 'Math.pow': Math.pow, 'Math.sin': Math.sin,
+                    'Math.cos': Math.cos, 'Math.tan': Math.tan, 'Math.log': Math.log,
+                    'sqrt': Math.sqrt, 'round': Math.round, 'floor': Math.floor,
+                    'ceil': Math.ceil, 'abs': Math.abs, 'min': Math.min, 'max': Math.max
+                };
+
+                function skipWhitespace() {
+                    while (pos < len && /\s/.test(text[pos])) pos++;
+                }
+
+                function peek() {
+                    skipWhitespace();
+                    if (pos >= len) return { type: 'EOF' };
+                    const ch = text[pos];
+
+                    if (ch === '"' || ch === "'") {
+                        const quote = ch;
+                        let end = pos + 1;
+                        let str = '';
+                        while (end < len && text[end] !== quote) {
+                            if (text[end] === '\\' && end + 1 < len) {
+                                end++;
+                                if (text[end] === 'n') str += '\n';
+                                else if (text[end] === 't') str += '\t';
+                                else str += text[end];
+                            } else {
+                                str += text[end];
+                            }
+                            end++;
+                        }
+                        if (end >= len) throw new Error('Neukončený textový řetězec');
+                        return { type: 'STRING', value: str, rawLen: end + 1 - pos };
+                    }
+
+                    if (/\d/.test(ch) || (ch === '.' && pos + 1 < len && /\d/.test(text[pos + 1]))) {
+                        let end = pos;
+                        while (end < len && /[\d.]/.test(text[end])) end++;
+                        const numStr = text.slice(pos, end);
+                        const num = Number(numStr);
+                        if (isNaN(num)) throw new Error(`Neplatné číslo: ${numStr}`);
+                        return { type: 'NUMBER', value: num, rawLen: end - pos };
+                    }
+
+                    const sub3 = text.slice(pos, pos + 3);
+                    if (sub3 === '===' || sub3 === '!==') return { type: 'OP', value: sub3, rawLen: 3 };
+
+                    const sub2 = text.slice(pos, pos + 2);
+                    if (['==', '!=', '<=', '>=', '&&', '||', '**'].includes(sub2)) {
+                        return { type: 'OP', value: sub2, rawLen: 2 };
+                    }
+
+                    if (['+', '-', '*', '/', '%', '<', '>', '!', '(', ')', ','].includes(ch)) {
+                        return { type: ch === '(' || ch === ')' || ch === ',' ? ch : 'OP', value: ch, rawLen: 1 };
+                    }
+
+                    if (/[\p{L}_$]/u.test(ch)) {
+                        let end = pos;
+                        while (end < len && /[\p{L}0-9_$.]/u.test(text[end])) end++;
+                        const id = text.slice(pos, end);
+                        return { type: 'ID', value: id, rawLen: end - pos };
+                    }
+
+                    throw new Error(`Neočekávaný znak: '${ch}' na pozici ${pos}`);
+                }
+
+                function next() {
+                    const token = peek();
+                    if (token.type !== 'EOF') pos += token.rawLen;
+                    return token;
+                }
+
+                function parseExpression() { return parseLogicalOr(); }
+
+                function parseLogicalOr() {
+                    let left = parseLogicalAnd();
+                    while (true) {
+                        const token = peek();
+                        if (token.type === 'OP' && token.value === '||') {
+                            next();
+                            const right = parseLogicalAnd();
+                            left = left || right;
+                        } else break;
+                    }
+                    return left;
+                }
+
+                function parseLogicalAnd() {
+                    let left = parseEquality();
+                    while (true) {
+                        const token = peek();
+                        if (token.type === 'OP' && token.value === '&&') {
+                            next();
+                            const right = parseEquality();
+                            left = left && right;
+                        } else break;
+                    }
+                    return left;
+                }
+
+                function parseEquality() {
+                    let left = parseRelational();
+                    while (true) {
+                        const token = peek();
+                        if (token.type === 'OP' && ['==', '!=', '===', '!=='].includes(token.value)) {
+                            const op = token.value;
+                            next();
+                            const right = parseRelational();
+                            if (op === '==') {
+                                if ((left === true && right === 'true') || (left === 'true' && right === true)) left = true;
+                                else if ((left === false && right === 'false') || (left === 'false' && right === false)) left = true;
+                                else left = (left == right);
+                            } else if (op === '!=') {
+                                if ((left === true && right === 'true') || (left === 'true' && right === true)) left = false;
+                                else if ((left === false && right === 'false') || (left === 'false' && right === false)) left = false;
+                                else left = (left != right);
+                            } else if (op === '===') {
+                                left = (left === right);
+                            } else if (op === '!==') {
+                                left = (left !== right);
+                            }
+                        } else break;
+                    }
+                    return left;
+                }
+
+                function parseRelational() {
+                    let left = parseAdditive();
+                    while (true) {
+                        const token = peek();
+                        if (token.type === 'OP' && ['<', '<=', '>', '>='].includes(token.value)) {
+                            const op = token.value;
+                            next();
+                            const right = parseAdditive();
+                            if (op === '<') left = (left < right);
+                            else if (op === '<=') left = (left <= right);
+                            else if (op === '>') left = (left > right);
+                            else if (op === '>=') left = (left >= right);
+                        } else break;
+                    }
+                    return left;
+                }
+
+                function parseAdditive() {
+                    let left = parseMultiplicative();
+                    while (true) {
+                        const token = peek();
+                        if (token.type === 'OP' && (token.value === '+' || token.value === '-')) {
+                            const op = token.value;
+                            next();
+                            const right = parseMultiplicative();
+                            if (op === '+') left = left + right;
+                            else left = left - right;
+                        } else break;
+                    }
+                    return left;
+                }
+
+                function parseMultiplicative() {
+                    let left = parseExponentiation();
+                    while (true) {
+                        const token = peek();
+                        if (token.type === 'OP' && (token.value === '*' || token.value === '/' || token.value === '%')) {
+                            const op = token.value;
+                            next();
+                            const right = parseExponentiation();
+                            if (op === '/') {
+                                if (right === 0) throw new Error('Dělení nulou');
+                                left = left / right;
+                            } else if (op === '%') {
+                                if (right === 0) throw new Error('Dělení nulou');
+                                left = left % right;
+                            } else {
+                                left = left * right;
+                            }
+                        } else break;
+                    }
+                    return left;
+                }
+
+                function parseExponentiation() {
+                    const base = parseUnary();
+                    const token = peek();
+                    if (token.type === 'OP' && token.value === '**') {
+                        next();
+                        const exp = parseExponentiation();
+                        return base ** exp;
+                    }
+                    return base;
+                }
+
+                function parseUnary() {
+                    const token = peek();
+                    if (token.type === 'OP' && (token.value === '+' || token.value === '-' || token.value === '!')) {
+                        const op = token.value;
+                        next();
+                        const operand = parseUnary();
+                        if (op === '+') return +operand;
+                        if (op === '-') return -operand;
+                        if (op === '!') return !operand;
+                    }
+                    return parsePrimary();
+                }
+
+                function parsePrimary() {
+                    const token = peek();
+                    if (token.type === 'NUMBER' || token.type === 'STRING') {
+                        next();
+                        return token.value;
+                    }
+
+                    if (token.type === '(') {
+                        next();
+                        const val = parseExpression();
+                        const close = next();
+                        if (close.type !== ')') throw new Error('Chybí uzavírací závorka )');
+                        return val;
+                    }
+
+                    if (token.type === 'ID') {
+                        const name = token.value;
+                        next();
+                        if (name === 'true') return true;
+                        if (name === 'false') return false;
+                        if (name === 'null') return null;
+                        if (name === 'undefined') return undefined;
+
+                        if (peek().type === '(') {
+                            next();
+                            const args = [];
+                            if (peek().type !== ')') {
+                                args.push(parseExpression());
+                                while (peek().type === ',') {
+                                    next();
+                                    args.push(parseExpression());
+                                }
+                            }
+                            const close = next();
+                            if (close.type !== ')') throw new Error(`Chybí uzavírací závorka ) u volání funkce '${name}'`);
+
+                            if (ALLOWED_FUNCS[name]) {
+                                return ALLOWED_FUNCS[name](...args);
+                            }
+                            throw new Error(`Nepovolená nebo neznámá funkce: '${name}'`);
+                        }
+
+                        if (scope && Object.prototype.hasOwnProperty.call(scope, name)) {
+                            let v = scope[name];
+                            if (typeof v === 'string' && v.length >= 2 && ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'")))) {
+                                v = v.slice(1, -1);
+                            }
+                            return v;
+                        }
+                        throw new Error(`Neznámá proměnná: '${name}'`);
+                    }
+
+                    throw new Error(`Neočekávaný token: ${token.value || token.type}`);
+                }
+
+                const result = parseExpression();
+                skipWhitespace();
+                if (pos < len) {
+                    throw new Error(`Nadbytečné znaky na konci výrazu: '${text.slice(pos)}'`);
+                }
+                return result;
             },
 
             // Detekce nekonečné smyčky podle opakování stavu (blok + obsah RAM),

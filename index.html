@@ -1528,16 +1528,16 @@
 
                     <div class="help-section">
                         <h4>Mise, hvězdy a hodnosti</h4>
-                        <div class="help-item"><strong>MISE</strong>14 misí: 8 pro profil H plus 6 pro E/J, od sekvence přes cykly až po záchranu systému. Misi spustíš kliknutím v menu.</div>
-                        <div class="help-item"><strong>Kompas</strong>nápověda zdarma (Cíl → Háček → Vzor → Postup). Nápověda nic nestojí, XP se nikdy neodečítá.</div>
-                        <div class="help-item"><strong>Hvězdy</strong>★ 100–115 %, ★★ &gt;115–125 %, ★★★ &gt;125 %.</div>
+                        <div class="help-item"><strong>MISE</strong> 14 misí: 8 pro profil H plus 6 pro E/J, od sekvence přes cykly až po záchranu systému. Misi spustíš kliknutím v menu.</div>
+                        <div class="help-item"><strong>Kompas</strong> nápověda zdarma (Cíl → Háček → Vzor → Postup). Nápověda nic nestojí, XP se nikdy neodečítá.</div>
+                        <div class="help-item"><strong>Hvězdy</strong> ★ 100–115 %, ★★ &gt;115–125 %, ★★★ &gt;125 %.</div>
                         <div class="help-item"><strong>Hodnost</strong> roste s celkovým XP; po splnění mise se ti nabídne stažení postupu (JSON), obrázek řešení (SVG) i volitelný certifikát.</div>
                         <div class="help-item" style="opacity: 0.7;">Oborový profil (H / E_J) přepneš zkratkou <span class="help-code">Ctrl+Alt+P</span> nebo <a href="#" onclick="App.toggleProfile();return false;" style="color: var(--accent);">kliknutím zde</a>.</div>
                     </div>
 
                     <div class="help-section">
                         <h4>Plochy a ukázky</h4>
-                        <div class="help-item"><strong>MISE</strong>úlohy; <strong>SPACE 1</strong>demo „sbírání jablek"; <strong>SPACE 2–5</strong>volné plochy pro vlastní tvorbu.</div>
+                        <div class="help-item"><strong>MISE</strong> úlohy; <strong>SPACE 1</strong> demo „sbírání jablek"; <strong>SPACE 2–5</strong> volné plochy pro vlastní tvorbu.</div>
                         <div class="help-item"><strong>Ukázky</strong> (<strong>Alt+S</strong>): Ahoj světe, Obsah kruhu, Součet 1..N, FizzBuzz: načtou hotový diagram do aktivní plochy, můžeš si je prohlédnout a upravit.</div>
                         <div class="help-item"><strong>IMPORT / EXPORT</strong> (JSON) uloží a načte celý postup: mise, plochy i jméno; <strong>SVG</strong> exportuje obrázek diagramu.</div>
                     </div>
@@ -1960,7 +1960,7 @@
                     story: 'Linka funguje, ale některé spojky vypadají, jako by je žvýkal robot.',
                     blocks: ['start', 'io', 'process', 'decision', 'loop', 'note', 'end'], xpBase: 220,
                     kompas: {
-                        cil: 'Potřebuješ 3 dobré — točíš, dokud je nemáš.',
+                        cil: 'Potřebuješ 3 dobré: točíš, dokud je nemáš.',
                         hacek: 'Kolikrát poběží smyčka? Záleží na vstupech?',
                         vzor: 'Smyčka dobrych < 3 → stav → dobrý? dobrych++',
                         postup: 'Ukonči cyklus, až dobrych == 3, a zvyš počítadlo jen u dobrého kusu.'
@@ -2474,7 +2474,7 @@
                     { type: 'process', label: 'vysledek = a ** b', x: 560, y: 1280 },
                     { type: 'io', label: 'Výsledek: {vysledek}', ioType: 'output', x: 560, y: 1450 },
                     { type: 'decision', label: 'op == "odmocnina"', yesPort: 'right', noPort: 'bottom', x: 0, y: 1560 },
-                    { type: 'note', label: 'ODMOCNINA:\n√(a² + b²) i √(a) jde přes\nMath.sqrt(a) — nepotřebuje b.', x: -440, y: 1560 },
+                    { type: 'note', label: 'ODMOCNINA:\n√(a² + b²) i √(a) jde přes\nMath.sqrt(a), nepotřebuje b.', x: -440, y: 1560 },
                     { type: 'process', label: 'vysledek = Math.sqrt(a)', x: 560, y: 1560 },
                     { type: 'io', label: 'Výsledek: {vysledek}', ioType: 'output', x: 560, y: 1730 },
                     { type: 'note', label: 'SVOD:\nVšechny větve a i neznámý\noperátor končí v jednom\nkolečku KONEC.', x: 1090, y: 1960 },
@@ -2607,7 +2607,7 @@
                     { type: 'decision', label: 'bmi <= 30', yesPort: 'right', noPort: 'bottom', x: 0, y: 790 },
                     { type: 'io', label: 'Nadváha (BMI {bmi})', ioType: 'output', x: 440, y: 790 },
                     { type: 'io', label: 'Obezita (BMI {bmi})', ioType: 'output', x: 0, y: 1050 },
-                    { type: 'note', label: 'SVOD:\nPodváha, norma, nadváha\ni obezita — vše končí\nv jednom KONCI.', x: 900, y: 1100 },
+                    { type: 'note', label: 'SVOD:\nPodváha, norma, nadváha\ni obezita, vše končí\nv jednom KONCI.', x: 900, y: 1100 },
                     { type: 'end', label: 'Konec', x: 780, y: 1100 }
                 ],
                 arrows: [
@@ -3471,7 +3471,7 @@
                 // Expoirace dat na PC (90 min nečinnosti) — mobil se nikdy nemaže automaticky.
                 try {
                     if (this.maybeExpirePcData(Date.now())) {
-                        this.toast('Uplynulo 90 minut — hodnoty na tomto počítači byly vymazány.', 3500);
+                        this.toast('Uplynulo 90 minut: hodnoty na tomto počítači byly vymazány.', 3500);
                     }
                 } catch(e) {}
                 this.noteLastActive();
@@ -3717,7 +3717,7 @@
                 this.pushHistory();
                 setTimeout(() => { this.renderArrows(); this.fitToScreen(); }, 50);
                 if (this.cheatStep === 0) this.toast('Cheat: plocha vyčištěna (start znovu)');
-                else if (this.cheatStep >= total) this.toast(`Cheat: hotovo (${total}/${total}) — můžeš spustit ▶`);
+                else if (this.cheatStep >= total) this.toast(`Cheat: hotovo (${total}/${total}): můžeš spustit ▶`);
                 else this.toast(`Cheat: krok ${this.cheatStep}/${total}`, 1200);
             },
             buildCheatSolution(level, reveal) {
@@ -3911,7 +3911,7 @@
                     { label: 'Nápověda', hint: 'syntaxe, zkratky, uložení', shortcut: 'Ctrl+Alt+H', run: () => this.openHelp() },
                     { label: 'O programu', hint: 'SPA, licence MIT', shortcut: 'Ctrl+Alt+I', run: () => this.openAbout() },
                     { label: 'O autorovi', hint: 'kontakt', shortcut: 'Ctrl+Alt+A', run: () => this.openAuthor() },
-                    { label: 'MISE — úlohy', hint: 'aktivní kontext', shortcut: 'Ctrl+Alt+M', run: () => this.selectWorkspace('campaign') },
+                    { label: 'MISE: úlohy', hint: 'aktivní kontext', shortcut: 'Ctrl+Alt+M', run: () => this.selectWorkspace('campaign') },
                     { label: 'Plochy', hint: 'SPACE 1–5 → výběr plochy', shortcut: 'Ctrl+Alt+1–5', keepOpen: true, run: () => this.expandSpaces() },
                     { label: 'Zaměřit diagram', hint: 'vše se vejde na plátno', shortcut: 'F', run: () => this.fitToScreen() },
                     { label: 'Střed pohledu', hint: 'centrum / nula', shortcut: 'Mezerník', run: () => this.centerView() },
@@ -3924,11 +3924,11 @@
             spaceCommands() {
                 return [
                     { label: '‹ Zpět na přehled', hint: '', shortcut: '', keepOpen: true, run: () => { this.paletteScope = 'main'; this.renderPalette(''); } },
-                    { label: 'SPACE 1 — jablka', hint: 'demo plocha', shortcut: 'Ctrl+Alt+1', run: () => this.switchWorkspace('space1') },
-                    { label: 'SPACE 2 — prázdná', hint: 'volná plocha', shortcut: 'Ctrl+Alt+2', run: () => this.switchWorkspace('space2') },
-                    { label: 'SPACE 3 — prázdná', hint: 'volná plocha', shortcut: 'Ctrl+Alt+3', run: () => this.switchWorkspace('space3') },
-                    { label: 'SPACE 4 — prázdná', hint: 'volná plocha', shortcut: 'Ctrl+Alt+4', run: () => this.switchWorkspace('space4') },
-                    { label: 'SPACE 5 — prázdná', hint: 'volná plocha', shortcut: 'Ctrl+Alt+5', run: () => this.switchWorkspace('space5') }
+                    { label: 'SPACE 1: jablka', hint: 'demo plocha', shortcut: 'Ctrl+Alt+1', run: () => this.switchWorkspace('space1') },
+                    { label: 'SPACE 2: prázdná', hint: 'volná plocha', shortcut: 'Ctrl+Alt+2', run: () => this.switchWorkspace('space2') },
+                    { label: 'SPACE 3: prázdná', hint: 'volná plocha', shortcut: 'Ctrl+Alt+3', run: () => this.switchWorkspace('space3') },
+                    { label: 'SPACE 4: prázdná', hint: 'volná plocha', shortcut: 'Ctrl+Alt+4', run: () => this.switchWorkspace('space4') },
+                    { label: 'SPACE 5: prázdná', hint: 'volná plocha', shortcut: 'Ctrl+Alt+5', run: () => this.switchWorkspace('space5') }
                 ];
             },
             expandSpaces() {
@@ -4016,7 +4016,7 @@
                         '<div class="lb-label" style="margin-top:8px;">Co máš udělat</div><div class="lb-step">' + steps + '</div>' +
                         '<div class="lb-label" style="margin-top:8px;">Přesuň a propoj</div><div class="lb-step">Bloky na plátně jsou rozházené. Přesuň je na vhodná místa a propoj šipkami podle zadání.</div>' +
                         '<div class="lb-label" style="margin-top:8px;">Povolené bloky</div><div class="lb-blocks">' + blocks + '</div>' +
-                        '<div class="lb-label" style="margin-top:8px;">Ověření</div><div class="lb-step">Spusť program tlačítkem ▶ — musí dojít do KONCE bez chyby.</div>';
+                        '<div class="lb-label" style="margin-top:8px;">Ověření</div><div class="lb-step">Spusť program tlačítkem ▶, musí dojít do KONCE bez chyby.</div>';
                 }
                 if (this.dom.levelKompas) {
                     this.dom.levelKompas.style.display = 'none';
@@ -4624,7 +4624,7 @@
                         b.dataType = b.dataType || this.inputExpect(b.label) || 'text';
                         const isNum = b.dataType === 'number';
                         const dIcon = isNum ? '123' : 'Aa';
-                        const dTitle = isNum ? 'Typ: ČÍSLO — povolí jen čísla' : 'Typ: TEXT — povolí cokoliv';
+                        const dTitle = isNum ? 'Typ: ČÍSLO, povolí jen čísla' : 'Typ: TEXT, povolí cokoliv';
                         const dColor = isNum ? '#00e5ff' : '#8b5cf6';
                         specialUI += `<div class="glass-wheel data-switch" onclick="App.toggleDataType('${b.id}', event)" title="${dTitle}" style="color: ${dColor}; border-color: ${dColor}; text-shadow: 0 0 10px ${dColor}80;">${dIcon}</div>`;
                     }
@@ -5710,7 +5710,7 @@
                 const s = String(value).trim();
                 const num = Number(value);
                 if (s !== '' && Number.isNaN(num)) {
-                    this.logConsole(`[CHYBA TYPU] ${what} obsahuje text ('${s}'), ne číslo — nelze ${ctx}.`, "error");
+                    this.logConsole(`[CHYBA TYPU] ${what} obsahuje text ('${s}'), ne číslo: nelze ${ctx}.`, "error");
                     this.runtimeTypeError = true;
                     return 0;
                 }
@@ -5722,7 +5722,7 @@
                 const s = String(value).trim();
                 const num = Number(value);
                 if (s !== '' && Number.isNaN(num)) {
-                    this.logConsole(`[CHYBA TYPU] ${what} obsahuje text ('${s}'), ne číslo — nelze ${ctx}.`, "error");
+                    this.logConsole(`[CHYBA TYPU] ${what} obsahuje text ('${s}'), ne číslo: nelze ${ctx}.`, "error");
                     this.runtimeTypeError = true;
                     return 0;
                 }
@@ -5849,7 +5849,7 @@
                         }
 
                         const outgoing = arrows.filter(a => a.from === cur.id);
-                        if (outgoing.length === 0) { error = 'Slepá ulička za blokem „' + cur.label + '“ — chybí šipka dál.'; errorBlock = cur.id; break; }
+                        if (outgoing.length === 0) { error = 'Slepá ulička za blokem „' + cur.label + '“ chybí šipka dál.'; errorBlock = cur.id; break; }
                         cur = byId[outgoing[0].to] || null;
                     }
                 } finally {
@@ -5857,7 +5857,7 @@
                 }
 
                 if (!error && !reachedEnd) {
-                    error = 'Program nepřišel k bloku KONEC — chybí ukončení toku.';
+                    error = 'Program nepřišel k bloku KONEC: chybí ukončení toku.';
                     errorBlock = cur && cur.id ? cur.id : (errorBlock || null);
                 }
 
@@ -5890,7 +5890,7 @@
                 }
                 if (ok && vector.requireLoop && loopsRun === 0) {
                     ok = false;
-                    message = 'Požadované opakování se neprovedlo — projdi ALESPOŇ jednou smyčku.';
+                    message = 'Požadované opakování se neprovedlo: projdi ALESPOŇ jednou smyčku.';
                 }
                 if (ok && typeof vector.maxOps === 'number' && ops > vector.maxOps) {
                     ok = false;
@@ -5928,7 +5928,7 @@
                 const rows = check.results.map(r =>
                     '<div style="border-left:3px solid ' + (r.ok ? '#10b981' : '#ef4444') + ';padding:8px 10px;margin-bottom:8px;background:rgba(0,0,0,0.25);">' +
                     '<strong style="color:' + (r.ok ? '#10b981' : '#ef4444') + ';">' + (r.ok ? '✓' : '✗') + ' Test ' + r.id + '</strong>' +
-                    '<div style="color:var(--text-dim);font-size:14px;line-height:1.5;">' + (r.ok ? 'Prošlo — výstup odpovídá zadání.' : r.message) + '</div></div>'
+                    '<div style="color:var(--text-dim);font-size:14px;line-height:1.5;">' + (r.ok ? 'Prošlo: výstup odpovídá zadání.' : r.message) + '</div></div>'
                 ).join('');
                 if (this.dom.checkTitle) this.dom.checkTitle.textContent = 'Kontrola: ' + check.passed + '/' + check.total + ' prošlo';
                 if (this.dom.checkBody) this.dom.checkBody.innerHTML = rows;
@@ -6141,7 +6141,7 @@
                     }
                     const hint = document.getElementById('sim-input-hint');
                     if (hint) {
-                        if (this.pendingInputType === 'number') { hint.style.display = 'block'; hint.textContent = 'Očekává se číslo — desetinnou čárku zadej jako tečku.'; }
+                        if (this.pendingInputType === 'number') { hint.style.display = 'block'; hint.textContent = 'Očekává se číslo: desetinnou čárku zadej jako tečku.'; }
                         else if (this.pendingInputType === 'text') { hint.style.display = 'block'; hint.textContent = 'Očekává se text.'; }
                         else hint.style.display = 'none';
                     }
@@ -6169,7 +6169,7 @@
                 }
                 if (this.pendingInputType === 'number' && !/^[+-]?(\d+([.]\d*)?|[.]\d+)$/.test(val.trim())) {
                     if (this.dom.simInputError) {
-                        this.dom.simInputError.textContent = 'Zadal jsi text, ale očekává se číslo. Napiš číslo — desetinnou čárku nahraď tečkou.';
+                        this.dom.simInputError.textContent = 'Zadal jsi text, ale očekává se číslo. Napiš číslo: desetinnou čárku nahraď tečkou.';
                         this.dom.simInputError.style.display = 'block';
                     }
                     this.dom.simInputField.focus();
@@ -6477,7 +6477,7 @@
                     this.isSimulating = false;
                     if (this.lastSimStatus === 'success' && this.isCampaign()) {
                         if (this.activeLevel) Game.setTag(this.activeLevel, Game.TAGS.ZPROVOZNENO);
-                        this.logConsole('Běh OK — spouštím automatickou kontrolu...', 'info');
+                        this.logConsole('Běh OK: spouštím automatickou kontrolu...', 'info');
                         this.runCheck(false);
                     }
                     if (this.lastSimStatus === 'success') {
@@ -6948,7 +6948,7 @@
                 if (!snap) { this.toast('Import zrušen (žádný soubor).'); return; }
                 this.applySnapshot(snap);
                 this.updateGameUI();
-                this.toast('Import dokončen — celý postup obnoven.');
+                this.toast('Import dokončen: celý postup obnoven.');
                 // Obnova aktivního kontextu: aktivní level → znovu otevřít zadání;
                 // aktivní SPACE → applySnapshot už otevřel právě tento SPACE.
                 const ctx = snap.activeContext || {};
@@ -6968,7 +6968,7 @@
                             this.openImportReview(outcome.snapshot);
                         } else if (outcome.type === 'legacy') {
                             const n = this.applyLegacyWorkspaces(outcome.workspaces, outcome.active);
-                            this.toast('Načten starý formát ploch (' + n + ') — bez herního stavu. Práce zůstává.');
+                            this.toast('Načten starý formát ploch (' + n + '): bez herního stavu. Práce zůstává.');
                         } else if (outcome.type === 'diagram') {
                             // Jedno schéma → do aktuální plochy (zachováno z dřívějška).
                             this.blocks = outcome.blocks;

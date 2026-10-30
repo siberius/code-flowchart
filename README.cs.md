@@ -92,6 +92,6 @@ Vestavěné vysvětlivky a výstupní věty mají anglické zobrazení. Názvy p
 
 Nová verze nabídne Uložit a aktualizovat. Nejdřív zastav simulaci a zavři otevřené dialogy. Před obnovením se uloží aktivní plocha; další otevřené karty dostanou vlastní nabídku aktualizace. Při prvním přechodu ze starší verze bez této nabídky jednou zavři všechna okna aplikace, aby se čekající verze mohla aktivovat.
 
-Na telefonu se nový diagram otevře v čitelném přiblížení. Celý diagram (F) vměstná všechny bloky, Čitelný začátek vrátí větší zobrazení ke STARTU. Změna velikosti okna zachovává kameru; uložené plochy si ponechají uložený pohled.
+Na telefonu se nový diagram otevře v čitelném přiblížení. Celý diagram (F) vměstná všechny bloky, Čitelný začátek vrátí větší zobrazení ke STARTU. Změna velikosti okna zachovává střed pohledu a přiblížení; uložené plochy si ponechají uložený pohled.
 
 Do neaktivity na PC se počítá skutečná práce myší, dotykem, klávesnicí nebo kolečkem. Automatické ukládání interval neprodlužuje. Po 90 minutách se vymaže i otevřený diagram a historie kroků zpět. Stará karta po vypršení společné relace přebírá čerstvě uložený stav před další úpravou a nepřepisuje ho automatickým ukládáním. Mobil a tablet automatickou expiraci nemají.

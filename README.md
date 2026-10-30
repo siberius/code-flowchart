@@ -36,13 +36,13 @@ New versions offer **Save and update**. Stop a running simulation and close open
 
 ## Diagram view
 
-New diagrams open at a readable scale on phones. **Whole diagram (F)** fits every block; **Readable start** returns to the start block at a larger scale. Resizing preserves the current camera. Saved workspaces keep their saved camera.
+New diagrams open at a readable scale on phones. **Whole diagram (F)** fits every block; **Readable start** returns to the start block at a larger scale. Resizing preserves the current camera center and scale. Saved workspaces keep their saved camera.
 
 ## Data and exports
 
 Workspaces, progress and the optional student name are stored locally in the browser. Desktop data expires after 90 minutes without pointer, keyboard or wheel activity, including while the page is open. Autosave does not extend the session. Expiration clears the in-memory work and undo history as well. Background tabs resume from the fresh saved session before editing. Mobile/tablet data is cleared manually using RESET. Save a JSON export to keep a portable copy. Browser storage is not a substitute for a backup.
 
-JSON exports preserve all missions, SPACE workspaces, active context, optional name and save time. Import restores the snapshot. SVG diagram export keeps source identifiers and expressions; built-in explanatory captions follow the interface language; certificate captions follow the interface language. Certificates with a supplied name contain that name. The local game is inspectable and is not a secured examination system.
+JSON exports preserve all missions, SPACE workspaces, active context, optional name and save time. Import restores the snapshot. SVG diagram export keeps source identifiers and expressions. Built-in explanatory captions and certificate captions follow the interface language. Certificates with a supplied name contain that name. The local game is inspectable and is not a secured examination system.
 
 There is no telemetry or remote API. The service worker caches only a fixed list of application files, not browser-storage data or generated exports. Author links open only when selected. Fictional CNC/production tasks illustrate algorithms, not machine-operation instructions.
 

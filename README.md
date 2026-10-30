@@ -20,7 +20,7 @@ Open [localhost:8139](http://localhost:8139/). No build, backend or dependencies
 
 A Czech primary browser language selects Czech; other browser languages select English. This does not use location. CS/EN saves a manual preference locally. Switching preserves blocks, connections, variables, workspace, progress and camera.
 
-Interface labels, mission briefs, hints, diagnostics and certificate captions are translated. User-authored block text, variable names, string literals and program output retain their exact content. Existing Czech sample programs and their code comments are kept so execution and JSON compatibility remain stable. English missions use the same original test vectors and thresholds.
+Interface labels, mission briefs, hints, diagnostics and certificate captions are translated. Built-in start/end captions, descriptive action labels and explanatory notes also have translated display labels. Their original source text remains in the saved program. User-authored block text, variable names, string literals and program output retain their exact content. Editing a built-in caption disables its automatic display translation. Existing Czech sample programs and their code comments are kept so execution and JSON compatibility remain stable. English missions use the same original test vectors and thresholds.
 
 ## Install and use offline
 

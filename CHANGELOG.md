@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-30 · Translation completion
+
+- Completed short menu/modal/button labels, including About, Author and mission actions
+- Added display-only translations for built-in diagram captions and notes; editing a caption opts it out
+- Česky: doplněné překlady menu, modalů, tlačítek a výchozích popisků diagramů, beze změny zdrojového programu
+
 ## 2026-10-30
 
 - Czech/English interface, mission briefs, hints, diagnostics and certificate captions

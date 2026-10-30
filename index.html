@@ -4634,7 +4634,7 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
                 
                 el.style.left = b.x + 'px'; el.style.top = b.y + 'px';
 
-                const safeLabel = String(b.label == null ? '' : b.label)
+                const safeLabel = String(window.FlowI18n ? window.FlowI18n.blockLabel(b) : (b.label == null ? '' : b.label))
                     .replace(/&/g, '&amp;')
                     .replace(/</g, '&lt;')
                     .replace(/>/g, '&gt;')
@@ -5580,7 +5580,7 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
                 }
                 const b = this.blocks.find(x => x.id === this.currentEditId);
                 if (b) { 
-                    b.label = text; 
+                    b.label = text; b.translationDisabled = true;
                     this.renderBlock(b); 
                     this.noteCampaignEdit();
                     
@@ -6728,7 +6728,7 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
 
                     svg += `<text class="text-label" x="${textX}" y="${labelY}" text-anchor="${textAnchor}">${window.FlowI18n ? window.FlowI18n.text(tLabel) : tLabel}</text>`;
                     
-                    const lines = b.label.split('\n');
+                    const lines = String(window.FlowI18n ? window.FlowI18n.blockLabel(b) : b.label).split('\n');
                     const lineHeight = 16;
                     let startY = by + finalH/2 - ((lines.length - 1) * lineHeight) / 2 + 6;
                     if (b.type === 'decision') startY += 8; 
@@ -7635,7 +7635,85 @@ const pmDictionary={
   "Více": "More",
   "Na Macu v Safari použij Soubor → Přidat do Docku.": "On a Mac in Safari, use File → Add to Dock.",
   "Nech zapnuté Otevřít jako webovou aplikaci, pokud se tato volba nabízí.": "Leave Open as Web App enabled if offered.",
-  "Pokud volba chybí, najdeš ji přes Upravit akce.": "If the option is missing, look under Edit Actions."
+  "Pokud volba chybí, najdeš ji přes Upravit akce.": "If the option is missing, look under Edit Actions.",
+  "O programu": "About the app",
+  "O autorovi": "About the author",
+  "O aplikaci:": "About this app:",
+  "JDU NA TO": "LET’S START",
+  "JDU PRACOVAT": "START WORKING",
+  "NAHRADIT": "REPLACE",
+  "NEJPRVE EXPORT": "EXPORT FIRST",
+  "ODESLAT (ENTER)": "SUBMIT (ENTER)",
+  "RESTART MISE": "RESTART MISSION",
+  "Konec": "End",
+  "Začátek Sběru": "Start collecting",
+  "Konec Hry": "End game",
+  "ANO (Smazat)": "YES (delete)",
+  "ANO (smazat)": "YES (delete)",
+  "Editovat blok": "Edit block",
+  "Hodnota...": "Value…",
+  "Import postupu": "Import progress",
+  "KOMPAS": "HINTS",
+  "Kompas": "Hints",
+  "Kontrola mise": "Mission check",
+  "Licence:": "License:",
+  "Metodika": "Teaching approach",
+  "Obsahuje": "Includes",
+  "Odskok do podprogramu (funkce)": "Call a subroutine (function)",
+  "Plocha 1: jablka demo": "Workspace 1: apple demo",
+  "Pozn.": "Note",
+  "Rychlost 1x": "Speed 1×",
+  "Rychlost 2x": "Speed 2×",
+  "Rychlost simulace": "Simulation speed",
+  "VSTUP:": "INPUT:",
+  "Verze:": "Version:",
+  "Zadejte hodnotu": "Enter a value",
+  "Zastavit": "Stop",
+  "konzole": "console",
+  "Na PC": "On desktop",
+  "na mobilu a tabletu": "on phones and tablets",
+  "se hodnoty po": "data is cleared after",
+  "nebo": "or",
+  "v menu.": "in the menu.",
+  "Po": "After",
+  "Znovu (Redo)": "Redo",
+  "Export diagramu": "Export diagram",
+  "Export postupu": "Export progress",
+  "Paleta": "Command palette",
+  "SPA, licence MIT": "SPA, MIT license",
+  "kontakt": "contact",
+  "diagnostika": "diagnostics",
+  "Přepnout profil H/E_J": "Switch H/E_J profile",
+  "Zakázka kontrola dílů: mez 50 mm.": "Parts inspection: 50 mm limit.",
+  "KALKULAČKA: Zadáme číslo a, operátor (text) a číslo b (pro ÷ a mocninu). √ používá jen číslo a.": "CALCULATOR:\nEnter a, an operator (text),\nand b (for division and powers).\n√ uses only a.",
+  "VĚTVENÍ: Podmínka op == \"…\" pustí jen tu správnou větev, ostatní se přeskočí.": "BRANCHES:\nThe condition op == \"…\"\nselects one matching branch.\nOther branches are skipped.",
+  "ODMOCNINA: √(a² + b²) i √(a) jde přes Math.sqrt(a), nepotřebuje b.": "SQUARE ROOT:\nUse Math.sqrt() for\n√(a² + b²) or √(a).\nThe latter does not need b.",
+  "SVOD: Všechny větve a i neznámý operátor končí v jednom kolečku KONEC.": "MERGE:\nAll branches, including an\nunknown operator, lead to\none END block.",
+  "PYTHAGOROVA VĚTA: c² = a² + b², a proto c = √(a² + b²). Odmocnina = Math.sqrt()": "PYTHAGORAS:\nc² = a² + b², so\nc = √(a² + b²).\nSquare root = Math.sqrt()",
+  "VÝVOJ ÚSPOR: Vypočteme, na kolik vyroste jistina po „roky\" let při ročním úroku v %.": "SAVINGS:\nCalculate the growth of\njistina over roky years\nat an annual interest rate.",
+  "CYKLUS S POČÍTADLEM: Každý rok se úrok přičte k jistině → „úrok z úroku\". Zaokrouhlení na haléře.": "COUNTED LOOP:\nEach year adds interest\nto the principal.\nRound to two decimals.",
+  "ČISTÁ MZDA: Z hrubé mzdy se srazí pojistné 11 % (6,5 + 4,5) a záloha na daň 15 %.": "NET PAY:\nThis sample subtracts\n11% insurance and\n15% tax from gross pay.",
+  "ZAOKROUHLENÍ: Math.round() zaokrouhlí na celé koruny.": "ROUNDING:\nMath.round() rounds\nto whole currency units.",
+  "EKO-JÍZDA: Spotřeba auta se udává v litrech na 100 km. Litry = spotřeba × km ÷ 100.": "FUEL USE:\nConsumption is in L/100 km.\nLiters = consumption\n× distance ÷ 100.",
+  "ZAOKROUHLENÍ: Math.round() → cena v celých korunách.": "ROUNDING:\nMath.round() gives a price\nin whole currency units.",
+  "TŘÍDĚNÍ: Do které popelnice materiál patří? Jeden směr = jedna VĚTEV podmínky.": "SORTING:\nWhich bin fits the material?\nEach direction is one\ncondition branch.",
+  "KASKÁDA PODMÍNEK: Srovnáváme postupně, dokud není materiál vhodný (nebo neznámý).": "CASCADE:\nCheck conditions in order\nuntil the material matches\nor is unknown.",
+  "SVOD: Všechny materiály (i neznámý) skončí v jednom KONCI.": "MERGE:\nAll materials, including\nunknown ones, reach one END.",
+  "VÝŠKA V METRECH: Napíšeme 1,75, ne 175. BMI = hmotnost ÷ výška².": "HEIGHT IN METERS:\nEnter 1.75, not 175.\nBMI = weight ÷ height².",
+  "ROZSAHY (orientačně): pod 18,5 podváha · 18,5–25 norma · 25–30 nadváha · nad 30 obezita.": "ILLUSTRATIVE RANGES:\nbelow 18.5: underweight\n18.5–25: normal; 25–30: overweight\nabove 30: obesity",
+  "SVOD: Podváha, norma, nadváha i obezita, vše končí v jednom KONCI.": "MERGE:\nAll BMI categories lead\nto one END block.",
+  "MĚŘÍTKO 1:25000 znamená: 1 cm na mapě je 250 m ve skutečnosti. Zadáme vzdálenost v cm.": "MAP SCALE 1:25000:\n1 cm on the map\nrepresents 250 m.\nEnter distance in cm.",
+  "JEDNOTKY: Po vynásobení máme cm, km = cm ÷ 100 000.": "UNITS:\nThe product is in cm.\nkm = cm ÷ 100000.",
+  "ÚVOD: Nejprve zadáme jméno a definujeme dvě barvy, které chceme sbírat. Pak vynulujeme počítadla a krok.": "INTRODUCTION:\nEnter a name and two colors\nto collect. Set the counters\nand step number to zero.",
+  "SMYČKA: Opakujeme 3x (krok < 3). V každém kroku \"utrhneme\" jablko a zeptáme se na jeho barvu.": "LOOP:\nRepeat 3 times (krok < 3).\nEach step picks an apple\nand asks for its color.",
+  "ROZHODOVÁNÍ: Zkontrolujeme, zda se nalezené jablko shoduje s 1. barvou. Podle toho zvedneme správné skóre.": "DECISION:\nCompare the found apple\nwith the first color.\nIncrease the matching score.",
+  "Mistr toku": "Flow master",
+  "Obsah kruhu": "Circle area",
+  "Plochy": "Workspaces",
+  "RESTARTOVAT": "RESTART",
+  "Vyrob sadu spojek": "Produce a connector set",
+  "Zadej věk": "Enter age",
+  "Chyba exportu": "Export failed"
 };
 const pmNormalize=s=>s.replace(/\s+/g,' ').trim();
 const pmEscapeRegex=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
@@ -7681,6 +7759,7 @@ function pmObserve(){pmObserver.observe(document.body,{childList:true,subtree:tr
 function pmApplyLanguage(){
  pmObserver.disconnect();document.documentElement.lang=pmLanguage;
  pmTranslate();
+ if(window.FlowI18n&&typeof App!=='undefined'&&App.blocks.length)App.renderAll();
  const b=document.getElementById('languageButton');b.textContent=pmLanguage==='cs'?'EN':'CS';b.lang=pmLanguage==='cs'?'en':'cs';b.setAttribute('aria-label',pmLanguage==='cs'?'Switch to English':'Přepnout do češtiny');
  document.title='CodeFlowChart HEFAISTOS';
  pmObserve();
@@ -7688,7 +7767,15 @@ function pmApplyLanguage(){
 document.getElementById('languageButton').addEventListener('click',()=>{pmLanguage=pmLanguage==='cs'?'en':'cs';try{localStorage.setItem(pmLanguageKey,pmLanguage);}catch{}pmApplyLanguage();});
 pmApplyLanguage();
 
-window.FlowI18n={text:pmText,language:()=>pmLanguage,svg:source=>{if(pmLanguage==='cs')return source;const doc=new DOMParser().parseFromString(source,'image/svg+xml');for(const el of doc.querySelectorAll('text'))if(!el.hasAttribute('data-user-content'))el.textContent=pmText(el.textContent);return new XMLSerializer().serializeToString(doc);}};
+
+const flowBuiltInLabels=new Set(["start\u0000Start", "process\u0000zapnout napájení", "process\u0000diagnostika", "process\u0000aktivace pracoviště", "note\u0000Počkej chvíli", "note\u0000Sled má pevné pořadí.", "end\u0000Konec", "process\u0000spustit výrobu", "process\u0000požádat o zavření krytu", "note\u0000Izolepa řešení není.", "note\u0000Jeden držák = 20 g materiálu.", "note\u0000Tělo cyklu = jedna výroba spojky.", "note\u0000Zásoba má dost dobrých kusů.", "note\u0000Jedna cílená chyba v meze cyklu.", "note\u0000Plán je pro celou zakázku stejný.", "note\u0000Zakázka kontrola dílů: mez 50 mm.", "note\u0000Napájení musí být dřív než aktivace.", "note\u0000Materiál pro tisk: 10 g na kus.", "note\u0000KALKULAČKA:\nZadáme číslo a, operátor (text)\na číslo b (pro ÷ a mocninu).\n√ používá jen číslo a.", "note\u0000VĚTVENÍ:\nPodmínka op == \"…\" pustí\njen tu správnou větev,\nostatní se přeskočí.", "note\u0000ODMOCNINA:\n√(a² + b²) i √(a) jde přes\nMath.sqrt(a), nepotřebuje b.", "note\u0000SVOD:\nVšechny větve a i neznámý\noperátor končí v jednom\nkolečku KONEC.", "note\u0000PYTHAGOROVA VĚTA:\nc² = a² + b², a proto\nc = √(a² + b²).\nOdmocnina = Math.sqrt()", "note\u0000VÝVOJ ÚSPOR:\nVypočteme, na kolik vyroste\njistina po „roky\" let při\nročním úroku v %.", "note\u0000CYKLUS S POČÍTADLEM:\nKaždý rok se úrok přičte\nk jistině → „úrok z úroku\".\nZaokrouhlení na haléře.", "note\u0000ČISTÁ MZDA:\nZ hrubé mzdy se srazí\npojistné 11 % (6,5 + 4,5)\na záloha na daň 15 %.", "note\u0000ZAOKROUHLENÍ:\nMath.round() zaokrouhlí\nna celé koruny.", "note\u0000EKO-JÍZDA:\nSpotřeba auta se udává\nv litrech na 100 km.\nLitry = spotřeba × km ÷ 100.", "note\u0000ZAOKROUHLENÍ:\nMath.round() → cena\nv celých korunách.", "note\u0000TŘÍDĚNÍ:\nDo které popelnice materiál\npatří? Jeden směr = jedna\nVĚTEV podmínky.", "note\u0000KASKÁDA PODMÍNEK:\nSrovnáváme postupně,\ndokud není materiál vhodný\n(nebo neznámý).", "note\u0000SVOD:\nVšechny materiály (i neznámý)\nskončí v jednom KONCI.", "note\u0000VÝŠKA V METRECH:\nNapíšeme 1,75, ne 175.\nBMI = hmotnost ÷ výška².", "note\u0000ROZSAHY (orientačně):\npod 18,5 podváha · 18,5–25\nnorma · 25–30 nadváha ·\nnad 30 obezita.", "note\u0000SVOD:\nPodváha, norma, nadváha\ni obezita, vše končí\nv jednom KONCI.", "note\u0000MĚŘÍTKO 1:25000\nznamená: 1 cm na mapě\nje 250 m ve skutečnosti.\nZadáme vzdálenost v cm.", "note\u0000JEDNOTKY:\nPo vynásobení máme cm,\nkm = cm ÷ 100 000.", "start\u0000Začátek Sběru", "note\u0000ÚVOD:\nNejprve zadáme jméno a definujeme\ndvě barvy, které chceme sbírat.\nPak vynulujeme počítadla a krok.", "note\u0000SMYČKA:\nOpakujeme 3x (krok < 3).\nV každém kroku \"utrhneme\" jablko\na zeptáme se na jeho barvu.", "note\u0000ROZHODOVÁNÍ:\nZkontrolujeme, zda se nalezené\njablko shoduje s 1. barvou.\nPodle toho zvedneme správné skóre.", "end\u0000Konec Hry"]);
+function flowDisplayLabel(block){
+ const raw=String(block.label==null?'':block.label);
+ if(pmLanguage==='cs'||block.translationDisabled||!flowBuiltInLabels.has(block.type+'\0'+raw))return raw;
+ return pmText(raw);
+}
+
+window.FlowI18n={blockLabel:flowDisplayLabel,text:pmText,language:()=>pmLanguage,svg:source=>{if(pmLanguage==='cs')return source;const doc=new DOMParser().parseFromString(source,'image/svg+xml');for(const el of doc.querySelectorAll('text'))if(!el.hasAttribute('data-user-content'))el.textContent=pmText(el.textContent);return new XMLSerializer().serializeToString(doc);}};
 
 const flowMode=matchMedia('(display-mode: standalone)');let flowInstalled=false;
 function flowInstallState(){const standalone=flowInstalled||navigator.standalone===true||flowMode.matches;document.getElementById('menu-install-pwa').hidden=standalone;}

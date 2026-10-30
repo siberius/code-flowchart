@@ -21,3 +21,9 @@ V Chromiu bylo ověřeno všech 14 zadání, dialogy, úplnost anglických text�
 WebKit 26.5 ověřil automatický jazyk pro české/anglické/německé nastavení, ruční volbu, návod iOS, spuštění z plochy a mobil/tablet 320/390/768 px i telefon na šířku 844 × 390. Desktop byl kontrolován při 1440 px. Ovládání horní lišty a instalační dialogy se vešly do obrazu. Reprezentativní snímky byly vizuálně zkontrolovány.
 
 Fyzická instalace na iPhonu/Androidu ani aktualizace ikony v operačním systému nebyly ověřeny. Linuxový WebKit nenahrazuje Safari na skutečném zařízení. Původní české programové příklady zůstávají záměrně zachované.
+
+## Translation completion / Doplnění překladu
+
+2026-10-30: all 14 levels were opened with English block captions and notes, then switched to Czech and back. Raw block/arrow data remained equal. About and Author dialogs were checked explicitly, including short words without accented letters. A custom edited action retained its text. The existing Node suites passed.
+
+Ve všech 14 levelech ověřeny anglické popisky a poznámky. Přepnutí jazyků zachovalo data bloků i šipek, vlastní upravený popisek zůstal doslovný. Výslovně zkontrolovány dialogy O programu/O autorovi a tlačítka bez diakritiky. Node sady prošly.

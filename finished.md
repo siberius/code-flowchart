@@ -1,5 +1,9 @@
 # finished.md — CodeFlowChart HEFAISTOS (code-flowchart)
 
+## 2026-10-30 · Doplnění angličtiny
+- Doplněny krátké texty menu/modalů/tlačítek bez diakritiky a zobrazovací překlady 42 výchozích popisků bloků/poznámek. Zdrojový program zůstává beze změny, upravené popisky se nepřekládají.
+- Prošly všechny Node sady a Chromium průchod 14 levely s přepínáním jazyků, kontrolou dialogů a vlastní úpravou. Cache v4. Aktualizace GitHubu, FTP beze změny.
+
 ## 2026-10-30 · Dvojjazyčná aplikace a PWA
 - Český/anglický jazyk podle prohlížeče, uložená ruční volba, překlady misí a UI bez změny kódu diagramů.
 - Offline cache, vložená písma s OFL, ikony Android/iPhone a responzivní mobilní lišta. SVG certifikát bezpečně zachovává jméno.

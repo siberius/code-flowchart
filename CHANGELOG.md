@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-30 · Output captions and compact toolbar
+
+- Translated built-in output sentences, including the introductory apple example, with consistent variable display aliases
+- Keep compact tools visible below the top bar on narrow screens and the mobile menu button on the right
+- Česky: přeložené výstupy a zobrazovací názvy proměnných, druhý řádek nástrojů a hamburger vpravo
+
 ## 2026-10-30 · Translation completion
 
 - Completed short menu/modal/button labels, including About, Author and mission actions

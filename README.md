@@ -55,3 +55,5 @@ Luděk Sušický: biologist and secondary-school and university teacher of compu
 Generative AI tools were used during development. The educational content, its revisions and responsibility for the final application lie with the author.
 
 [GitHub repository](https://github.com/siberius/code-flowchart)
+
+Built-in input/output sentences and variable identifiers have consistent English display aliases. The interpreter and JSON export keep the original identifiers and quoted source literals. On narrower screens, compact tools remain visible in a second toolbar row; the mobile menu button is on the right.

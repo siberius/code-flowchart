@@ -27,3 +27,7 @@ Fyzická instalace na iPhonu/Androidu ani aktualizace ikony v operačním systé
 2026-10-30: all 14 levels were opened with English block captions and notes, then switched to Czech and back. Raw block/arrow data remained equal. About and Author dialogs were checked explicitly, including short words without accented letters. A custom edited action retained its text. The existing Node suites passed.
 
 Ve všech 14 levelech ověřeny anglické popisky a poznámky. Přepnutí jazyků zachovalo data bloků i šipek, vlastní upravený popisek zůstal doslovný. Výslovně zkontrolovány dialogy O programu/O autorovi a tlačítka bez diakritiky. Node sady prošly.
+
+2026-10-30: Chromium and WebKit checks verified the exact introductory output text in English, consistent input/variable display aliases and identical raw block state after a language roundtrip. At 320/390/520/768/1024 px, all tool buttons were visible in the compact second row; the menu button was right-aligned on mobile. Existing Node suites passed.
+
+Ověřen konkrétní výstup úvodního diagramu v angličtině, názvy vstupů a nezměněná zdrojová data. Chromium i WebKit potvrdily viditelný druhý řádek nástrojů při 320/390/520/768/1024 px a hamburger vpravo na mobilu.

@@ -87,3 +87,5 @@ Ikony mají SVG zdroj, varianty 192/512 px, neprůhlednou 180px ikonu pro iPhone
 Licence vlastního kódu je MIT. Písma JetBrains Mono a Syne mají vlastní oznámení SIL OFL v `licenses/`. Při vývoji byly použity nástroje generativní AI; návrh výukového obsahu, úpravy a odpovědnost za výslednou podobu náleží autorovi. `PLAN.md` a PDF zůstávají původní české projektové podklady.
 
 Doplnění překladu: výchozí názvy začátku/konce, popisné kroky a vysvětlivky diagramů mají anglické zobrazení. Zdroj diagramu se nemění. Vlastní úprava popisku jeho automatický překlad vypne.
+
+Vestavěné vstupní a výstupní věty i proměnné mají anglické zobrazovací názvy. Interpret a JSON zachovávají původní identifikátory a řetězce zdrojového programu. Na užších obrazovkách jsou nástroje trvale v menším druhém řádku pod horní lištou, hamburger je na mobilu vpravo.

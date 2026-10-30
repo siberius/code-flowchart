@@ -1,5 +1,10 @@
 # finished.md — CodeFlowChart HEFAISTOS (code-flowchart)
 
+## 2026-10-30 · Výstupy diagramů a responzivní nástroje
+- Doplněné zobrazovací překlady všech vestavěných výstupních vět a konzistentní aliasy proměnných při zachování zdrojových dat.
+- Nástroje se při zúžení přesunou do trvalého menšího druhého řádku, mobilní hamburger je vpravo. Cache v6.
+- Chromium/WebKit: přesný text úvodního výstupu, zdrojová invariance, nástroje 320–1024 px. Node sady prošly. GitHub aktualizován, FTP beze změny.
+
 ## 2026-10-30 · Doplnění angličtiny
 - Doplněny krátké texty menu/modalů/tlačítek bez diakritiky a zobrazovací překlady 42 výchozích popisků bloků/poznámek. Zdrojový program zůstává beze změny, upravené popisky se nepřekládají.
 - Prošly všechny Node sady a Chromium průchod 14 levely s přepínáním jazyků, kontrolou dialogů a vlastní úpravou. Cache v4. Aktualizace GitHubu, FTP beze změny.

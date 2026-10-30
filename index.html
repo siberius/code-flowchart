@@ -1158,6 +1158,19 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
 #offlineStatus{color:var(--accent);font-size:12px;margin:12px 0}
 @media(max-width:520px){#logo{display:none}#topbar>.topbar-sep,#topbar>div[style="width: 16px;"]{display:none}#topbar{padding-top:0}#ws-switch{flex:1;min-width:70px;width:100px;max-width:130px}#ws-film{min-width:0;width:70px}#hamburger-btn,#topbar-tools-toggle{flex-shrink:0}#topbar-tools-row.open{justify-content:flex-start;overflow-x:auto}#logo{font-size:14px}#languageButton{padding:4px;min-width:36px}#topbar{gap:4px}.modal{max-width:calc(100vw - 24px)}input,textarea{font-size:16px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+/* Keep tools visible in a compact second row on narrower screens. */
+@media(max-width:1280px){
+ #topbar{overflow:visible}
+ #topbar-tools-toggle{display:none!important}
+ #topbar-tools-row,#topbar-tools-row.open{display:flex;position:fixed;top:56px;left:0;right:0;height:40px;max-height:40px;padding:3px 8px;gap:5px;align-items:center;justify-content:center;opacity:1;pointer-events:auto;overflow:visible;background:rgba(15,22,34,.96);border-bottom:1px solid #244958;z-index:101}
+ #topbar-tools-row .top-btn{flex:1 1 36px;max-width:44px;min-width:28px;width:36px;height:32px;min-height:32px;padding:3px;font-size:10px;line-height:1;display:flex;align-items:center;justify-content:center}
+ #topbar-tools-row .top-btn svg{width:16px;height:16px}
+ #canvas-wrap{margin-top:96px;height:calc(100% - 96px)}
+ #hud{top:100px}
+ #side-menu{top:96px;max-height:calc(100vh - 96px);max-height:calc(100dvh - 96px);overflow-y:auto}
+}
+@media(max-width:768px){#hamburger-btn{order:99;margin-left:auto;flex-shrink:0}#languageButton{order:0}#topbar-tools-row{order:100}}
+
 </style>
 </head>
 <body>
@@ -6154,7 +6167,7 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
             promptDecision(blockId, signal) {
                 return new Promise(resolve => {
                     const b = this.blocks.find(x => x.id === blockId);
-                    this.dom.simDecisionTitle.innerText = b.label;
+                    this.dom.simDecisionTitle.innerText = window.FlowI18n ? window.FlowI18n.blockLabel(b) : b.label;
                     
                     const isLoop = b.type === 'loop';
                     this.dom.btnSimYes.innerText = isLoop ? 'TĚLO (Pokračovat)' : 'ANO';
@@ -6181,7 +6194,7 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
             pendingInputType: null,
             promptInput(textLabel, signal, expectType) {
                 return new Promise(resolve => {
-                    this.dom.simInputTitle.innerText = textLabel;
+                    this.dom.simInputTitle.innerText = window.FlowI18n ? window.FlowI18n.identifier(textLabel) : textLabel;
                     this.pendingInputType = expectType || null;
                     this.dom.simInputField.value = '';
                     if (this.dom.simInputField) this.dom.simInputField.inputMode = this.pendingInputType === 'number' ? 'decimal' : 'text';
@@ -7713,7 +7726,30 @@ const pmDictionary={
   "RESTARTOVAT": "RESTART",
   "Vyrob sadu spojek": "Produce a connector set",
   "Zadej věk": "Enter age",
-  "Chyba exportu": "Export failed"
+  "Chyba exportu": "Export failed",
+  "Díky jméno! Máš skore1 x barva1 a skore2 x barva2 jablek.": "Thanks, name!\nYou have score1 × color1\nand score2 × color2 apples.",
+  "Spotřeba: {spotreba} g": "Consumption: {spotreba} g",
+  "Doručeno: {krok}": "Delivered: {krok}",
+  "Stav: vyhovuje": "Status: accepted",
+  "Stav: vadný": "Status: defective",
+  "Materiál: {material} g": "Material: {material} g",
+  "Ahoj, {jmeno}!": "Hello, {jmeno}!",
+  "Obsah: {obsah}": "Area: {obsah}",
+  "Součet: {soucet}": "Sum: {soucet}",
+  "Přepona c = {c}": "Hypotenuse c = {c}",
+  "Po {roky} letech: {jistina} Kč": "After {roky} years: {jistina} CZK",
+  "Čistá mzda: {cista} Kč": "Net pay: {cista} CZK",
+  "Cesta: {litry} l, náklady {naklady} Kč": "Trip: {litry} L, cost {naklady} CZK",
+  "Plast → žlutý kontejner": "Plastic → yellow bin",
+  "Papír → modrý kontejner": "Paper → blue bin",
+  "Sklo → zelený kontejner": "Glass → green bin",
+  "Bio → hnědý kontejner": "Organic waste → brown bin",
+  "Neznámý materiál: {material}": "Unknown material: {material}",
+  "Podváha (BMI {bmi})": "Underweight (BMI {bmi})",
+  "Norma (BMI {bmi})": "Normal range (BMI {bmi})",
+  "Nadváha (BMI {bmi})": "Overweight (BMI {bmi})",
+  "Obezita (BMI {bmi})": "Obesity (BMI {bmi})",
+  "Skutečnost: {realne_km} km": "Ground distance: {realne_km} km"
 };
 const pmNormalize=s=>s.replace(/\s+/g,' ').trim();
 const pmEscapeRegex=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
@@ -7768,14 +7804,21 @@ document.getElementById('languageButton').addEventListener('click',()=>{pmLangua
 pmApplyLanguage();
 
 
-const flowBuiltInLabels=new Set(["start\u0000Start", "process\u0000zapnout napájení", "process\u0000diagnostika", "process\u0000aktivace pracoviště", "note\u0000Počkej chvíli", "note\u0000Sled má pevné pořadí.", "end\u0000Konec", "process\u0000spustit výrobu", "process\u0000požádat o zavření krytu", "note\u0000Izolepa řešení není.", "note\u0000Jeden držák = 20 g materiálu.", "note\u0000Tělo cyklu = jedna výroba spojky.", "note\u0000Zásoba má dost dobrých kusů.", "note\u0000Jedna cílená chyba v meze cyklu.", "note\u0000Plán je pro celou zakázku stejný.", "note\u0000Zakázka kontrola dílů: mez 50 mm.", "note\u0000Napájení musí být dřív než aktivace.", "note\u0000Materiál pro tisk: 10 g na kus.", "note\u0000KALKULAČKA:\nZadáme číslo a, operátor (text)\na číslo b (pro ÷ a mocninu).\n√ používá jen číslo a.", "note\u0000VĚTVENÍ:\nPodmínka op == \"…\" pustí\njen tu správnou větev,\nostatní se přeskočí.", "note\u0000ODMOCNINA:\n√(a² + b²) i √(a) jde přes\nMath.sqrt(a), nepotřebuje b.", "note\u0000SVOD:\nVšechny větve a i neznámý\noperátor končí v jednom\nkolečku KONEC.", "note\u0000PYTHAGOROVA VĚTA:\nc² = a² + b², a proto\nc = √(a² + b²).\nOdmocnina = Math.sqrt()", "note\u0000VÝVOJ ÚSPOR:\nVypočteme, na kolik vyroste\njistina po „roky\" let při\nročním úroku v %.", "note\u0000CYKLUS S POČÍTADLEM:\nKaždý rok se úrok přičte\nk jistině → „úrok z úroku\".\nZaokrouhlení na haléře.", "note\u0000ČISTÁ MZDA:\nZ hrubé mzdy se srazí\npojistné 11 % (6,5 + 4,5)\na záloha na daň 15 %.", "note\u0000ZAOKROUHLENÍ:\nMath.round() zaokrouhlí\nna celé koruny.", "note\u0000EKO-JÍZDA:\nSpotřeba auta se udává\nv litrech na 100 km.\nLitry = spotřeba × km ÷ 100.", "note\u0000ZAOKROUHLENÍ:\nMath.round() → cena\nv celých korunách.", "note\u0000TŘÍDĚNÍ:\nDo které popelnice materiál\npatří? Jeden směr = jedna\nVĚTEV podmínky.", "note\u0000KASKÁDA PODMÍNEK:\nSrovnáváme postupně,\ndokud není materiál vhodný\n(nebo neznámý).", "note\u0000SVOD:\nVšechny materiály (i neznámý)\nskončí v jednom KONCI.", "note\u0000VÝŠKA V METRECH:\nNapíšeme 1,75, ne 175.\nBMI = hmotnost ÷ výška².", "note\u0000ROZSAHY (orientačně):\npod 18,5 podváha · 18,5–25\nnorma · 25–30 nadváha ·\nnad 30 obezita.", "note\u0000SVOD:\nPodváha, norma, nadváha\ni obezita, vše končí\nv jednom KONCI.", "note\u0000MĚŘÍTKO 1:25000\nznamená: 1 cm na mapě\nje 250 m ve skutečnosti.\nZadáme vzdálenost v cm.", "note\u0000JEDNOTKY:\nPo vynásobení máme cm,\nkm = cm ÷ 100 000.", "start\u0000Začátek Sběru", "note\u0000ÚVOD:\nNejprve zadáme jméno a definujeme\ndvě barvy, které chceme sbírat.\nPak vynulujeme počítadla a krok.", "note\u0000SMYČKA:\nOpakujeme 3x (krok < 3).\nV každém kroku \"utrhneme\" jablko\na zeptáme se na jeho barvu.", "note\u0000ROZHODOVÁNÍ:\nZkontrolujeme, zda se nalezené\njablko shoduje s 1. barvou.\nPodle toho zvedneme správné skóre.", "end\u0000Konec Hry"]);
+const flowBuiltInLabels=new Set(["start\u0000Start", "process\u0000zapnout napájení", "process\u0000diagnostika", "process\u0000aktivace pracoviště", "note\u0000Počkej chvíli", "note\u0000Sled má pevné pořadí.", "end\u0000Konec", "io\u0000krytZavren", "decision\u0000krytZavren == true", "process\u0000spustit výrobu", "process\u0000požádat o zavření krytu", "note\u0000Izolepa řešení není.", "io\u0000pocet", "process\u0000spotreba = pocet * 20", "io\u0000Spotřeba: {spotreba} g", "note\u0000Jeden držák = 20 g materiálu.", "process\u0000spojky = 0", "loop\u0000spojky < 4", "process\u0000spojky++", "note\u0000Tělo cyklu = jedna výroba spojky.", "process\u0000dobrych = 0", "loop\u0000dobrych < 3", "io\u0000stav", "decision\u0000stav == \"ok\"", "process\u0000dobrych++", "note\u0000Zásoba má dost dobrých kusů.", "io\u0000n", "process\u0000krok = 0", "loop\u0000krok < n", "process\u0000krok = krok + 1", "io\u0000Doručeno: {krok}", "note\u0000Jedna cílená chyba v meze cyklu.", "process\u0000plan = cteni_planu()", "process\u0000krok++", "note\u0000Plán je pro celou zakázku stejný.", "io\u0000delka", "decision\u0000delka >= 50", "io\u0000Stav: vyhovuje", "io\u0000Stav: vadný", "note\u0000Zakázka kontrola dílů: mez 50 mm.", "note\u0000Napájení musí být dřív než aktivace.", "process\u0000material = pocet * 10", "io\u0000Materiál: {material} g", "note\u0000Materiál pro tisk: 10 g na kus.", "process\u0000jmeno = \"světe\"", "io\u0000Ahoj, {jmeno}!", "io\u0000r", "process\u0000obsah = 3.14159 * r ** 2", "io\u0000Obsah: {obsah}", "process\u0000soucet = 0", "process\u0000i = 1", "loop\u0000i <= n", "process\u0000soucet = soucet + i", "process\u0000i++", "io\u0000Součet: {soucet}", "decision\u0000i % 3 == 0", "io\u0000Fizz", "io\u0000{i}", "io\u0000a", "io\u0000op", "io\u0000b", "note\u0000KALKULAČKA:\nZadáme číslo a, operátor (text)\na číslo b (pro ÷ a mocninu).\n√ používá jen číslo a.", "decision\u0000op == \"soucet\"", "process\u0000vysledek = a + b", "io\u0000Výsledek: {vysledek}", "decision\u0000op == \"rozdil\"", "process\u0000vysledek = a - b", "note\u0000VĚTVENÍ:\nPodmínka op == \"…\" pustí\njen tu správnou větev,\nostatní se přeskočí.", "decision\u0000op == \"soucin\"", "process\u0000vysledek = a * b", "decision\u0000op == \"podil\"", "process\u0000vysledek = a / b", "decision\u0000op == \"mocnina\"", "process\u0000vysledek = a ** b", "decision\u0000op == \"odmocnina\"", "note\u0000ODMOCNINA:\n√(a² + b²) i √(a) jde přes\nMath.sqrt(a), nepotřebuje b.", "process\u0000vysledek = Math.sqrt(a)", "note\u0000SVOD:\nVšechny větve a i neznámý\noperátor končí v jednom\nkolečku KONEC.", "note\u0000PYTHAGOROVA VĚTA:\nc² = a² + b², a proto\nc = √(a² + b²).\nOdmocnina = Math.sqrt()", "process\u0000c = Math.sqrt(a * a + b * b)", "io\u0000Přepona c = {c}", "io\u0000jistina", "io\u0000rocni_urok", "io\u0000roky", "note\u0000VÝVOJ ÚSPOR:\nVypočteme, na kolik vyroste\njistina po „roky\" let při\nročním úroku v %.", "loop\u0000i <= roky", "process\u0000jistina = Math.round(jistina * (1 + rocni_urok / 100) * 100) / 100", "note\u0000CYKLUS S POČÍTADLEM:\nKaždý rok se úrok přičte\nk jistině → „úrok z úroku\".\nZaokrouhlení na haléře.", "io\u0000Po {roky} letech: {jistina} Kč", "note\u0000ČISTÁ MZDA:\nZ hrubé mzdy se srazí\npojistné 11 % (6,5 + 4,5)\na záloha na daň 15 %.", "io\u0000hruba", "process\u0000pojistne = hruba * 0.11", "process\u0000dan = hruba * 0.15", "note\u0000ZAOKROUHLENÍ:\nMath.round() zaokrouhlí\nna celé koruny.", "process\u0000cista = Math.round(hruba - pojistne - dan)", "io\u0000Čistá mzda: {cista} Kč", "io\u0000spotreba", "io\u0000km", "io\u0000cena_za_l", "note\u0000EKO-JÍZDA:\nSpotřeba auta se udává\nv litrech na 100 km.\nLitry = spotřeba × km ÷ 100.", "process\u0000litry = spotreba * km / 100", "note\u0000ZAOKROUHLENÍ:\nMath.round() → cena\nv celých korunách.", "process\u0000naklady = Math.round(litry * cena_za_l)", "io\u0000Cesta: {litry} l, náklady {naklady} Kč", "io\u0000material", "note\u0000TŘÍDĚNÍ:\nDo které popelnice materiál\npatří? Jeden směr = jedna\nVĚTEV podmínky.", "decision\u0000material == \"plast\"", "io\u0000Plast → žlutý kontejner", "decision\u0000material == \"papir\"", "io\u0000Papír → modrý kontejner", "decision\u0000material == \"sklo\"", "io\u0000Sklo → zelený kontejner", "note\u0000KASKÁDA PODMÍNEK:\nSrovnáváme postupně,\ndokud není materiál vhodný\n(nebo neznámý).", "decision\u0000material == \"bio\"", "io\u0000Bio → hnědý kontejner", "io\u0000Neznámý materiál: {material}", "note\u0000SVOD:\nVšechny materiály (i neznámý)\nskončí v jednom KONCI.", "io\u0000vaha", "io\u0000vyska", "note\u0000VÝŠKA V METRECH:\nNapíšeme 1,75, ne 175.\nBMI = hmotnost ÷ výška².", "process\u0000bmi = Math.round(vaha / (vyska * vyska) * 10) / 10", "decision\u0000bmi < 18.5", "io\u0000Podváha (BMI {bmi})", "decision\u0000bmi <= 25", "io\u0000Norma (BMI {bmi})", "note\u0000ROZSAHY (orientačně):\npod 18,5 podváha · 18,5–25\nnorma · 25–30 nadváha ·\nnad 30 obezita.", "decision\u0000bmi <= 30", "io\u0000Nadváha (BMI {bmi})", "io\u0000Obezita (BMI {bmi})", "note\u0000SVOD:\nPodváha, norma, nadváha\ni obezita, vše končí\nv jednom KONCI.", "io\u0000na_mape", "note\u0000MĚŘÍTKO 1:25000\nznamená: 1 cm na mapě\nje 250 m ve skutečnosti.\nZadáme vzdálenost v cm.", "io\u0000meritko", "process\u0000realne_cm = na_mape * meritko", "note\u0000JEDNOTKY:\nPo vynásobení máme cm,\nkm = cm ÷ 100 000.", "process\u0000realne_km = realne_cm / 100000", "io\u0000Skutečnost: {realne_km} km", "start\u0000Začátek Sběru", "note\u0000ÚVOD:\nNejprve zadáme jméno a definujeme\ndvě barvy, které chceme sbírat.\nPak vynulujeme počítadla a krok.", "io\u0000jméno", "io\u0000barva1", "io\u0000barva2", "process\u0000skore1 = 0\nskore2 = 0\nkrok = 0", "loop\u0000krok < 3", "note\u0000SMYČKA:\nOpakujeme 3x (krok < 3).\nV každém kroku \"utrhneme\" jablko\na zeptáme se na jeho barvu.", "io\u0000nalezena_barva", "decision\u0000nalezena_barva == barva1", "process\u0000skore1++\nkrok++", "process\u0000skore2++\nkrok++", "note\u0000ROZHODOVÁNÍ:\nZkontrolujeme, zda se nalezené\njablko shoduje s 1. barvou.\nPodle toho zvedneme správné skóre.", "io\u0000Díky jméno!\nMáš skore1 x barva1\na skore2 x barva2 jablek.", "end\u0000Konec Hry"]);
+const flowIdentifierAliases={"jméno": "name", "jmeno": "name", "barva1": "color1", "barva2": "color2", "skore1": "score1", "skore2": "score2", "krok": "step", "nalezena_barva": "found_color", "krytZavren": "coverClosed", "pocet": "quantity", "spotreba": "consumption", "spojky": "connectors", "dobrych": "good_parts", "stav": "status", "cteni_planu": "read_plan", "delka": "length", "obsah": "area", "soucet": "sum", "vysledek": "result", "jistina": "principal", "rocni_urok": "annual_interest", "roky": "years", "hruba": "gross_pay", "pojistne": "insurance", "dan": "tax", "cista": "net_pay", "cena_za_l": "price_per_liter", "litry": "liters", "naklady": "cost", "vaha": "weight", "vyska": "height", "na_mape": "map_distance", "meritko": "scale", "realne_cm": "ground_cm", "realne_km": "ground_km"};
+function flowAliasCode(value){
+ if(pmLanguage==='cs')return String(value);
+ // Quoted source literals stay literal; variable tokens use consistent display aliases.
+ return String(value).replace(/("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|[\p{L}_][\p{L}\p{N}_]*/gu,(token,literal)=>literal?token:(flowIdentifierAliases[token]||token));
+}
+
 function flowDisplayLabel(block){
  const raw=String(block.label==null?'':block.label);
  if(pmLanguage==='cs'||block.translationDisabled||!flowBuiltInLabels.has(block.type+'\0'+raw))return raw;
- return pmText(raw);
+ return flowAliasCode(pmText(raw));
 }
 
-window.FlowI18n={blockLabel:flowDisplayLabel,text:pmText,language:()=>pmLanguage,svg:source=>{if(pmLanguage==='cs')return source;const doc=new DOMParser().parseFromString(source,'image/svg+xml');for(const el of doc.querySelectorAll('text'))if(!el.hasAttribute('data-user-content'))el.textContent=pmText(el.textContent);return new XMLSerializer().serializeToString(doc);}};
+window.FlowI18n={identifier:flowAliasCode,blockLabel:flowDisplayLabel,text:pmText,language:()=>pmLanguage,svg:source=>{if(pmLanguage==='cs')return source;const doc=new DOMParser().parseFromString(source,'image/svg+xml');for(const el of doc.querySelectorAll('text'))if(!el.hasAttribute('data-user-content'))el.textContent=pmText(el.textContent);return new XMLSerializer().serializeToString(doc);}};
 
 const flowMode=matchMedia('(display-mode: standalone)');let flowInstalled=false;
 function flowInstallState(){const standalone=flowInstalled||navigator.standalone===true||flowMode.matches;document.getElementById('menu-install-pwa').hidden=standalone;}

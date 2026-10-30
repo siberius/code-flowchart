@@ -88,4 +88,10 @@ Licence vlastního kódu je MIT. Písma JetBrains Mono a Syne mají vlastní ozn
 
 Doplnění překladu: výchozí názvy začátku/konce, popisné kroky a vysvětlivky diagramů mají anglické zobrazení. Zdroj diagramu se nemění. Vlastní úprava popisku jeho automatický překlad vypne.
 
-Vestavěné vstupní a výstupní věty i proměnné mají anglické zobrazovací názvy. Interpret a JSON zachovávají původní identifikátory a řetězce zdrojového programu. Na užších obrazovkách jsou nástroje trvale v menším druhém řádku pod horní lištou, hamburger je na mobilu vpravo.
+Vestavěné vysvětlivky a výstupní věty mají anglické zobrazení. Názvy proměnných a výrazy se všude zobrazují podle skutečného kódu, shodně v diagramu, editoru, zadání vstupu i RAM. Otevření a uložení popisku beze změny jeho zdroj nepřepisuje. Interpret a JSON zachovávají původní identifikátory a řetězce. Na užších obrazovkách jsou nástroje trvale v menším druhém řádku pod horní lištou, hamburger je na mobilu vpravo.
+
+Nová verze nabídne Uložit a aktualizovat. Nejdřív zastav simulaci a zavři otevřené dialogy. Před obnovením se uloží aktivní plocha; další otevřené karty dostanou vlastní nabídku aktualizace. Při prvním přechodu ze starší verze bez této nabídky jednou zavři všechna okna aplikace, aby se čekající verze mohla aktivovat.
+
+Na telefonu se nový diagram otevře v čitelném přiblížení. Celý diagram (F) vměstná všechny bloky, Čitelný začátek vrátí větší zobrazení ke STARTU. Změna velikosti okna zachovává kameru; uložené plochy si ponechají uložený pohled.
+
+Do neaktivity na PC se počítá skutečná práce myší, dotykem, klávesnicí nebo kolečkem. Automatické ukládání interval neprodlužuje. Po 90 minutách se vymaže i otevřený diagram a historie kroků zpět. Stará karta po vypršení společné relace přebírá čerstvě uložený stav před další úpravou a nepřepisuje ho automatickým ukládáním. Mobil a tablet automatickou expiraci nemají.

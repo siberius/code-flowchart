@@ -20,7 +20,7 @@ Open [localhost:8139](http://localhost:8139/). No build, backend or dependencies
 
 A Czech primary browser language selects Czech; other browser languages select English. This does not use location. CS/EN saves a manual preference locally. Switching preserves blocks, connections, variables, workspace, progress and camera.
 
-Interface labels, mission briefs, hints, diagnostics and certificate captions are translated. Built-in start/end captions, descriptive action labels and explanatory notes also have translated display labels. Their original source text remains in the saved program. User-authored block text, variable names, string literals and program output retain their exact content. Editing a built-in caption disables its automatic display translation. Existing Czech sample programs and their code comments are kept so execution and JSON compatibility remain stable. English missions use the same original test vectors and thresholds.
+Interface labels, mission briefs, hints, diagnostics and certificate captions are translated. Built-in start/end captions, descriptive action labels and explanatory notes also have translated display labels. Their original source text remains in the saved program. User-authored block text, variable names, string literals and program output retain their exact content. Variable identifiers and executable expressions use their actual source spelling consistently in the diagram, editor, input dialogs and RAM. Opening and saving a caption without changes preserves its source; changing a built-in caption makes it user-authored. Existing Czech sample programs and their code comments are kept so execution and JSON compatibility remain stable. English missions use the same original test vectors and thresholds.
 
 ## Install and use offline
 
@@ -32,11 +32,17 @@ Choose **Add to home screen** in the menu. Supported browsers provide a native i
 
 Wait for **Ready offline** before disconnecting. Browsers may evict cached files. Icons include a 180 px Apple touch icon, 192/512 px PNGs, an Android maskable variant and editable SVG sources. Physical-device installation remains a manual check.
 
+New versions offer **Save and update**. Stop a running simulation and close open dialogs first. The app saves the active workspace before reloading. Other tabs show their own update action. For the first upgrade from an older release without this action, close all app tabs/windows once to let the waiting version activate.
+
+## Diagram view
+
+New diagrams open at a readable scale on phones. **Whole diagram (F)** fits every block; **Readable start** returns to the start block at a larger scale. Resizing preserves the current camera. Saved workspaces keep their saved camera.
+
 ## Data and exports
 
-Workspaces, progress and the optional student name are stored locally in the browser. Desktop data expires after 90 minutes of inactivity; mobile/tablet data is cleared manually using RESET. Save a JSON export to keep a portable copy. Browser storage is not a substitute for a backup.
+Workspaces, progress and the optional student name are stored locally in the browser. Desktop data expires after 90 minutes without pointer, keyboard or wheel activity, including while the page is open. Autosave does not extend the session. Expiration clears the in-memory work and undo history as well. Background tabs resume from the fresh saved session before editing. Mobile/tablet data is cleared manually using RESET. Save a JSON export to keep a portable copy. Browser storage is not a substitute for a backup.
 
-JSON exports preserve all missions, SPACE workspaces, active context, optional name and save time. Import restores the snapshot. SVG diagram export preserves the program's text; certificate captions follow the interface language. Certificates with a supplied name contain that name. The local game is inspectable and is not a secured examination system.
+JSON exports preserve all missions, SPACE workspaces, active context, optional name and save time. Import restores the snapshot. SVG diagram export keeps source identifiers and expressions; built-in explanatory captions follow the interface language; certificate captions follow the interface language. Certificates with a supplied name contain that name. The local game is inspectable and is not a secured examination system.
 
 There is no telemetry or remote API. The service worker caches only a fixed list of application files, not browser-storage data or generated exports. Author links open only when selected. Fictional CNC/production tasks illustrate algorithms, not machine-operation instructions.
 

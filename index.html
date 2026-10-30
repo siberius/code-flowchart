@@ -3642,8 +3642,8 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
                 const activity = event => {
                     if (event.isTrusted === false) return;
                     const now = Date.now();
-                    this.sessionTick(now, false);
                     if (now - lastActivityWrite >= 1000) {
+                        if (this.sessionTick(now, false)) event.stopImmediatePropagation();
                         this.noteLastActive(now); lastActivityWrite = now;
                     }
                 };
@@ -3654,9 +3654,16 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
                     if (event.key === 'blockflow_v3_session_epoch') this.sessionTick();
                 });
 
+                let canvasSize = {width: this.dom.canvasWrap.clientWidth, height: this.dom.canvasWrap.clientHeight};
                 window.addEventListener('resize', () => {
                     clearTimeout(this.resizeTimer);
-                    this.resizeTimer = setTimeout(() => { this.applyTransform(); this.renderArrows(); }, 200);
+                    this.resizeTimer = setTimeout(() => {
+                        const width = this.dom.canvasWrap.clientWidth, height = this.dom.canvasWrap.clientHeight;
+                        this.vx += (width - canvasSize.width) / 2;
+                        this.vy += (height - canvasSize.height) / 2;
+                        canvasSize = {width, height};
+                        this.applyTransform(); this.renderArrows();
+                    }, 200);
                 });
 
                 document.addEventListener('fullscreenchange', () => {
@@ -3695,16 +3702,17 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
             noteLastActive(now = Date.now()) {
                 try { localStorage.setItem('blockflow_v3_last_active', String(now)); } catch (e) {}
             },
-            resetExpiredSession() {
+            resetExpiredSession(notify = true) {
                 this.stopSimulation(false);
-                document.querySelectorAll('.modal.show').forEach(el => el.classList.remove('show'));
+                document.querySelectorAll('.modal-overlay.show').forEach(el => el.classList.remove('show'));
                 Game.playerName = ''; Game.xp = 0; Game.levels = {}; Game.certificates = [];
                 Game.load();
                 this.internalClipboard = null;
                 this.currentEditId = null; this.pendingImportSnapshot = null; this.pendingConfirm = null;
                 this.pendingCampaign = false; this.pendingLevel = null; this.nameSkipped = false;
                 this.activeLevel = null; this.lastCampaignSlot = null;
-                this.activeWorkspace = this.startupWorkspace();
+                const savedSlot = localStorage.getItem('blockflow_v3_active_ws');
+                this.activeWorkspace = this.workspaceSlots().includes(savedSlot) ? savedSlot : APPLES_SLOT;
                 this.stateHistory = []; this.historyIndex = -1; this.selectedBlocks.clear();
                 this.lastCheck = null; this.lastSimStatus = 'untested'; this.cheatStep = 0;
                 this.visualRAM = {}; this.updateRAM(this.visualRAM);
@@ -3715,7 +3723,7 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
                 this.updateWorkspaceUI(); this.updateGameUI();
                 this.renderAll(); this.pushHistory();
                 if (!loaded) this.fitInitialView();
-                this.toast('Uplynulo 90 minut: hodnoty na tomto počítači byly vymazány.', 3500);
+                if (notify) this.toast('Uplynulo 90 minut: hodnoty na tomto počítači byly vymazány.', 3500);
             },
             sessionTick(now = Date.now(), save = true) {
                 let epoch = null;
@@ -3726,12 +3734,19 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
                     try { localStorage.setItem('blockflow_v3_session_epoch', epoch); } catch (e) {}
                     this.noteLastActive(now);
                 }
-                if (expired || epoch !== this.sessionEpoch) {
+                const remoteReset = !expired && epoch !== this.sessionEpoch;
+                const reset = expired || remoteReset;
+                const resume = this.sessionSuspended && !save;
+                if (remoteReset) this.sessionSuspended = true;
+                if (reset || resume) {
                     this.sessionEpoch = epoch;
-                    this.resetExpiredSession();
+                    this.resetExpiredSession(reset);
                 }
-                if (save) this.saveState(true);
-                return expired;
+                // A background tab must not overwrite a fresh session after another tab expires.
+                // Its first real interaction reloads the current saved state before editing resumes.
+                if (resume || expired) this.sessionSuspended = false;
+                if (save && !this.sessionSuspended) this.saveState(true);
+                return reset || resume;
             },
             // PC: po 90 minutách nečinnosti se hodnoty vymažou; dotyková zařízení nikdy ne.
             maybeExpirePcData(now) {
@@ -3901,7 +3916,7 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
                 this.updateWorkspaceUI();
                 this.renderAll();
                 this.pushHistory();
-                setTimeout(() => { this.renderArrows(); this.fitToScreen(); }, 50);
+                setTimeout(() => { this.renderArrows(); this.fitInitialView(); }, 50);
                 if (this.cheatStep === 0) this.toast('Cheat: plocha vyčištěna (start znovu)');
                 else if (this.cheatStep >= total) this.toast(`Cheat: hotovo (${total}/${total}): můžeš spustit ▶`);
                 else this.toast(`Cheat: krok ${this.cheatStep}/${total}`, 1200);
@@ -4050,7 +4065,7 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
                     this.renderAll();
                     this.saveWorkspace(this.activeWorkspace);
                     this.pushHistory();
-                    setTimeout(() => { this.renderArrows(); this.fitToScreen(); }, 50);
+                    setTimeout(() => { this.renderArrows(); this.fitInitialView(); }, 50);
                     this.toast('Ukázka: ' + s.name);
                 };
                 if (this.blocks.length > 1) {
@@ -4290,7 +4305,7 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
                     this.applyPalette(this.currentPalette());
                     this.refreshCanvas();
                     const that = this;
-                    setTimeout(() => { if (typeof that.renderArrows === 'function') that.renderArrows(); that.fitToScreen(); }, 50);
+                    setTimeout(() => { if (typeof that.renderArrows === 'function') that.renderArrows(); that.fitInitialView(); }, 50);
                     // Aktuální pokus je nový a musí se znovu ověřit (PLAN §7.10, §16).
                     this.levelFailed = false;
                     this.levelHintUsed = false;
@@ -4608,15 +4623,16 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
             },
 
             fitInitialView() {
+                if (!this.dom || !this.dom.canvasWrap) return;
                 this.fitToScreen();
                 if (this.dom.canvasWrap.clientWidth <= 768 && this.vscale < 0.7) this.readableView();
             },
             readableView() {
-                if (!this.blocks.length) return;
+                if (!this.blocks.length || !this.dom || !this.dom.canvasWrap) return;
                 const block = this.blocks.find(b => b.type === 'start') || this.blocks[0];
                 const el = document.getElementById(block.id);
                 const width = el ? el.offsetWidth : 200;
-                this.vscale = this.dom.canvasWrap.clientWidth <= 768 ? 0.7 : 1;
+                this.vscale = Math.min(1, (this.dom.canvasWrap.clientWidth - 48) / Math.max(width, 1));
                 this.vx = this.dom.canvasWrap.clientWidth / 2 - (block.x + width / 2) * this.vscale;
                 this.vy = 70 - block.y * this.vscale;
                 this.applyTransform();
@@ -5463,7 +5479,7 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
                 document.getElementById('clear-confirm-modal').classList.remove('show');
                 this.clearCanvasSilent();
                 this.renderAll();
-                setTimeout(() => this.fitToScreen(), 50);
+                setTimeout(() => this.fitInitialView(), 50);
                 this.toast('Plocha úspěšně vymazána');
                 this.saveState();
             },
@@ -6453,7 +6469,7 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
                 wrap.classList.add('sim-boot');
                 setTimeout(() => wrap.classList.remove('sim-boot'), 750);
                 
-                setTimeout(() => this.fitToScreen(), 50);
+                setTimeout(() => this.fitInitialView(), 50);
 
                 this.logConsole(`Inicializace CodeFlowChart Engine v1.1${stepMode ? ' (Krokování)' : ''}...`, "info");
                 
@@ -8034,21 +8050,23 @@ if('serviceWorker'in navigator&&isSecureContext&&/^https?:$/.test(location.proto
  });
  button.addEventListener('click',()=>{
   if(App.isSimulating){App.toast('Před aktualizací zastav simulaci');return;}
-  if(document.querySelector('.modal.show')){App.toast('Před aktualizací zavři otevřený dialog');return;}
+  if(document.querySelector('.modal-overlay.show')){App.toast('Před aktualizací zavři otevřený dialog');return;}
   try{App.saveState(true);}catch{App.toast('Uložení se nezdařilo. Před aktualizací exportuj postup.',5000);return;}
   if(changed){location.reload();return;}
   const worker=registration?.waiting;
   if(!worker){banner.hidden=true;return;}
   requested=true;button.disabled=true;
-  try{worker.postMessage({type:'ACTIVATE_UPDATE'});}catch{requested=false;button.disabled=false;App.toast('Aktualizace se nezdařila. Zkus to znovu.');}
+  try{worker.postMessage({type:'ACTIVATE_UPDATE'});setTimeout(()=>{if(requested){requested=false;button.disabled=false;App.toast('Aktualizace se nezdařila. Zkus to znovu.');}},15000);}catch{requested=false;button.disabled=false;App.toast('Aktualizace se nezdařila. Zkus to znovu.');}
  });
  try{
   registration=await navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'});
-  registration.addEventListener('updatefound',()=>{
-   const worker=registration.installing;
-   if(worker)worker.addEventListener('statechange',()=>{if(worker.state==='installed')offer();});
-  });
-  offer();
+  const watch=worker=>{
+   if(!worker)return;
+   worker.addEventListener('statechange',()=>{if(worker.state==='installed')setTimeout(offer,0);});
+   if(worker.state==='installed')offer();
+  };
+  registration.addEventListener('updatefound',()=>watch(registration.installing));
+  watch(registration.installing);offer();
   await navigator.serviceWorker.ready;
   document.getElementById('offlineStatus').textContent='Připraveno bez internetu';
  }catch{document.getElementById('offlineStatus').textContent='Offline uložení se nezdařilo';}

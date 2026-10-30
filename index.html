@@ -1196,6 +1196,14 @@
 body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
 #languageButton{flex-shrink:0;min-width:44px;min-height:44px}
 .modal{max-height:calc(100vh - 32px);max-height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 32px);overflow-y:auto;overscroll-behavior:contain}
+#view-controls{position:fixed;right:12px;top:108px;z-index:110;display:flex;gap:6px}
+#view-controls .icon-btn{width:44px;height:44px;display:grid;place-items:center;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--accent);cursor:pointer}
+#view-controls svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+#view-controls button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#app-update{position:fixed;left:12px;right:12px;bottom:60px;z-index:1200;max-width:560px;margin:auto;padding:12px;display:flex;align-items:center;gap:12px;border:1px solid var(--accent);border-radius:10px;background:var(--surface);color:var(--text);font-size:13px;box-shadow:0 4px 24px #0008}
+#app-update[hidden]{display:none}
+#app-update-button{min-height:44px;flex-shrink:0}
+@media(max-width:520px){#app-update{flex-wrap:wrap}#app-update-button{width:100%}}
 #offlineStatus{color:var(--accent);font-size:12px;margin:12px 0}
 @media(max-width:520px){#logo{display:none}#topbar>.topbar-sep,#topbar>div[style="width: 16px;"]{display:none}#topbar{padding-top:0}#ws-switch{flex:1;min-width:70px;width:100px;max-width:130px}#ws-film{min-width:0;width:70px}#hamburger-btn,#topbar-tools-toggle{flex-shrink:0}#topbar-tools-row.open{justify-content:flex-start;overflow-x:auto}#logo{font-size:14px}#languageButton{padding:4px;min-width:36px}#topbar{gap:4px}.modal{max-width:calc(100vw - 24px)}input,textarea{font-size:16px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
@@ -1321,6 +1329,15 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
         <path id="temp-path" d="" />
     </svg>
 
+    <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+        <symbol id="i-fit-view" viewBox="0 0 24 24"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5M8 8h8v8H8z"/></symbol>
+        <symbol id="i-readable-view" viewBox="0 0 24 24"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6M7 10h6m-3-3v6"/></symbol>
+    </svg>
+    <div id="view-controls" role="group" aria-label="Pohled na diagram">
+        <button class="icon-btn" type="button" onclick="App.fitToScreen()" title="Celý diagram (F)" aria-label="Celý diagram (F)"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#i-fit-view"/></svg></button>
+        <button class="icon-btn" type="button" onclick="App.readableView()" title="Čitelný začátek" aria-label="Čitelný začátek"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#i-readable-view"/></svg></button>
+    </div>
+    <aside id="app-update" role="status" hidden><span>Je dostupná nová verze</span><button class="btn btn-primary" type="button" id="app-update-button">Uložit a aktualizovat</button></aside>
     <div id="sim-token"></div>
 
     <div id="toolbar">
@@ -3616,14 +3633,30 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
 
                 setTimeout(() => {
                     this.renderArrows();
-                    if (!loaded) this.fitToScreen();
+                    if (!loaded) this.fitInitialView();
                 }, 150);
 
-                setInterval(() => { this.saveState(true); this.noteLastActive(); }, 3000);
+                this.sessionEpoch = localStorage.getItem('blockflow_v3_session_epoch');
+                setInterval(() => this.sessionTick(), 3000);
+                let lastActivityWrite = 0;
+                const activity = event => {
+                    if (event.isTrusted === false) return;
+                    const now = Date.now();
+                    this.sessionTick(now, false);
+                    if (now - lastActivityWrite >= 1000) {
+                        this.noteLastActive(now); lastActivityWrite = now;
+                    }
+                };
+                ['pointerdown', 'pointermove', 'keydown', 'wheel'].forEach(type =>
+                    document.addEventListener(type, activity, {capture: true, passive: true}));
+                document.addEventListener('visibilitychange', () => { if (!document.hidden) this.sessionTick(); });
+                window.addEventListener('storage', event => {
+                    if (event.key === 'blockflow_v3_session_epoch') this.sessionTick();
+                });
 
                 window.addEventListener('resize', () => {
                     clearTimeout(this.resizeTimer);
-                    this.resizeTimer = setTimeout(() => this.fitToScreen(), 200);
+                    this.resizeTimer = setTimeout(() => { this.applyTransform(); this.renderArrows(); }, 200);
                 });
 
                 document.addEventListener('fullscreenchange', () => {
@@ -3659,8 +3692,46 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
                 } catch (e) {}
                 return false;
             },
-            noteLastActive() {
-                try { localStorage.setItem('blockflow_v3_last_active', String(Date.now())); } catch (e) {}
+            noteLastActive(now = Date.now()) {
+                try { localStorage.setItem('blockflow_v3_last_active', String(now)); } catch (e) {}
+            },
+            resetExpiredSession() {
+                this.stopSimulation(false);
+                document.querySelectorAll('.modal.show').forEach(el => el.classList.remove('show'));
+                Game.playerName = ''; Game.xp = 0; Game.levels = {}; Game.certificates = [];
+                Game.load();
+                this.internalClipboard = null;
+                this.currentEditId = null; this.pendingImportSnapshot = null; this.pendingConfirm = null;
+                this.pendingCampaign = false; this.pendingLevel = null; this.nameSkipped = false;
+                this.activeLevel = null; this.lastCampaignSlot = null;
+                this.activeWorkspace = this.startupWorkspace();
+                this.stateHistory = []; this.historyIndex = -1; this.selectedBlocks.clear();
+                this.lastCheck = null; this.lastSimStatus = 'untested'; this.cheatStep = 0;
+                this.visualRAM = {}; this.updateRAM(this.visualRAM);
+                this.dom.consoleOut.innerHTML = '';
+                this.setProfile(localStorage.getItem('blockflow_v3_profile') || 'H');
+                const loaded = this.loadWorkspace(this.activeWorkspace);
+                if (!loaded) this.buildWorkspaceDefault(this.activeWorkspace);
+                this.updateWorkspaceUI(); this.updateGameUI();
+                this.renderAll(); this.pushHistory();
+                if (!loaded) this.fitInitialView();
+                this.toast('Uplynulo 90 minut: hodnoty na tomto počítači byly vymazány.', 3500);
+            },
+            sessionTick(now = Date.now(), save = true) {
+                let epoch = null;
+                try { epoch = localStorage.getItem('blockflow_v3_session_epoch'); } catch (e) {}
+                const expired = this.maybeExpirePcData(now);
+                if (expired) {
+                    epoch = String(now);
+                    try { localStorage.setItem('blockflow_v3_session_epoch', epoch); } catch (e) {}
+                    this.noteLastActive(now);
+                }
+                if (expired || epoch !== this.sessionEpoch) {
+                    this.sessionEpoch = epoch;
+                    this.resetExpiredSession();
+                }
+                if (save) this.saveState(true);
+                return expired;
             },
             // PC: po 90 minutách nečinnosti se hodnoty vymažou; dotyková zařízení nikdy ne.
             maybeExpirePcData(now) {
@@ -3757,7 +3828,7 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
 
                 setTimeout(() => {
                     this.renderArrows();
-                    if (!loaded) this.fitToScreen();
+                    if (!loaded) this.fitInitialView();
                 }, 50);
             },
             buildWorkspaceDefault(slot) {
@@ -4523,7 +4594,7 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
             },
 
             zoom(factor) {
-                const newScale = Math.min(3, Math.max(0.2, this.vscale * factor));
+                const newScale = Math.min(3, Math.max(0.05, this.vscale * factor));
                 const wrap = this.dom.canvasWrap;
                 const cx = wrap.clientWidth / 2;
                 const cy = wrap.clientHeight / 2;
@@ -4536,6 +4607,20 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
                 this.wheelSaveTimeout = setTimeout(() => this.saveState(), 500);
             },
 
+            fitInitialView() {
+                this.fitToScreen();
+                if (this.dom.canvasWrap.clientWidth <= 768 && this.vscale < 0.7) this.readableView();
+            },
+            readableView() {
+                if (!this.blocks.length) return;
+                const block = this.blocks.find(b => b.type === 'start') || this.blocks[0];
+                const el = document.getElementById(block.id);
+                const width = el ? el.offsetWidth : 200;
+                this.vscale = this.dom.canvasWrap.clientWidth <= 768 ? 0.7 : 1;
+                this.vx = this.dom.canvasWrap.clientWidth / 2 - (block.x + width / 2) * this.vscale;
+                this.vy = 70 - block.y * this.vscale;
+                this.applyTransform();
+            },
             fitToScreen() {
                 if (this.blocks.length === 0) return;
                 if (!this.dom || !this.dom.canvasWrap) return;
@@ -4568,7 +4653,7 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
                 const scaleX = (wrapW - padX * 2) / dw;
                 const scaleY = (wrapH - padY * 2 - bottomReserve) / dh;
 
-                this.vscale = Math.min(1.2, Math.max(0.2, Math.min(scaleX, scaleY)));
+                this.vscale = Math.min(1.2, Math.max(0.05, Math.min(scaleX, scaleY)));
                 
                 this.vx = (wrapW / 2) - (minX + dw / 2) * this.vscale;
                 // Prázdné plochy (jediný Start): ukotvit do horní třetiny, ne na střed.
@@ -5087,7 +5172,7 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
                         const center = { x: (pts[0].x + pts[1].x)/2, y: (pts[0].y + pts[1].y)/2 };
 
                         const scaleFactor = dist / (this.initialPinchDist || 1);
-                        const newScale = Math.min(3, Math.max(0.2, this.initialVscale * scaleFactor));
+                        const newScale = Math.min(3, Math.max(0.05, this.initialVscale * scaleFactor));
 
                         const factor = newScale / this.initialVscale;
                         const rect = this.dom.canvasWrap.getBoundingClientRect();
@@ -5161,7 +5246,7 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
 
                 this.dom.canvasWrap.addEventListener('wheel', e => {
                     e.preventDefault(); if(e.ctrlKey) return; 
-                    const delta = e.deltaY > 0 ? 0.9 : 1.1; const newScale = Math.min(3, Math.max(0.2, this.vscale * delta)); const factor = newScale / this.vscale;
+                    const delta = e.deltaY > 0 ? 0.9 : 1.1; const newScale = Math.min(3, Math.max(0.05, this.vscale * delta)); const factor = newScale / this.vscale;
                     const rect = this.dom.canvasWrap.getBoundingClientRect(); const cx = e.clientX - rect.left; const cy = e.clientY - rect.top;
                     this.vx = cx - factor * (cx - this.vx); this.vy = cy - factor * (cy - this.vy); this.vscale = newScale; this.applyTransform();
                     
@@ -5630,7 +5715,9 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
             currentEditId: null,
             openEdit(id) {
                 const b = this.blocks.find(x => x.id === id); if (!b) return;
-                this.currentEditId = id; this.dom.editInput.value = b.label;
+                this.currentEditId = id;
+                this.editOriginalText = window.FlowI18n ? window.FlowI18n.blockLabel(b) : b.label;
+                this.dom.editInput.value = this.editOriginalText;
                 if (this.dom.editError) this.dom.editError.style.display = 'none';
                 this.dom.editModal.classList.add('show');
                 setTimeout(() => this.dom.editInput.focus(), 50);
@@ -5645,7 +5732,8 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
                     return;
                 }
                 const b = this.blocks.find(x => x.id === this.currentEditId);
-                if (b) { 
+                if (b) {
+                    if (text === this.editOriginalText) { this.closeEdit(); return; }
                     b.label = text; b.translationDisabled = true;
                     this.renderBlock(b); 
                     this.noteCampaignEdit();
@@ -7013,7 +7101,7 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
                 this.updateWorkspaceUI();
                 this.refreshCanvas();
                 const that = this;
-                setTimeout(() => { if (typeof that.renderArrows === 'function') that.renderArrows(); if (!loaded) that.fitToScreen(); }, 50);
+                setTimeout(() => { if (typeof that.renderArrows === 'function') that.renderArrows(); if (!loaded) that.fitInitialView(); }, 50);
                 return out;
             },
             applyLegacyWorkspaces(workspaces, active) {
@@ -7035,7 +7123,7 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
                 this.updateWorkspaceUI();
                 this.refreshCanvas();
                 const that = this;
-                setTimeout(() => { if (typeof that.renderArrows === 'function') that.renderArrows(); if (!loaded) that.fitToScreen(); }, 50);
+                setTimeout(() => { if (typeof that.renderArrows === 'function') that.renderArrows(); if (!loaded) that.fitInitialView(); }, 50);
                 return count;
             },
             openImportReview(snapshot) {
@@ -7780,7 +7868,7 @@ const pmDictionary={
   "Vyrob sadu spojek": "Produce a connector set",
   "Zadej věk": "Enter age",
   "Chyba exportu": "Export failed",
-  "Díky jméno! Máš skore1 x barva1 a skore2 x barva2 jablek.": "Thanks, name!\nYou have score1 × color1\nand score2 × color2 apples.",
+  "Díky jméno! Máš skore1 x barva1 a skore2 x barva2 jablek.": "Thanks, jméno!\nYou have skore1 × barva1\nand skore2 × barva2 apples.",
   "Spotřeba: {spotreba} g": "Consumption: {spotreba} g",
   "Doručeno: {krok}": "Delivered: {krok}",
   "Stav: vyhovuje": "Status: accepted",
@@ -7818,6 +7906,14 @@ function pmText(value){
  let result=normalized;for(const [pattern,replacement] of dynamic)result=result.replace(pattern,replacement);
  return result.replace(pmPattern,key=>pmDictionary[key]);
 }
+Object.assign(pmDictionary, {
+ 'Pohled na diagram':'Diagram view', 'Celý diagram (F)':'Whole diagram (F)', 'Čitelný začátek':'Readable start',
+ 'Je dostupná nová verze':'A new version is available', 'Uložit a aktualizovat':'Save and update',
+ 'Před aktualizací zastav simulaci':'Stop the simulation before updating',
+ 'Před aktualizací zavři otevřený dialog':'Close the open dialog before updating',
+ 'Uložení se nezdařilo. Před aktualizací exportuj postup.':'Saving failed. Export your progress before updating.',
+ 'Aktualizace se nezdařila. Zkus to znovu.':'Update failed. Try again.'
+});
 const pmNodes=new WeakMap(),pmAttrs=new WeakMap();
 const pmIgnored='script,style,textarea,input,.block-code,#ram-output,[data-user-content],#languageButton';
 const pmAttributeNames=['title','aria-label','placeholder','data-tip'];
@@ -7907,20 +8003,17 @@ pmApplyLanguage();
 
 
 const flowBuiltInLabels=new Set(["start\u0000Start", "process\u0000zapnout napájení", "process\u0000diagnostika", "process\u0000aktivace pracoviště", "note\u0000Počkej chvíli", "note\u0000Sled má pevné pořadí.", "end\u0000Konec", "io\u0000krytZavren", "decision\u0000krytZavren == true", "process\u0000spustit výrobu", "process\u0000požádat o zavření krytu", "note\u0000Izolepa řešení není.", "io\u0000pocet", "process\u0000spotreba = pocet * 20", "io\u0000Spotřeba: {spotreba} g", "note\u0000Jeden držák = 20 g materiálu.", "process\u0000spojky = 0", "loop\u0000spojky < 4", "process\u0000spojky++", "note\u0000Tělo cyklu = jedna výroba spojky.", "process\u0000dobrych = 0", "loop\u0000dobrych < 3", "io\u0000stav", "decision\u0000stav == \"ok\"", "process\u0000dobrych++", "note\u0000Zásoba má dost dobrých kusů.", "io\u0000n", "process\u0000krok = 0", "loop\u0000krok < n", "process\u0000krok = krok + 1", "io\u0000Doručeno: {krok}", "note\u0000Jedna cílená chyba v meze cyklu.", "process\u0000plan = cteni_planu()", "process\u0000krok++", "note\u0000Plán je pro celou zakázku stejný.", "io\u0000delka", "decision\u0000delka >= 50", "io\u0000Stav: vyhovuje", "io\u0000Stav: vadný", "note\u0000Zakázka kontrola dílů: mez 50 mm.", "note\u0000Napájení musí být dřív než aktivace.", "process\u0000material = pocet * 10", "io\u0000Materiál: {material} g", "note\u0000Materiál pro tisk: 10 g na kus.", "process\u0000jmeno = \"světe\"", "io\u0000Ahoj, {jmeno}!", "io\u0000r", "process\u0000obsah = 3.14159 * r ** 2", "io\u0000Obsah: {obsah}", "process\u0000soucet = 0", "process\u0000i = 1", "loop\u0000i <= n", "process\u0000soucet = soucet + i", "process\u0000i++", "io\u0000Součet: {soucet}", "decision\u0000i % 3 == 0", "io\u0000Fizz", "io\u0000{i}", "io\u0000a", "io\u0000op", "io\u0000b", "note\u0000KALKULAČKA:\nZadáme číslo a, operátor (text)\na číslo b (pro ÷ a mocninu).\n√ používá jen číslo a.", "decision\u0000op == \"soucet\"", "process\u0000vysledek = a + b", "io\u0000Výsledek: {vysledek}", "decision\u0000op == \"rozdil\"", "process\u0000vysledek = a - b", "note\u0000VĚTVENÍ:\nPodmínka op == \"…\" pustí\njen tu správnou větev,\nostatní se přeskočí.", "decision\u0000op == \"soucin\"", "process\u0000vysledek = a * b", "decision\u0000op == \"podil\"", "process\u0000vysledek = a / b", "decision\u0000op == \"mocnina\"", "process\u0000vysledek = a ** b", "decision\u0000op == \"odmocnina\"", "note\u0000ODMOCNINA:\n√(a² + b²) i √(a) jde přes\nMath.sqrt(a), nepotřebuje b.", "process\u0000vysledek = Math.sqrt(a)", "note\u0000SVOD:\nVšechny větve a i neznámý\noperátor končí v jednom\nkolečku KONEC.", "note\u0000PYTHAGOROVA VĚTA:\nc² = a² + b², a proto\nc = √(a² + b²).\nOdmocnina = Math.sqrt()", "process\u0000c = Math.sqrt(a * a + b * b)", "io\u0000Přepona c = {c}", "io\u0000jistina", "io\u0000rocni_urok", "io\u0000roky", "note\u0000VÝVOJ ÚSPOR:\nVypočteme, na kolik vyroste\njistina po „roky\" let při\nročním úroku v %.", "loop\u0000i <= roky", "process\u0000jistina = Math.round(jistina * (1 + rocni_urok / 100) * 100) / 100", "note\u0000CYKLUS S POČÍTADLEM:\nKaždý rok se úrok přičte\nk jistině → „úrok z úroku\".\nZaokrouhlení na haléře.", "io\u0000Po {roky} letech: {jistina} Kč", "note\u0000ČISTÁ MZDA:\nZ hrubé mzdy se srazí\npojistné 11 % (6,5 + 4,5)\na záloha na daň 15 %.", "io\u0000hruba", "process\u0000pojistne = hruba * 0.11", "process\u0000dan = hruba * 0.15", "note\u0000ZAOKROUHLENÍ:\nMath.round() zaokrouhlí\nna celé koruny.", "process\u0000cista = Math.round(hruba - pojistne - dan)", "io\u0000Čistá mzda: {cista} Kč", "io\u0000spotreba", "io\u0000km", "io\u0000cena_za_l", "note\u0000EKO-JÍZDA:\nSpotřeba auta se udává\nv litrech na 100 km.\nLitry = spotřeba × km ÷ 100.", "process\u0000litry = spotreba * km / 100", "note\u0000ZAOKROUHLENÍ:\nMath.round() → cena\nv celých korunách.", "process\u0000naklady = Math.round(litry * cena_za_l)", "io\u0000Cesta: {litry} l, náklady {naklady} Kč", "io\u0000material", "note\u0000TŘÍDĚNÍ:\nDo které popelnice materiál\npatří? Jeden směr = jedna\nVĚTEV podmínky.", "decision\u0000material == \"plast\"", "io\u0000Plast → žlutý kontejner", "decision\u0000material == \"papir\"", "io\u0000Papír → modrý kontejner", "decision\u0000material == \"sklo\"", "io\u0000Sklo → zelený kontejner", "note\u0000KASKÁDA PODMÍNEK:\nSrovnáváme postupně,\ndokud není materiál vhodný\n(nebo neznámý).", "decision\u0000material == \"bio\"", "io\u0000Bio → hnědý kontejner", "io\u0000Neznámý materiál: {material}", "note\u0000SVOD:\nVšechny materiály (i neznámý)\nskončí v jednom KONCI.", "io\u0000vaha", "io\u0000vyska", "note\u0000VÝŠKA V METRECH:\nNapíšeme 1,75, ne 175.\nBMI = hmotnost ÷ výška².", "process\u0000bmi = Math.round(vaha / (vyska * vyska) * 10) / 10", "decision\u0000bmi < 18.5", "io\u0000Podváha (BMI {bmi})", "decision\u0000bmi <= 25", "io\u0000Norma (BMI {bmi})", "note\u0000ROZSAHY (orientačně):\npod 18,5 podváha · 18,5–25\nnorma · 25–30 nadváha ·\nnad 30 obezita.", "decision\u0000bmi <= 30", "io\u0000Nadváha (BMI {bmi})", "io\u0000Obezita (BMI {bmi})", "note\u0000SVOD:\nPodváha, norma, nadváha\ni obezita, vše končí\nv jednom KONCI.", "io\u0000na_mape", "note\u0000MĚŘÍTKO 1:25000\nznamená: 1 cm na mapě\nje 250 m ve skutečnosti.\nZadáme vzdálenost v cm.", "io\u0000meritko", "process\u0000realne_cm = na_mape * meritko", "note\u0000JEDNOTKY:\nPo vynásobení máme cm,\nkm = cm ÷ 100 000.", "process\u0000realne_km = realne_cm / 100000", "io\u0000Skutečnost: {realne_km} km", "start\u0000Začátek Sběru", "note\u0000ÚVOD:\nNejprve zadáme jméno a definujeme\ndvě barvy, které chceme sbírat.\nPak vynulujeme počítadla a krok.", "io\u0000jméno", "io\u0000barva1", "io\u0000barva2", "process\u0000skore1 = 0\nskore2 = 0\nkrok = 0", "loop\u0000krok < 3", "note\u0000SMYČKA:\nOpakujeme 3x (krok < 3).\nV každém kroku \"utrhneme\" jablko\na zeptáme se na jeho barvu.", "io\u0000nalezena_barva", "decision\u0000nalezena_barva == barva1", "process\u0000skore1++\nkrok++", "process\u0000skore2++\nkrok++", "note\u0000ROZHODOVÁNÍ:\nZkontrolujeme, zda se nalezené\njablko shoduje s 1. barvou.\nPodle toho zvedneme správné skóre.", "io\u0000Díky jméno!\nMáš skore1 x barva1\na skore2 x barva2 jablek.", "end\u0000Konec Hry"]);
-const flowIdentifierAliases={"jméno": "name", "jmeno": "name", "barva1": "color1", "barva2": "color2", "skore1": "score1", "skore2": "score2", "krok": "step", "nalezena_barva": "found_color", "krytZavren": "coverClosed", "pocet": "quantity", "spotreba": "consumption", "spojky": "connectors", "dobrych": "good_parts", "stav": "status", "cteni_planu": "read_plan", "delka": "length", "obsah": "area", "soucet": "sum", "vysledek": "result", "jistina": "principal", "rocni_urok": "annual_interest", "roky": "years", "hruba": "gross_pay", "pojistne": "insurance", "dan": "tax", "cista": "net_pay", "cena_za_l": "price_per_liter", "litry": "liters", "naklady": "cost", "vaha": "weight", "vyska": "height", "na_mape": "map_distance", "meritko": "scale", "realne_cm": "ground_cm", "realne_km": "ground_km"};
-function flowAliasCode(value){
- if(pmLanguage==='cs')return String(value);
- // Quoted source literals stay literal; variable tokens use consistent display aliases.
- return String(value).replace(/("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|[\p{L}_][\p{L}\p{N}_]*/gu,(token,literal)=>literal?token:(flowIdentifierAliases[token]||token));
-}
-
 function flowDisplayLabel(block){
  const raw=String(block.label==null?'':block.label);
  if(pmLanguage==='cs'||block.translationDisabled||!flowBuiltInLabels.has(block.type+'\0'+raw))return raw;
- return flowAliasCode(pmText(raw));
+ // Keep executable expressions and quoted literals identical to their source.
+ if(block.type==='decision'||block.type==='loop'||block.type==='call'||
+    (block.type==='io'&&block.ioType==='input')||
+    (block.type==='process'&&/[=+*/()[\]<>-]/.test(raw))||/^\s*["']/.test(raw))return raw;
+ return pmText(raw);
 }
 
-window.FlowI18n={identifier:flowAliasCode,blockLabel:flowDisplayLabel,text:pmText,language:()=>pmLanguage,svg:source=>{if(pmLanguage==='cs')return source;const doc=new DOMParser().parseFromString(source,'image/svg+xml');for(const el of doc.querySelectorAll('text'))if(!el.hasAttribute('data-user-content'))el.textContent=pmText(el.textContent);return new XMLSerializer().serializeToString(doc);}};
+window.FlowI18n={identifier:value=>String(value),blockLabel:flowDisplayLabel,text:pmText,language:()=>pmLanguage,svg:source=>{if(pmLanguage==='cs')return source;const doc=new DOMParser().parseFromString(source,'image/svg+xml');for(const el of doc.querySelectorAll('text'))if(!el.hasAttribute('data-user-content'))el.textContent=pmText(el.textContent);return new XMLSerializer().serializeToString(doc);}};
 
 const flowMode=matchMedia('(display-mode: standalone)');let flowInstalled=false;
 function flowInstallState(){const standalone=flowInstalled||navigator.standalone===true||flowMode.matches;document.getElementById('menu-install-pwa').hidden=standalone;}
@@ -7930,7 +8023,36 @@ if(flowMode.addEventListener)flowMode.addEventListener('change',flowInstallState
 const flowOriginalInstall=App.triggerPwaInstall;
 App.triggerPwaInstall=async function(){const event=this.deferredInstallPrompt;this.deferredInstallPrompt=null;document.getElementById('btn-pwa-install-action').style.display='none';if(event){try{await event.prompt();const result=await event.userChoice;if(result.outcome==='accepted')this.closeInstallModal();return;}catch{}}this.openInstallModal();};
 flowInstallState();
-if('serviceWorker'in navigator&&isSecureContext&&/^https?:$/.test(location.protocol))addEventListener('load',async()=>{try{await navigator.serviceWorker.register('./sw.js');await navigator.serviceWorker.ready;document.getElementById('offlineStatus').textContent='Připraveno bez internetu';}catch{document.getElementById('offlineStatus').textContent='Offline uložení se nezdařilo';}});
+if('serviceWorker'in navigator&&isSecureContext&&/^https?:$/.test(location.protocol))addEventListener('load',async()=>{
+ const banner=document.getElementById('app-update'),button=document.getElementById('app-update-button');
+ let registration,requested=false,changed=false,previousController=navigator.serviceWorker.controller;
+ const offer=()=>{if(registration?.waiting&&navigator.serviceWorker.controller)banner.hidden=false;};
+ navigator.serviceWorker.addEventListener('controllerchange',()=>{
+  if(requested){location.reload();return;}
+  if(previousController){changed=true;banner.hidden=false;}
+  previousController=navigator.serviceWorker.controller;
+ });
+ button.addEventListener('click',()=>{
+  if(App.isSimulating){App.toast('Před aktualizací zastav simulaci');return;}
+  if(document.querySelector('.modal.show')){App.toast('Před aktualizací zavři otevřený dialog');return;}
+  try{App.saveState(true);}catch{App.toast('Uložení se nezdařilo. Před aktualizací exportuj postup.',5000);return;}
+  if(changed){location.reload();return;}
+  const worker=registration?.waiting;
+  if(!worker){banner.hidden=true;return;}
+  requested=true;button.disabled=true;
+  try{worker.postMessage({type:'ACTIVATE_UPDATE'});}catch{requested=false;button.disabled=false;App.toast('Aktualizace se nezdařila. Zkus to znovu.');}
+ });
+ try{
+  registration=await navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'});
+  registration.addEventListener('updatefound',()=>{
+   const worker=registration.installing;
+   if(worker)worker.addEventListener('statechange',()=>{if(worker.state==='installed')offer();});
+  });
+  offer();
+  await navigator.serviceWorker.ready;
+  document.getElementById('offlineStatus').textContent='Připraveno bez internetu';
+ }catch{document.getElementById('offlineStatus').textContent='Offline uložení se nezdařilo';}
+});
 else document.getElementById('offlineStatus').textContent='Offline instalace vyžaduje HTTPS nebo localhost';
 
 </script>

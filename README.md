@@ -1,72 +1,57 @@
-# CodeFlowChart 
+# CodeFlowChart HEFAISTOS
 
-Výukový editor a simulátor vývojových diagramů v jediném souboru `index.html`.
-Žák staví diagram z bloků, krokuje běh programu, sleduje proměnné ve Visual RAM
-a ověřuje řešení automatickými testy. Hra provází servisní lodí HEFAISTOS
-a robotem ŠROUB.
+[Česky](README.cs.md)
 
-- **Cílová skupina:** učební obory H a podpůrná cesta E/J (15–19 let), úvodní
-  algoritmizace (RVP SOV). Gymnázia a maturitní IT obory nejsou cílem.
-- **Bez instalace, bez serveru, bez sběru dat.** Jediným výstupem je certifikát
-  a export postupu (JSON), který si žák stahuje sám.
-- **Repozitář:** https://github.com/siberius/code-flowchart
+An offline flowchart editor and simulator for introductory algorithms. Build blocks and connections, run or step through a program, inspect variables in Visual RAM and verify missions with test cases.
 
-## Spuštění
+The service ship HEFAISTOS and robot ŠROUB guide 14 missions: eight for the Czech H vocational profile and six for the E/J support profile. Five SPACE workspaces support free experimentation. These curriculum profiles retain their Czech meanings in the English interface.
 
-Hra je jediný HTML soubor, nepotřebuje build ani závislosti:
+## Run
 
-1. Stáhni nebo naklonuj repozitář.
-2. Otevři `index.html` v prohlížeči (dvojklik stačí, funguje i offline).
+Open `index.html` directly, or serve the project folder:
 
-## Obsah hry
+```sh
+python3 -m http.server 8139 --bind 127.0.0.1
+```
 
-- **MISE** — 14 misí: 8 pro profil H (m01–m08) + 6 pro podpůrnou cestu E/J.
-  Témata: posloupnost, větvení, vstup → výpočet → výstup, cykly, ladění,
-  efektivita a vlastní tvorba.
-- **SPACE 1–5** — volné plochy pro vlastní tvorbu (SPACE 1 obsahuje ukázku
-  „Sbírání jablek").
-- **Kompas a Ladička** — nápověda nic nestojí, hodnocení se nikdy nesnižuje.
-  Značky postupu: Zprovozněno → Ověřeno → Upraveno.
-- **Certifikát (SVG)** — fakultativní potvrzení dokončené mise se jménem,
-  datem a časem.
+Open [localhost:8139](http://localhost:8139/). No build, backend or dependencies are required. Installation and service-worker caching require HTTPS or localhost. Fonts are embedded in the HTML, so no Google Fonts request is needed. An isolated HTML copy has inline icon and manifest fallbacks.
 
-## Uložení a soukromí
+## Languages
 
-- Pokrok se ukládá do `localStorage` prohlížeče — přežije obnovení stránky
-  i přepnutí mezi hodinami.
-- Na PC se data po **90 minutách nečinnosti** automaticky vymažou, na mobilu
-  a tabletu se mažou jen ručně červeným RESET.
-- **Export JSON** = úplný snímek celé práce (všechny mise + všechny plochy).
-  Po splnění mise se nabídne stažení, rozpracovanou práci lze vyvést z menu.
-  Jméno je dobrovolné — kdo ho nezadá, má v exportu `null`.
+A Czech primary browser language selects Czech; other browser languages select English. This does not use location. CS/EN saves a manual preference locally. Switching preserves blocks, connections, variables, workspace, progress and camera.
 
-## Klávesové zkratky (výběr)
+Interface labels, mission briefs, hints, diagnostics and certificate captions are translated. User-authored block text, variable names, string literals and program output retain their exact content. Existing Czech sample programs and their code comments are kept so execution and JSON compatibility remain stable. English missions use the same original test vectors and thresholds.
 
-| Zkratka | Akce |
-|---|---|
-| `Ctrl+K` | Paleta příkazů (přehled všech zkratek) |
-| `Alt+S` | Výběr ukázky |
-| `Ctrl+Alt+H` / `Ctrl+Alt+I` / `Ctrl+Alt+A` | Nápověda / O programu / O autorovi |
-| `Ctrl+Alt+J` / `Ctrl+Alt+O` | Export / import JSON |
-| `Ctrl+Alt+M` / `Ctrl+Alt+1–5` | Plocha MISE / SPACE 1–5 |
-| `Ctrl+Z` / `Ctrl+Y` | Zpět / Znovu |
-| `Ctrl+S` | Export SVG |
-| `Esc` | Zavřít dialog |
+## Install and use offline
 
-## Vývoj
+Choose **Add to home screen** in the menu. Supported browsers provide a native installation prompt. Other browsers receive manual instructions.
 
-Celá aplikace je vanilla JS a CSS přímo v `index.html` — žádný module systém,
-žádný build, žádné závislosti. Podrobný plán přestavby je v `PLAN.md`.
-Repozitář obsahuje záměrně jen aplikaci a dokumenty; vývojové testy zůstávají
-mimo veřejný repozitář.
+- iPhone/iPad: Safari → Share → Add to Home Screen; keep Open as Web App enabled when offered
+- Android: browser menu → Install app / Add to Home Screen
+- macOS Safari: File → Add to Dock
 
-## Licence
+Wait for **Ready offline** before disconnecting. Browsers may evict cached files. Icons include a 180 px Apple touch icon, 192/512 px PNGs, an Android maskable variant and editable SVG sources. Physical-device installation remains a manual check.
 
-MIT © 2026 Luděk Sušický — viz soubor `LICENSE`.
-Dílo můžeš svobodně používat, upravovat i šířit včetně školní výuky.
+## Data and exports
 
-## Autor
+Workspaces, progress and the optional student name are stored locally in the browser. Desktop data expires after 90 minutes of inactivity; mobile/tablet data is cleared manually using RESET. Save a JSON export to keep a portable copy. Browser storage is not a substitute for a backup.
 
-**Luděk Sušický** — biolog, středoškolský a vysokoškolský učitel informatických předmětů
-Kontakt: ludek.susicky@gmail.com · X: [@ludeksusicky](https://x.com/ludeksusicky) ·
-LinkedIn: [ludek-susicky](https://www.linkedin.com/in/ludek-susicky/)
+JSON exports preserve all missions, SPACE workspaces, active context, optional name and save time. Import restores the snapshot. SVG diagram export preserves the program's text; certificate captions follow the interface language. Certificates with a supplied name contain that name. The local game is inspectable and is not a secured examination system.
+
+There is no telemetry or remote API. The service worker caches only a fixed list of application files, not browser-storage data or generated exports. Author links open only when selected. Fictional CNC/production tasks illustrate algorithms, not machine-operation instructions.
+
+## Documentation
+
+- [Verification and limitations](docs/VERIFICATION.md)
+- [Changelog](CHANGELOG.md)
+- `PLAN.md` and `codeflowchart.pdf`: original Czech project documents, retained for reference
+
+## License and author
+
+MIT, copyright © 2026 Luděk Sušický. See [LICENSE](LICENSE). Embedded JetBrains Mono and Syne fonts retain their SIL Open Font License notices in [licenses/](licenses/).
+
+Luděk Sušický: biologist and secondary-school and university teacher of computing subjects
+
+Generative AI tools were used during development. The educational content, its revisions and responsibility for the final application lie with the author.
+
+[GitHub repository](https://github.com/siberius/code-flowchart)

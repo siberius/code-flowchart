@@ -1,5 +1,11 @@
 # finished.md — CodeFlowChart HEFAISTOS (code-flowchart)
 
+## 2026-10-30 · Dvojjazyčná aplikace a PWA
+- Český/anglický jazyk podle prohlížeče, uložená ruční volba, překlady misí a UI bez změny kódu diagramů.
+- Offline cache, vložená písma s OFL, ikony Android/iPhone a responzivní mobilní lišta. SVG certifikát bezpečně zachovává jméno.
+- Prošly Node sady a Chromium/WebKit: všech 14 zadání, lokální ukládání, SVG/JSON a offline obnova. Podrobnosti docs/VERIFICATION.md. Fyzická instalace neověřena.
+- Aktualizace určena pro veřejný siberius/code-flowchart pod MIT. FTP nasazení neproběhlo.
+
 Archiv dokončených úkolů (nejnovější nahoře). Formát dle `MASTER-AGENTS.md` §14.
 
 ## 2026-10-17 — Generování a export aplikačních ikon (SVG, PNG, ICO, Manifest) pro CodeFlowChart

@@ -69,8 +69,7 @@ Pro vzdělávací obsah navíc: `md-skills/vzdelavaci-metodiky.md` (RVP/ŠVP, CZ
   4. **Offline záloha:** Pro zajištění 100% funkčnosti při spuštění jediného izolovaného HTML souboru z disku/flashky se v `index.html` vždy zachovává inline Data URI záloha pro manifest i SVG ikonu.
 
 ### Konvence a mantinely
-- UI texty a komentáře v aplikaci jsou česky; kód, identifikátory a názvy
-  funkcí anglicky.
+- UI texty jsou česky a anglicky; kód, identifikátory a názvy funkcí anglicky. Texty vlastních bloků, proměnné a řetězce se nepřekládají.
 - Přestavba se řídí fázemi F0→F9 z `PLAN.md` §13; kritéria §14 a rozhodnutí
   §0/§15 jsou závazná. Historické návrhy nepřebírat automaticky jako nový úkol.
 - Před jakoukoliv změnou kódu musí být plán schválen; kód se nemění, dokud
@@ -110,3 +109,10 @@ Pro vzdělávací obsah navíc: `md-skills/vzdelavaci-metodiky.md` (RVP/ŠVP, CZ
     self-test misí m01–m08 pro oba profily (až vzniknou).
 - Po každé změně ověřit přiměřeně riziku (MASTER „Git, verification and completion");
   dokončené úkoly eviduj v `finished.md` (formát dle MASTER completion + `governance/PROJECT-OPERATIONS.md` changelog).
+
+## Dvojjazyčná revize 2026-10-30
+- Skutečný vstup je index.html. Překlad je inline, aplikace zůstává bez sestavení.
+- codeflowchart-language ukládá jen ruční jazyk. Diagramy a původní testy misí zůstávají nezávislé na jazyce.
+- sw.js cachuje pevný seznam souborů; při změně obsahu zvýšit verzi. Autoritativní manifest je pouze kořenový manifest.json.
+- Písma jsou vložená pro offline běh; licence v licenses/. SVG export nepoužívá vzdálené fonty.
+- Veřejné README.md/README.cs.md a docs/VERIFICATION.md jsou dokumentace GitHubu.

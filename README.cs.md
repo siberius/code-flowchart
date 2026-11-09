@@ -72,17 +72,11 @@ mimo veřejný repozitář.
 MIT © 2026 Luděk Sušický — viz soubor `LICENSE`.
 Dílo můžeš svobodně používat, upravovat i šířit včetně školní výuky.
 
-## Související vzdělávací aplikace
-
-- 🌌 **[ELEMENTA](https://github.com/siberius/elementa)** — Prostorová 3D mapa prvků / Spatial Map of the Elements ([Spustit online](https://school.vibemaker.cz/elementa/))
-- 🛡️ **[Ochrana dat žáků](https://github.com/siberius/student-data-protection)** — Bezpečí dat žáků ve školních aplikacích a GDPR ([Článek na Vibemaker](https://vibemaker.cz/clanek/bezpeci-dat-zaku/))
-- 🧭 **[Vzdělávací metodiky](https://github.com/siberius/learning-methodologies)** — Didaktické metodiky pro vývoj aplikací s AI ([Článek na Vibemaker](https://vibemaker.cz/clanek/vzdelavaci-metodiky-pro-vibekoding/))
-
 ## Autor
 
-**Luděk Sušický** — biolog, středoškolský a vysokoškolský učitel informatických předmětů
-Kontakt: ludek.susicky@gmail.com · X: [@ludeksusicky](https://x.com/ludeksusicky) ·
-LinkedIn: [ludek-susicky](https://www.linkedin.com/in/ludek-susicky/)
+**Luděk Sušický** — biolog, středoškolský a vysokoškolský učitel informatických předmětů  
+Kontakt: ludek.susicky@gmail.com · X: [@ludeksusicky](https://x.com/ludeksusicky) · LinkedIn: [ludek-susicky](https://www.linkedin.com/in/ludek-susicky/)  
+Další vzdělávací projekty a otevřené aplikace autora najdete na profilu [@siberius na GitHubu](https://github.com/siberius).
 
 ## Dvojjazyčné rozhraní a instalace na plochu
 

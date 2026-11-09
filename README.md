@@ -57,17 +57,13 @@ There is no telemetry or remote API. The service worker caches only a fixed list
 - [Changelog](CHANGELOG.md)
 - `PLAN.md` and `codeflowchart.pdf`: original Czech project documents, retained for reference
 
-## Related educational apps / Související aplikace
-
-- 🌌 **[ELEMENTA](https://github.com/siberius/elementa)** — Spatial 3D Map of the Elements / Prostorová mapa prvků ([Live Web App](https://school.vibemaker.cz/elementa/))
-- 🛡️ **[Student Data Protection](https://github.com/siberius/student-data-protection)** — GDPR and data safety in school apps ([Článek](https://vibemaker.cz/clanek/bezpeci-dat-zaku/))
-- 🧭 **[Learning Methodologies](https://github.com/siberius/learning-methodologies)** — Didactic framework for designing educational apps with AI ([Článek](https://vibemaker.cz/clanek/vzdelavaci-metodiky-pro-vibekoding/))
-
 ## License and author
 
 MIT, copyright © 2026 Luděk Sušický. See [LICENSE](LICENSE). Embedded JetBrains Mono and Syne fonts retain their SIL Open Font License notices in [licenses/](licenses/).
 
 Luděk Sušický: biologist and secondary-school and university teacher of computing subjects
+
+More educational projects and open-source applications by the author: [@siberius on GitHub](https://github.com/siberius).
 
 Generative AI tools were used during development. The educational content, its revisions and responsibility for the final application lie with the author.
 

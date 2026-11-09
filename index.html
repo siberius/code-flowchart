@@ -1101,19 +1101,33 @@
         }
 
 
-        /* ==== F1: HUD operátora, menu sekce, jméno, reset, level modal ==== */
+        /* ==== F1: HUD operátora (kompaktní mini-badge vlevo nahoře) ==== */
         #hud {
-            position: fixed; top: 56px; right: 12px; z-index: 300;
-            background: rgba(10, 14, 22, 0.9); border: 1px solid var(--border);
-            border-radius: 10px; padding: 8px 12px; font-size: 12px;
-            display: none; flex-direction: column; gap: 4px; min-width: 190px;
-            box-shadow: 0 6px 24px rgba(0,0,0,0.5);
+            position: fixed; top: 64px; left: 14px; z-index: 90;
+            background: rgba(10, 14, 22, 0.85); backdrop-filter: blur(8px);
+            border: 1px solid rgba(0, 229, 255, 0.25);
+            border-radius: 16px; padding: 4px 10px; font-size: 11px;
+            display: none; flex-direction: row; align-items: center; gap: 8px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.45); pointer-events: none;
+            line-height: 1.2;
         }
-        #hud.show { display: flex; }
-        #hud .hud-row { display: flex; justify-content: space-between; gap: 10px; }
-        #hud .hud-label { color: var(--accent); letter-spacing: 1px; font-size: 10px; opacity: 0.8; }
-        #hud .hud-val { color: var(--text); font-weight: 600; }
-        #hud #hud-stars { color: var(--accent3); }
+        #hud.show { display: inline-flex; }
+        #hud .hud-row { display: flex; align-items: center; gap: 5px; }
+        #hud .hud-label { color: var(--accent); letter-spacing: 0.5px; font-size: 9px; opacity: 0.85; font-family: 'JetBrains Mono', monospace; }
+        #hud .hud-val { color: var(--text); font-weight: 600; font-size: 11px; }
+        #hud .hud-sep { color: var(--border); opacity: 0.6; font-size: 10px; }
+        #hud #hud-stars { color: var(--accent3); margin-left: 2px; }
+        @media(max-width: 1280px) {
+            #hud { top: 102px; left: 10px; }
+        }
+        @media(max-width: 768px) {
+            #hud { padding: 3px 8px; gap: 5px; font-size: 10px; border-radius: 12px; }
+            #hud .hud-rank-row, #hud .hud-sep-rank { display: none; }
+            #hud #hud-name { display: none; }
+        }
+        @media(max-width: 420px) {
+            #hud .hud-role-row, #hud .hud-sep-role { display: none; }
+        }
 
         #side-menu { max-height: calc(100vh - 56px); max-height: calc(100dvh - 56px); overflow-y: auto; }
         .menu-section-title {
@@ -1215,7 +1229,6 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
  #topbar-tools-row .top-btn{flex:1 1 36px;max-width:44px;min-width:28px;width:36px;height:32px;min-height:32px;padding:3px;font-size:10px;line-height:1;display:flex;align-items:center;justify-content:center}
  #topbar-tools-row .top-btn svg{width:16px;height:16px}
  #canvas-wrap{margin-top:96px;height:calc(100% - 96px)}
- #hud{top:100px}
  #side-menu{top:96px;max-height:calc(100vh - 96px);max-height:calc(100dvh - 96px);overflow-y:auto}
 }
 @media(max-width:768px){#hamburger-btn{order:99;margin-left:auto;flex-shrink:0}#languageButton{order:0}#topbar-tools-row{order:100}}
@@ -1281,9 +1294,11 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
 
     <!-- F1: HUD operátora (learning mode) -->
     <div id="hud">
-        <div class="hud-row"><span class="hud-label" id="hud-role">HEFAISTOS H</span> <span class="hud-val" id="hud-name" data-user-content>—</span></div>
-        <div class="hud-row"><span class="hud-label">HODNOST</span> <span class="hud-val" id="hud-rank">Nováček</span></div>
-        <div class="hud-row"><span class="hud-label">XP</span> <span class="hud-val" id="hud-xp">0</span> <span class="hud-val" id="hud-stars">★0</span></div>
+        <div class="hud-row hud-role-row"><span class="hud-label" id="hud-role">HEFAISTOS H</span> <span class="hud-val" id="hud-name" data-user-content>—</span></div>
+        <span class="hud-sep hud-sep-role">•</span>
+        <div class="hud-row hud-rank-row"><span class="hud-label">HODNOST</span> <span class="hud-val" id="hud-rank">Nováček</span></div>
+        <span class="hud-sep hud-sep-rank">•</span>
+        <div class="hud-row hud-xp-row"><span class="hud-label">XP</span> <span class="hud-val" id="hud-xp">0 XP</span> <span class="hud-val" id="hud-stars">★0</span></div>
     </div>
 
     <!-- Boční Hamburger Menu -->
@@ -3654,6 +3669,15 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
                 if (!loaded) {
                     this.buildWorkspaceDefault(this.activeWorkspace);
                     this.saveState(true);
+                } else if (this.activeWorkspace === APPLES_SLOT) {
+                    const targetLang = (typeof FlowI18n !== 'undefined' && typeof FlowI18n.language === 'function')
+                        ? FlowI18n.language()
+                        : (typeof pmLanguage !== 'undefined' ? pmLanguage : 'cs');
+                    const currentApplesLang = this.isDefaultApplesGraph(this.blocks);
+                    if (currentApplesLang && currentApplesLang !== targetLang) {
+                        this.buildDefaultGameLoop();
+                        this.saveState(true);
+                    }
                 }
                 this.applyPalette(this.currentPalette());
 
@@ -3872,6 +3896,15 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
                 if (!loaded) {
                     this.buildWorkspaceDefault(slot);
                     this.saveWorkspace(slot);
+                } else if (slot === APPLES_SLOT) {
+                    const targetLang = (typeof FlowI18n !== 'undefined' && typeof FlowI18n.language === 'function')
+                        ? FlowI18n.language()
+                        : (typeof pmLanguage !== 'undefined' ? pmLanguage : 'cs');
+                    const currentApplesLang = this.isDefaultApplesGraph(this.blocks);
+                    if (currentApplesLang && currentApplesLang !== targetLang) {
+                        this.buildDefaultGameLoop();
+                        this.saveWorkspace(APPLES_SLOT);
+                    }
                 }
                 this.applyPalette(this.currentPalette());
 
@@ -4566,44 +4599,64 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
                 if (this.dom.resultCertBtn) this.dom.resultCertBtn.style.display = 'block';
             },
 
+            isDefaultApplesGraph(blocks) {
+                if (!blocks || blocks.length !== 15) return false;
+                const labels = new Set(blocks.map(b => b.label));
+                const isCs = labels.has('Začátek Sběru') && labels.has('jméno') && labels.has('barva1');
+                const isEn = (labels.has('Apple Harvest') || labels.has('Start')) && labels.has('name') && labels.has('color1');
+                return isCs ? 'cs' : (isEn ? 'en' : false);
+            },
+
             buildDefaultGameLoop() {
                 this.blocks = []; this.arrows = []; this.nextId = 1;
                 this.vx = 0;
                 this.vy = 0;
 
+                const isEn = (typeof FlowI18n !== 'undefined' && typeof FlowI18n.language === 'function')
+                    ? FlowI18n.language() === 'en'
+                    : (typeof pmLanguage !== 'undefined' ? pmLanguage === 'en' : false);
+
                 const cx = 0;
                 const cy = -805; // posun celého diagramu jablek o cca 70 % výš
 
-                const b1 = this.addBlockSilent('start', 'Začátek Sběru', cx - 250, cy - 140);
-                const b_note1 = this.addBlockSilent('note', 'ÚVOD:\nNejprve zadáme jméno a definujeme\ndvě barvy, které chceme sbírat.\nPak vynulujeme počítadla a krok.', cx + 320, cy - 20);
+                const b1 = this.addBlockSilent('start', isEn ? 'Apple Harvest' : 'Začátek Sběru', cx - 250, cy - 140);
+                const b_note1 = this.addBlockSilent('note', isEn
+                    ? 'INTRODUCTION:\nFirst enter a name and define\ntwo colors you want to collect.\nThen reset counters and step.'
+                    : 'ÚVOD:\nNejprve zadáme jméno a definujeme\ndvě barvy, které chceme sbírat.\nPak vynulujeme počítadla a krok.', cx + 320, cy - 20);
                 
-                const b2 = this.addBlockSilent('io', 'jméno', cx, cy);
+                const b2 = this.addBlockSilent('io', isEn ? 'name' : 'jméno', cx, cy);
                 b2.ioType = 'input';
                 
-                const b3 = this.addBlockSilent('io', 'barva1', cx - 250, cy + 140);
+                const b3 = this.addBlockSilent('io', isEn ? 'color1' : 'barva1', cx - 250, cy + 140);
                 b3.ioType = 'input';
 
-                const b4 = this.addBlockSilent('io', 'barva2', cx, cy + 280);
+                const b4 = this.addBlockSilent('io', isEn ? 'color2' : 'barva2', cx, cy + 280);
                 b4.ioType = 'input';
                 
-                const b5 = this.addBlockSilent('process', 'skore1 = 0\nskore2 = 0\nkrok = 0', cx, cy + 420);
+                const b5 = this.addBlockSilent('process', isEn ? 'score1 = 0\nscore2 = 0\nstep = 0' : 'skore1 = 0\nskore2 = 0\nkrok = 0', cx, cy + 420);
                 
-                const b6 = this.addBlockSilent('loop', 'krok < 3', cx, cy + 560);
-                const b_note2 = this.addBlockSilent('note', 'SMYČKA:\nOpakujeme 3x (krok < 3).\nV každém kroku "utrhneme" jablko\na zeptáme se na jeho barvu.', cx - 380, cy + 500);
+                const b6 = this.addBlockSilent('loop', isEn ? 'step < 3' : 'krok < 3', cx, cy + 560);
+                const b_note2 = this.addBlockSilent('note', isEn
+                    ? 'LOOP:\nRepeat 3 times (step < 3).\nEach step "picks" an apple\nand asks for its color.'
+                    : 'SMYČKA:\nOpakujeme 3x (krok < 3).\nV každém kroku "utrhneme" jablko\na zeptáme se na jeho barvu.', cx - 380, cy + 500);
 
-                const b7 = this.addBlockSilent('io', 'nalezena_barva', cx, cy + 720);
+                const b7 = this.addBlockSilent('io', isEn ? 'found_color' : 'nalezena_barva', cx, cy + 720);
                 b7.ioType = 'input';
                 
-                const b8 = this.addBlockSilent('decision', 'nalezena_barva == barva1', cx, cy + 860);
+                const b8 = this.addBlockSilent('decision', isEn ? 'found_color == color1' : 'nalezena_barva == barva1', cx, cy + 860);
                 
-                const b9 = this.addBlockSilent('process', 'skore1++\nkrok++', cx + 320, cy + 860);
-                const b10 = this.addBlockSilent('process', 'skore2++\nkrok++', cx - 320, cy + 860);
-                const b_note3 = this.addBlockSilent('note', 'ROZHODOVÁNÍ:\nZkontrolujeme, zda se nalezené\njablko shoduje s 1. barvou.\nPodle toho zvedneme správné skóre.', cx + 620, cy + 860);
+                const b9 = this.addBlockSilent('process', isEn ? 'score1++\nstep++' : 'skore1++\nkrok++', cx + 320, cy + 860);
+                const b10 = this.addBlockSilent('process', isEn ? 'score2++\nstep++' : 'skore2++\nkrok++', cx - 320, cy + 860);
+                const b_note3 = this.addBlockSilent('note', isEn
+                    ? 'DECISION:\nCheck if the picked apple\nmatches the 1st color.\nIncrement the correct score.'
+                    : 'ROZHODOVÁNÍ:\nZkontrolujeme, zda se nalezené\njablko shoduje s 1. barvou.\nPodle toho zvedneme správné skóre.', cx + 620, cy + 860);
 
-                const b11 = this.addBlockSilent('io', 'Díky jméno!\nMáš skore1 x barva1\na skore2 x barva2 jablek.', cx + 380, cy + 560);
+                const b11 = this.addBlockSilent('io', isEn
+                    ? 'Thanks {name}!\nYou have {score1} x {color1}\nand {score2} x {color2} apples.'
+                    : 'Díky jméno!\nMáš skore1 x barva1\na skore2 x barva2 jablek.', cx + 380, cy + 560);
                 b11.ioType = 'output';
                 
-                const b12 = this.addBlockSilent('end', 'Konec Hry', cx + 700, cy + 560);
+                const b12 = this.addBlockSilent('end', isEn ? 'Game Over' : 'Konec Hry', cx + 700, cy + 560);
 
                 b6.yesPort = 'bottom'; b6.noPort = 'right';
                 b8.yesPort = 'right';  b8.noPort = 'left';
@@ -8031,7 +8084,17 @@ function pmObserve(){pmObserver.observe(document.body,{childList:true,subtree:tr
 function pmApplyLanguage(){
  pmObserver.disconnect();document.documentElement.lang=pmLanguage;
  pmTranslate();flowSpeedSync();
- if(window.FlowI18n&&typeof App!=='undefined'&&App.blocks.length)App.renderAll();
+ if(window.FlowI18n&&typeof App!=='undefined'&&App.blocks.length){
+  if (App.activeWorkspace === 'space1' && typeof App.isDefaultApplesGraph === 'function') {
+   const currentApplesLang = App.isDefaultApplesGraph(App.blocks);
+   if (currentApplesLang && currentApplesLang !== pmLanguage) {
+    App.buildDefaultGameLoop();
+    App.saveWorkspace('space1');
+    setTimeout(() => { if (typeof App.renderArrows === 'function') App.renderArrows(); App.fitInitialView(true); }, 50);
+   }
+  }
+  App.renderAll();
+ }
  const b=document.getElementById('languageButton');b.textContent=pmLanguage==='cs'?'EN':'CS';b.lang=pmLanguage==='cs'?'en':'cs';b.setAttribute('aria-label',pmLanguage==='cs'?'Switch to English':'Přepnout do češtiny');
  document.title='CodeFlowChart HEFAISTOS';
  pmObserve();

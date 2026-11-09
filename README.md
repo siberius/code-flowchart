@@ -2,7 +2,10 @@
 
 [Česky](README.cs.md)
 
-> 🚀 **Online verze / Live web app:** [https://school.vibemaker.cz/codeflowchart/](https://school.vibemaker.cz/codeflowchart/)
+> 🚀 **Online verze / Live web app:** [https://school.vibemaker.cz/codeflowchart/](https://school.vibemaker.cz/codeflowchart/)  
+> *(Run directly in your browser · Offline-ready PWA · No registration)*
+
+[![CodeFlowChart HEFAISTOS — flowchart editor and simulator](docs/codeflowchart.gif)](https://school.vibemaker.cz/codeflowchart/)
 
 An offline flowchart editor and simulator for introductory algorithms. Build blocks and connections, run or step through a program, inspect variables in Visual RAM and verify missions with test cases.
 
@@ -53,6 +56,12 @@ There is no telemetry or remote API. The service worker caches only a fixed list
 - [Verification and limitations](docs/VERIFICATION.md)
 - [Changelog](CHANGELOG.md)
 - `PLAN.md` and `codeflowchart.pdf`: original Czech project documents, retained for reference
+
+## Related educational apps / Související aplikace
+
+- 🌌 **[ELEMENTA](https://github.com/siberius/elementa)** — Spatial 3D Map of the Elements / Prostorová mapa prvků ([Live Web App](https://school.vibemaker.cz/elementa/))
+- 🛡️ **[Student Data Protection](https://github.com/siberius/student-data-protection)** — GDPR and data safety in school apps ([Článek](https://vibemaker.cz/clanek/bezpeci-dat-zaku/))
+- 🧭 **[Learning Methodologies](https://github.com/siberius/learning-methodologies)** — Didactic framework for designing educational apps with AI ([Článek](https://vibemaker.cz/clanek/vzdelavaci-metodiky-pro-vibekoding/))
 
 ## License and author
 

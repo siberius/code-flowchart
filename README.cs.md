@@ -2,7 +2,10 @@
 
 [English](README.md)
 
-> 🚀 **Spustit online v prohlížeči:** [https://school.vibemaker.cz/codeflowchart/](https://school.vibemaker.cz/codeflowchart/)
+> 🚀 **Spustit online v prohlížeči:** [https://school.vibemaker.cz/codeflowchart/](https://school.vibemaker.cz/codeflowchart/)  
+> *(Běží přímo v prohlížeči · PWA offline · Bez instalace a registrace)*
+
+[![CodeFlowChart HEFAISTOS — simulátor vývojových diagramů](docs/codeflowchart.gif)](https://school.vibemaker.cz/codeflowchart/)
 
 Výukový editor a simulátor vývojových diagramů v jediném souboru `index.html`.
 Žák staví diagram z bloků, krokuje běh programu, sleduje proměnné ve Visual RAM
@@ -68,6 +71,12 @@ mimo veřejný repozitář.
 
 MIT © 2026 Luděk Sušický — viz soubor `LICENSE`.
 Dílo můžeš svobodně používat, upravovat i šířit včetně školní výuky.
+
+## Související vzdělávací aplikace
+
+- 🌌 **[ELEMENTA](https://github.com/siberius/elementa)** — Prostorová 3D mapa prvků / Spatial Map of the Elements ([Spustit online](https://school.vibemaker.cz/elementa/))
+- 🛡️ **[Ochrana dat žáků](https://github.com/siberius/student-data-protection)** — Bezpečí dat žáků ve školních aplikacích a GDPR ([Článek na Vibemaker](https://vibemaker.cz/clanek/bezpeci-dat-zaku/))
+- 🧭 **[Vzdělávací metodiky](https://github.com/siberius/learning-methodologies)** — Didaktické metodiky pro vývoj aplikací s AI ([Článek na Vibemaker](https://vibemaker.cz/clanek/vzdelavaci-metodiky-pro-vibekoding/))
 
 ## Autor
 

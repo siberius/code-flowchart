@@ -74,9 +74,14 @@ Dílo můžeš svobodně používat, upravovat i šířit včetně školní výu
 
 ## Autor
 
-**Luděk Sušický** — biolog, středoškolský a vysokoškolský učitel informatických předmětů  
-Kontakt: ludek.susicky@gmail.com · X: [@ludeksusicky](https://x.com/ludeksusicky) · LinkedIn: [ludek-susicky](https://www.linkedin.com/in/ludek-susicky/)  
-Další vzdělávací projekty a otevřené aplikace autora najdete na profilu [@siberius na GitHubu](https://github.com/siberius).
+**Luděk Sušický** — biolog, středoškolský a vysokoškolský učitel informatických předmětů
+
+- E-mail: [ludek.susicky@gmail.com](mailto:ludek.susicky@gmail.com)
+- X: [@ludeksusicky](https://x.com/ludeksusicky)
+- LinkedIn: [Luděk Sušický](https://www.linkedin.com/in/ludek-susicky/)
+- GitHub: [@siberius](https://github.com/siberius) — další vzdělávací projekty a otevřené aplikace
+
+Aplikace je příkladem SPA (Single Page Application) v jediném HTML souboru.
 
 ## Dvojjazyčné rozhraní a instalace na plochu
 

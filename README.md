@@ -60,12 +60,17 @@ There is no telemetry or remote API. The service worker caches only a fixed list
 
 MIT, copyright © 2026 Luděk Sušický. See [LICENSE](LICENSE). Embedded JetBrains Mono and Syne fonts retain their SIL Open Font License notices in [licenses/](licenses/).
 
-Luděk Sušický: biologist and secondary-school and university teacher of computing subjects
+### Author
 
-More educational projects and open-source applications by the author: [@siberius on GitHub](https://github.com/siberius).
+**Luděk Sušický** — biologist, secondary-school and university teacher of computing subjects
+
+- E-mail: [ludek.susicky@gmail.com](mailto:ludek.susicky@gmail.com)
+- X: [@ludeksusicky](https://x.com/ludeksusicky)
+- LinkedIn: [Luděk Sušický](https://www.linkedin.com/in/ludek-susicky/)
+- GitHub: [@siberius](https://github.com/siberius) — more educational projects and open-source applications
+
+The app is an example of an SPA (Single Page Application) in a single HTML file.
 
 Generative AI tools were used during development. The educational content, its revisions and responsibility for the final application lie with the author.
 
 [GitHub repository](https://github.com/siberius/code-flowchart)
-
-Built-in input/output sentences and variable identifiers have consistent English display aliases. The interpreter and JSON export keep the original identifiers and quoted source literals. On narrower screens, compact tools remain visible in a second toolbar row; the mobile menu button is on the right.

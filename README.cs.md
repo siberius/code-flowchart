@@ -2,6 +2,7 @@
 
 [English](README.md)
 
+> 🚀 **Spustit online v prohlížeči:** [https://school.vibemaker.cz/codeflowchart/](https://school.vibemaker.cz/codeflowchart/) (dostupné také na [http://school.vibemaker.cz/codeflowchart](http://school.vibemaker.cz/codeflowchart))
 
 Výukový editor a simulátor vývojových diagramů v jediném souboru `index.html`.
 Žák staví diagram z bloků, krokuje běh programu, sleduje proměnné ve Visual RAM
@@ -12,14 +13,15 @@ a robotem ŠROUB.
   algoritmizace (RVP SOV). Gymnázia a maturitní IT obory nejsou cílem.
 - **Bez instalace, bez serveru, bez sběru dat.** Jediným výstupem je certifikát
   a export postupu (JSON), který si žák stahuje sám.
+- **Online aplikace:** https://school.vibemaker.cz/codeflowchart/
 - **Repozitář:** https://github.com/siberius/code-flowchart
 
 ## Spuštění
 
-Hra je jediný HTML soubor, nepotřebuje build ani závislosti:
-
-1. Stáhni nebo naklonuj repozitář.
-2. Otevři `index.html` v prohlížeči (dvojklik stačí, funguje i offline).
+- **Přímo v prohlížeči online:** Otevři [https://school.vibemaker.cz/codeflowchart/](https://school.vibemaker.cz/codeflowchart/)
+- **Lokálně / offline:** Hra je jediný HTML soubor, nepotřebuje build ani závislosti:
+  1. Stáhni nebo naklonuj repozitář.
+  2. Otevři `index.html` v prohlížeči (dvojklik stačí, funguje i offline).
 
 ## Obsah hry
 

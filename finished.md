@@ -14,6 +14,7 @@
 - **Ověření a testy:**
   - Rozšířeny testovací sady o testy pro `push` s proměnnou a výrazem, `+=` pro pole, `pole.length`, `Math.trunc` a záchyt chyb běhu v checkeru.
   - 100 % pass napříč všemi 7 testovacími sadami (527 testů, 0 FAIL). Syntax OK, flow OK, check OK, storage OK, ui OK, game OK, smoke OK.
+  - Nasazeno na produkci https://school.vibemaker.cz/codeflowchart/ přes deploy.py s verzí cache v9; ověřeno live HTTP 200.
 
 ## 2026-10-30 · Výstupy diagramů a responzivní nástroje
 - Doplněné zobrazovací překlady všech vestavěných výstupních vět a konzistentní aliasy proměnných při zachování zdrojových dat.

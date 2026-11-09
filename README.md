@@ -2,13 +2,16 @@
 
 [Česky](README.cs.md)
 
+> 🚀 **Online verze / Live web app:** [https://school.vibemaker.cz/codeflowchart/](https://school.vibemaker.cz/codeflowchart/) (dostupné také na [http://school.vibemaker.cz/codeflowchart](http://school.vibemaker.cz/codeflowchart))
+
 An offline flowchart editor and simulator for introductory algorithms. Build blocks and connections, run or step through a program, inspect variables in Visual RAM and verify missions with test cases.
 
 The service ship HEFAISTOS and robot ŠROUB guide 14 missions: eight for the Czech H vocational profile and six for the E/J support profile. Five SPACE workspaces support free experimentation. These curriculum profiles retain their Czech meanings in the English interface.
 
 ## Run
 
-Open `index.html` directly, or serve the project folder:
+- **Online in browser:** [https://school.vibemaker.cz/codeflowchart/](https://school.vibemaker.cz/codeflowchart/)
+- **Offline / Local:** Open `index.html` directly, or serve the project folder:
 
 ```sh
 python3 -m http.server 8139 --bind 127.0.0.1

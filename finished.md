@@ -1,5 +1,20 @@
 # finished.md — CodeFlowChart HEFAISTOS (code-flowchart)
 
+## 2026-11-09 · Hloubkový audit a komplexní oprava enginu, přístupnosti a běhové logiky
+- **Oblast:** `index.html` (běhový engine `safeEval` a `parseVariable`, checker `runCheckVector`, focus trap přístupnosti, detekce školních dotykových PC `isTouchDevice`) + `testing/flow_tests.js` + `testing/flow_check_tests.js`.
+- **Důvod a realizace:**
+  - **Izolace a záchyt chyb běhu v checkeru testovacích vektorů:** V `runCheckVector` inicializován a v bloku `finally` bezpečně obnoven stav `runtimeTypeError`. V procesních blocích je po `parseVariable` kontrolována chyba běhu (dělení nulou, nepovolená aritmetika), která okamžitě selže vektor s jasnou diagnostikou a neznečišťuje stav aplikace.
+  - **Podpora proměnných a výrazů v `array.push(...)`:** Nahrazeno primitivní ořezávání řetězců za bezpečné vyhodnocení přes `safeEval(rawVal, this.visualRAM)`. Podporovány jsou proměnné (`seznam.push(x)`) i složené výrazy.
+  - **Operátor `+=` u polí:** Odstraněn prázdný blok `if (Array.isArray(...)) {}` a nahrazen bezpečným vkládáním/spojováním prvků pole (`push` / `push(...evaluated)`).
+  - **Rozšíření `safeEval`:** Doplněna funkce `Math.trunc` / `trunc` a bezpečný přístup k vlastnosti `.length` u polí a řetězců (`pole.length`).
+  - **Deduplikace kódu:** `toNumber` sjednocen jako čistý alias `requireNumber`.
+  - **Zpřesnění `isTouchDevice()` pro školní dotyková PC:** Zařízení s jemným ukazatelem myši/trackpadu a hoverem (`(pointer: fine) and (hover: hover)`) zůstávají vyhodnocena jako PC, což zajišťuje správné fungování 90minutové expirace nečinnosti na sdílených školních PC v souladu s pravidly bezpečnosti dat žáků.
+  - **Přístupnost (WCAG 2.2 AA Focus Trap):** Implementován univerzální cyklus klávesy Tab pro aktivní modální okna, zabraňující úniku fokusu na pozadí plátna.
+  - **Bilingvní invariance výstupů:** V `runCheckVector` doplněna kontrola přeloženého ekvivalentu výstupních vět přes `window.FlowI18n.text`, takže validní anglická i česká řešení v bilingvním režimu spolehlivě procházejí kontrolou.
+- **Ověření a testy:**
+  - Rozšířeny testovací sady o testy pro `push` s proměnnou a výrazem, `+=` pro pole, `pole.length`, `Math.trunc` a záchyt chyb běhu v checkeru.
+  - 100 % pass napříč všemi 7 testovacími sadami (527 testů, 0 FAIL). Syntax OK, flow OK, check OK, storage OK, ui OK, game OK, smoke OK.
+
 ## 2026-10-30 · Výstupy diagramů a responzivní nástroje
 - Doplněné zobrazovací překlady všech vestavěných výstupních vět a konzistentní aliasy proměnných při zachování zdrojových dat.
 - Nástroje se při zúžení přesunou do trvalého menšího druhého řádku, mobilní hamburger je vpravo. Cache v6.

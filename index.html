@@ -2982,8 +2982,10 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
                     'Math.ceil': Math.ceil, 'Math.abs': Math.abs, 'Math.min': Math.min,
                     'Math.max': Math.max, 'Math.pow': Math.pow, 'Math.sin': Math.sin,
                     'Math.cos': Math.cos, 'Math.tan': Math.tan, 'Math.log': Math.log,
+                    'Math.trunc': Math.trunc,
                     'sqrt': Math.sqrt, 'round': Math.round, 'floor': Math.floor,
-                    'ceil': Math.ceil, 'abs': Math.abs, 'min': Math.min, 'max': Math.max
+                    'ceil': Math.ceil, 'abs': Math.abs, 'min': Math.min, 'max': Math.max,
+                    'trunc': Math.trunc
                 };
 
                 function skipWhitespace() {
@@ -3231,6 +3233,15 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
                                 v = v.slice(1, -1);
                             }
                             return v;
+                        }
+                        if (name.includes('.') && scope) {
+                            const parts = name.split('.');
+                            if (parts.length === 2 && Object.prototype.hasOwnProperty.call(scope, parts[0])) {
+                                const obj = scope[parts[0]];
+                                if (parts[1] === 'length' && (Array.isArray(obj) || typeof obj === 'string')) {
+                                    return obj.length;
+                                }
+                            }
                         }
                         throw new Error(`Neznámá proměnná: '${name}'`);
                     }
@@ -3581,6 +3592,27 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
                 this.setupKeyboard();
                 this.initWidgetDrag();
                 document.addEventListener('click', (e) => this.onModalBackdropClick(e));
+                // Přístupnost: Focus Trap pro aktivní modální okna
+                document.addEventListener('keydown', (e) => {
+                    if (e.key !== 'Tab') return;
+                    const openModal = document.querySelector('.modal-overlay.show .modal-box');
+                    if (!openModal) return;
+                    const focusables = openModal.querySelectorAll('a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])');
+                    if (!focusables || focusables.length === 0) return;
+                    const first = focusables[0];
+                    const last = focusables[focusables.length - 1];
+                    if (e.shiftKey) {
+                        if (document.activeElement === first || !openModal.contains(document.activeElement)) {
+                            e.preventDefault();
+                            last.focus();
+                        }
+                    } else {
+                        if (document.activeElement === last || !openModal.contains(document.activeElement)) {
+                            e.preventDefault();
+                            first.focus();
+                        }
+                    }
+                });
                 // Na plochu mimo otevřený terminál → terminál se zasune dolů na lištu.
                 if (this.dom.canvasWrap) {
                     this.dom.canvasWrap.addEventListener('pointerdown', () => {
@@ -3691,11 +3723,15 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
             },
             isTouchDevice() {
                 try {
-                    if (navigator.maxTouchPoints && navigator.maxTouchPoints > 0) return true;
                     if (typeof matchMedia === 'function') {
+                        const fine = matchMedia('(pointer: fine)');
+                        const hover = matchMedia('(hover: hover)');
+                        // Školní PC / notebook s dotykovým monitorem a myší/touchpadem zůstává PC pro expiraci dat
+                        if (fine && fine.matches && hover && hover.matches) return false;
                         const mq = matchMedia('(pointer: coarse)');
-                        return !!(mq && mq.matches);
+                        if (mq && mq.matches) return true;
                     }
+                    if (navigator.maxTouchPoints && navigator.maxTouchPoints > 0) return true;
                 } catch (e) {}
                 return false;
             },
@@ -5828,9 +5864,17 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
                         const pushMatch = line.match(this.REGEX.push);
                         if (pushMatch) {
                             const varName = pushMatch[1];
-                            let valToPush = pushMatch[2].trim();
-                            if (valToPush.startsWith('"') || valToPush.startsWith("'")) valToPush = valToPush.slice(1, -1);
-                            else if (!isNaN(valToPush)) valToPush = Number(valToPush);
+                            let rawVal = pushMatch[2].trim();
+                            let valToPush = rawVal;
+                            if ((rawVal.startsWith('"') && rawVal.endsWith('"')) || (rawVal.startsWith("'") && rawVal.endsWith("'"))) {
+                                valToPush = rawVal.slice(1, -1);
+                            } else {
+                                try {
+                                    valToPush = this.safeEval(rawVal, this.visualRAM);
+                                } catch (e) {
+                                    valToPush = !isNaN(rawVal) ? Number(rawVal) : rawVal;
+                                }
+                            }
                             
                             if (!this.visualRAM[varName]) this.visualRAM[varName] = [];
                             if (!Array.isArray(this.visualRAM[varName])) this.visualRAM[varName] = [this.visualRAM[varName]];
@@ -5893,7 +5937,13 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
                                     this.logConsole(`[VAROVÁNÍ] Proměnná '${varName}' nebyla deklarována. Systém dosazuje 0.`, "warning");
                                 }
                                 if (op === '+=') {
-                                    if (Array.isArray(this.visualRAM[varName])) {} 
+                                    if (Array.isArray(this.visualRAM[varName])) {
+                                        if (Array.isArray(evaluated)) {
+                                            this.visualRAM[varName].push(...evaluated);
+                                        } else if (evaluated !== undefined) {
+                                            this.visualRAM[varName].push(evaluated);
+                                        }
+                                    } 
                                     else this.visualRAM[varName] = this.requireNumber(this.visualRAM[varName], `Proměnná '${varName}'`, 'přičíst') + this.toNumber(evaluated, `Výraz '${rightSide}'`, 'přičíst');
                                 }
                                 else if (op === '-=') this.visualRAM[varName] = this.requireNumber(this.visualRAM[varName], `Proměnná '${varName}'`, 'odečíst') - this.toNumber(evaluated, `Výraz '${rightSide}'`, 'odečíst');
@@ -5938,15 +5988,7 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
             },
 
             toNumber(value, what, ctx) {
-                if (value === undefined || value === null) return 0;
-                const s = String(value).trim();
-                const num = Number(value);
-                if (s !== '' && Number.isNaN(num)) {
-                    this.logConsole(`[CHYBA TYPU] ${what} obsahuje text ('${s}'), ne číslo: nelze ${ctx}.`, "error");
-                    this.runtimeTypeError = true;
-                    return 0;
-                }
-                return num || 0;
+                return this.requireNumber(value, what, ctx);
             },
 
             // ==== F2: Checker — automatická kontrola proti testovacím vektorům ====
@@ -6013,8 +6055,8 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
 
                 // Běh sdílí sémantiku výrazů s ruční simulací (parseVariable/replaceVars),
                 // jen s potlačeným vykreslováním a vlastní pamětí vektoru.
-                const savedRam = this.visualRAM, savedLog = this.logConsole, savedUpd = this.updateRAM;
-                this.logConsole = () => {}; this.updateRAM = () => {}; this.visualRAM = ram;
+                const savedRam = this.visualRAM, savedLog = this.logConsole, savedUpd = this.updateRAM, savedTypeErr = this.runtimeTypeError;
+                this.logConsole = () => {}; this.updateRAM = () => {}; this.visualRAM = ram; this.runtimeTypeError = false;
                 try {
                     while (cur) {
                         steps++;
@@ -6031,6 +6073,11 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
                             execCounts[labelKey] = (execCounts[labelKey] || 0) + 1;
                             ops++;
                             this.parseVariable(cur.label);
+                            if (this.runtimeTypeError) {
+                                error = 'Chyba běhu v bloku „' + cur.label + '“ (např. nepovolené dělení nulou nebo neplatná operace).';
+                                errorBlock = cur.id;
+                                break;
+                            }
                         }
                         else if (type === 'call') { trace.push(cur.label); execCounts[labelKey] = (execCounts[labelKey] || 0) + 1; }
                         else if (type === 'note') { /* poznámka se neprovádí, tok pokračuje dál — nemění výsledek */ }
@@ -6073,7 +6120,7 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
                         cur = byId[outgoing[0].to] || null;
                     }
                 } finally {
-                    this.visualRAM = savedRam; this.logConsole = savedLog; this.updateRAM = savedUpd;
+                    this.visualRAM = savedRam; this.logConsole = savedLog; this.updateRAM = savedUpd; this.runtimeTypeError = savedTypeErr;
                 }
 
                 if (!error && !reachedEnd) {
@@ -6094,6 +6141,10 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
                         const want = this.canonOutput(expected);
                         const got = outputs.map(o => this.canonOutput(o)).join(' / ');
                         ok = got === want;
+                        if (!ok && typeof window !== 'undefined' && window.FlowI18n && window.FlowI18n.text) {
+                            const translatedWant = this.canonOutput(window.FlowI18n.text(expected));
+                            if (got === translatedWant) ok = true;
+                        }
                         if (!ok) message = 'čekal jsem „' + want + '“, ale máš „' + (got || 'žádný výstup') + '“';
                     }
                 }

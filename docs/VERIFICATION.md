@@ -32,7 +32,12 @@ Ve všech 14 levelech ověřeny anglické popisky a poznámky. Přepnutí jazyk�
 
 Ověřen konkrétní výstup úvodního diagramu v angličtině, názvy vstupů a nezměněná zdrojová data. Chromium i WebKit potvrdily viditelný druhý řádek nástrojů při 320/390/520/768/1024 px a hamburger vpravo na mobilu.
 
-## Source identifiers, sessions and updates (2026-10-30)
+## Engine audit, runtime error isolation, array expressions and accessibility (2026-11-09)
+
+Node suites passed (527 checks, 0 errors across 7 suites). All 14 built-in mission solutions passed both profiles. Runtime errors (such as division by zero or invalid operations in process blocks) during headless vector execution now trigger immediate vector failure without dirtying the global application state. Array expressions in `push()` evaluate dynamically and `+=` reliably appends elements. Mathematical evaluation supports `Math.trunc` and property `.length`. Accessible focus trapping cycles correctly in open modals. Chromium verified the Service Worker update flow to release `2026-11-09-v9` with offline activation.
+
+Node sady prošly (527 testů, 0 chyb v 7 sadách). Všech 14 vestavěných misí prošlo v obou profilech. Běhové chyby (dělení nulou, neplatné operace) v procesních blocích při headless kontrole způsobí okamžité selhání vektoru bez znečištění stavu aplikace. Pole podporují výrazy v `push()` a připojování přes `+=`. Doplněn `Math.trunc` a `.length`. Modální okna mají uzamčený cyklus klávesy Tab (WCAG 2.2 AA). Chromium ověřilo aktualizaci Service Workeru na verzi `2026-11-09-v9` s offline přechodem.
+
 
 Chromium and WebKit passed all 14 built-in mission solutions with the original test vectors. Source identifiers matched diagram code, editor fields, input labels and RAM. Checks covered unchanged source after a no-op caption edit and a language roundtrip, custom expressions, autosave without activity renewal, real pointer activity, desktop expiration, a stale second tab preserving a fresh session, unrelated storage keys, and mobile retention. Readable and whole-diagram views were checked at 320/390 px and landscape 844 × 390 after view transitions completed. Existing core, checker, storage, game, smoke and UI suites passed; speed-control and compact-toolbar regressions passed in Chromium.
 

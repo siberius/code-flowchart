@@ -1,5 +1,16 @@
 # Changelog
 
+## 2026-11-09 · Engine audit, runtime error isolation, array expressions and accessibility
+
+- Isolated runtime errors in mission test checker so division by zero or invalid operations fail immediately without dirtying app state
+- Added variable and expression evaluation to `array.push(...)` and supported `+=` element appending for arrays
+- Extended `safeEval` with `Math.trunc` and safe `.length` access on arrays and strings
+- Deduplicated `toNumber` and refined `isTouchDevice()` to preserve 90-minute inactivity session expiration on school touchscreen laptops
+- Implemented WCAG 2.2 focus trap for active modal dialogs and added bilingual tolerance for test vector outputs
+- Upgraded offline Service Worker cache to `2026-11-09-v9`
+- Česky: izolace chyb v checkeru, výrazy v `push()`, `+=` pro pole, `Math.trunc`, `.length`, focus trap a SW cache v9
+
+
 ## 2026-10-30 · Output captions and compact toolbar
 
 - Translated built-in output sentences, including the introductory apple example, with consistent variable display aliases

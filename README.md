@@ -13,13 +13,12 @@ The service ship HEFAISTOS and robot ŠROUB guide 14 missions: eight for the Cze
 
 ## Run
 
-Open `index.html` directly, or serve the project folder:
+The application is a single HTML file requiring no build step, backend or external dependencies:
 
-```sh
-python3 -m http.server 8139 --bind 127.0.0.1
-```
+1. **Online:** Open [https://school.vibemaker.cz/codeflowchart/](https://school.vibemaker.cz/codeflowchart/)
+2. **Offline / Local:** Download or clone the repository and open `index.html` directly in any modern browser (double-click is enough).
 
-Open [localhost:8139](http://localhost:8139/). No build, backend or dependencies are required. Installation and service-worker caching require HTTPS or localhost. Fonts are embedded in the HTML, so no Google Fonts request is needed. An isolated HTML copy has inline icon and manifest fallbacks.
+PWA installation and offline service-worker caching activate when served over HTTPS. Fonts are embedded directly in the HTML file, so no Google Fonts connection is needed. An isolated HTML copy has inline icon and manifest fallbacks.
 
 ## Languages
 

@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-11-09 · Mobile toolbar scroll belt with gradient cues and compact speed control
+
+- Compacted mobile toolbar (`#toolbar`) block buttons (reduced height, width, and typography) to fit comfortably on small screens while retaining touch target accessibility
+- Added dynamic edge-fading gradient masks (`-webkit-mask-image`) and continuous cyan scrollbar to indicate horizontal scrollability and content continuation
+- Compacted terminal speed control (`.sim-speed-trigger`) on mobile to a sleek 28px pill showing concise `1×` / `2×` / `MAX` labels without crowding the terminal bar
+- Hidden auxiliary subtitle labels in terminal header on narrow screens to provide maximum clean space for simulation controls
+- Upgraded offline Service Worker cache to `2026-11-09-v12`
+- Česky: zmenšená a kompaktní tlačítka modulů v dolním panelu na mobilu, plynulé přechodové masky a indikátor posuvu napovídající možnost scrollování, miniaturizované tlačítko rychlosti na terminálu (1×/2×/MAX), SW cache v12
+
 ## 2026-11-09 · Top-left responsive HUD badge and authentic English intro diagram
 
 - Redesigned HUD badge (XP, rank, stars, role) into a compact glassmorphism pill placed at the top-left corner under the toolbar (`left: 14px; z-index: 90`), eliminating all collisions with canvas view controls and the hamburger menu

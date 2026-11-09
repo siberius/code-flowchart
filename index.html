@@ -8175,10 +8175,22 @@ function flowSpeedInit(){
  });
  root.addEventListener('focusout',event=>{if(!root.contains(event.relatedTarget)&&!event.relatedTarget?.closest?.('#languageButton'))close(false);});
  document.addEventListener('click',event=>{if(!root.contains(event.target)&&!event.target.closest?.('#languageButton'))close(false);},true);
- window.addEventListener('resize',()=>{if(!menu.hidden)position();});
+ window.addEventListener('resize',()=>{if(!menu.hidden)position();flowSpeedSync();});
  select.addEventListener('change',flowSpeedSync);flowSpeedSync();
 }
 flowSpeedInit();
+const flowTb=document.getElementById('toolbar');
+if(flowTb){
+ const updateTb=()=>{
+  const canLeft=flowTb.scrollLeft>6;
+  const canRight=flowTb.scrollLeft<flowTb.scrollWidth-flowTb.clientWidth-6;
+  flowTb.classList.toggle('can-scroll-left',canLeft);
+  flowTb.classList.toggle('can-scroll-right',canRight);
+ };
+ flowTb.addEventListener('scroll',updateTb,{passive:true});
+ window.addEventListener('resize',updateTb,{passive:true});
+ setTimeout(updateTb,300);
+}
 pmApplyLanguage();
 
 

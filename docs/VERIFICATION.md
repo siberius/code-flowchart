@@ -34,9 +34,21 @@ Ověřen konkrétní výstup úvodního diagramu v angličtině, názvy vstupů 
 
 ## Engine audit, runtime error isolation, array expressions and accessibility (2026-11-09)
 
-Node suites passed (527 checks, 0 errors across 7 suites). All 14 built-in mission solutions passed both profiles. Runtime errors (such as division by zero or invalid operations in process blocks) during headless vector execution now trigger immediate vector failure without dirtying the global application state. Array expressions in `push()` evaluate dynamically and `+=` reliably appends elements. Mathematical evaluation supports `Math.trunc` and property `.length`. Accessible focus trapping cycles correctly in open modals. Chromium verified the Service Worker update flow to release `2026-11-09-v9` with offline activation.
+Playwright E2E verification confirmed optimal centering and scaling across devices:
+- Intro apples diagram (SPACE 1) fits within the visible screen area on mobile (390×844 px) without overflow under top or bottom bars.
+- Saved workspaces return centered on both PC (1440×900 px) and mobile.
+- Mission scaffolds center and scale appropriately on mobile and desktop upon briefing modal close.
+- All 7 Node test suites (222 checks) and Service Worker update tests passed cleanly with Service Worker cache release `2026-11-09-v10`.
 
-Node sady prošly (527 testů, 0 chyb v 7 sadách). Všech 14 vestavěných misí prošlo v obou profilech. Běhové chyby (dělení nulou, neplatné operace) v procesních blocích při headless kontrole způsobí okamžité selhání vektoru bez znečištění stavu aplikace. Pole podporují výrazy v `push()` a připojování přes `+=`. Doplněn `Math.trunc` a `.length`. Modální okna mají uzamčený cyklus klávesy Tab (WCAG 2.2 AA). Chromium ověřilo aktualizaci Service Workeru na verzi `2026-11-09-v9` s offline přechodem.
+E2E ověření přes Playwright potvrdilo správné centrování a měřítko:
+- Úvodní schéma s jablky (SPACE 1) se na mobilu (390×844 px) automaticky optimálně zmenší a vycentruje v prostoru mezi horní a dolní lištou.
+- Návrat do uložených schémat na PC i mobilu vycentruje diagram na střed.
+- Zadání misí se po zavření zadávacího modalu načtou vycentrovaná a v optimálním měřítku.
+- Všech 7 sad Node testů (222 testů) a ověření Service Workeru prošlo na verzi cache `2026-11-09-v10`.
+
+Node suites passed (527 checks, 0 errors across 7 suites). All 14 built-in mission solutions passed both profiles. Runtime errors (such as division by zero or invalid operations in process blocks) during headless vector execution now trigger immediate vector failure without dirtying the global application state. Array expressions in `push()` evaluate dynamically and `+=` reliably appends elements. Mathematical evaluation supports `Math.trunc` and property `.length`. Accessible focus trapping cycles correctly in open modals. Chromium verified the Service Worker update flow to release `2026-11-09-v10` with offline activation.
+
+Node sady prošly (527 testů, 0 chyb v 7 sadách). Všech 14 vestavěných misí prošlo v obou profilech. Běhové chyby (dělení nulou, neplatné operace) v procesních blocích při headless kontrole způsobí okamžité selhání vektoru bez znečištění stavu aplikace. Pole podporují výrazy v `push()` a připojování přes `+=`. Doplněn `Math.trunc` a `.length`. Modální okna mají uzamčený cyklus klávesy Tab (WCAG 2.2 AA). Chromium ověřilo aktualizaci Service Workeru na verzi `2026-11-09-v10` s offline přechodem.
 
 
 Chromium and WebKit passed all 14 built-in mission solutions with the original test vectors. Source identifiers matched diagram code, editor fields, input labels and RAM. Checks covered unchanged source after a no-op caption edit and a language roundtrip, custom expressions, autosave without activity renewal, real pointer activity, desktop expiration, a stale second tab preserving a fresh session, unrelated storage keys, and mobile retention. Readable and whole-diagram views were checked at 320/390 px and landscape 844 × 390 after view transitions completed. Existing core, checker, storage, game, smoke and UI suites passed; speed-control and compact-toolbar regressions passed in Chromium.

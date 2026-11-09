@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-11-09 · Responsive auto-fit, mobile centering and diagram workspace centering
+
+- Optimized introductory apples diagram (SPACE 1) loading on mobile: automatically centered and scaled to comfortably fit narrow screens with top/bottom toolbars
+- Diagrams load centered both upon return to saved workspaces (on PC and mobile) and during level/mission loading
+- Refined viewport calculations in `fitToScreen` taking into account mobile/desktop bar reserves, responsive padding, and accurate block dimension fallbacks
+- Upgraded offline Service Worker cache to `2026-11-09-v10`
+- Česky: centrování a optimální zmenšení úvodního schématu s jablky na mobilu, automatické vycentrování při návratu do uloženého schématu (PC i mobil) a při načítání misí, SW cache v10
+
 ## 2026-11-09 · Engine audit, runtime error isolation, array expressions and accessibility
 
 - Isolated runtime errors in mission test checker so division by zero or invalid operations fail immediately without dirtying app state

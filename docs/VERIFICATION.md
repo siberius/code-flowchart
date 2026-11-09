@@ -32,6 +32,22 @@ Ve všech 14 levelech ověřeny anglické popisky a poznámky. Přepnutí jazyk�
 
 Ověřen konkrétní výstup úvodního diagramu v angličtině, názvy vstupů a nezměněná zdrojová data. Chromium i WebKit potvrdily viditelný druhý řádek nástrojů při 320/390/520/768/1024 px a hamburger vpravo na mobilu.
 
+## Top-left HUD badge and English intro diagram verification (2026-11-09)
+
+Playwright E2E and Node suites confirmed the updated UI and English diagram:
+- HUD badge resides at the top-left (`left: 14px; top: 64px; z-index: 90`), completely avoiding collision with view controls (`right: 12px; top: 108px; z-index: 110`) and side menu (`z-index: 95/250`).
+- Responsive HUD layout scales down to a micro-pill (`0 XP ★0`) on mobile screens without obscuring canvas content.
+- Introductory apple diagram in English renders native English identifiers (`name`, `color1`, `color2`, `found_color`, `score1`, `score2`, `step`) and proper English notes/outputs.
+- Language switcher toggles cleanly between English and Czech apple schemes for unmodified default workspaces.
+- Service Worker cache release bumped to `2026-11-09-v11`.
+
+E2E ověření přes Playwright a Node sady potvrdilo úpravy rozhraní a anglického schématu:
+- HUD odznak je umístěn vlevo nahoře (`left: 14px; top: 64px; z-index: 90`) bez jakýchkoliv kolizí s tlačítky pohledu vpravo či vysouvacím menu.
+- Na mobilu se HUD responzivně sbalí do mikro-odznaku (`0 XP ★0`).
+- Úvodní diagram s jablky má v angličtině nativní anglické proměnné (`name`, `color1`, `score1`, `step` atd.).
+- Přepínání jazyků automaticky synchronizuje výchozí schéma SPACE 1 mezi češtinou a angličtinou.
+- Verze cache Service Workeru povýšena na `2026-11-09-v11`.
+
 ## Engine audit, runtime error isolation, array expressions and accessibility (2026-11-09)
 
 Playwright E2E verification confirmed optimal centering and scaling across devices:

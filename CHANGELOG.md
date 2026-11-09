@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-11-09 · Top-left responsive HUD badge and authentic English intro diagram
+
+- Redesigned HUD badge (XP, rank, stars, role) into a compact glassmorphism pill placed at the top-left corner under the toolbar (`left: 14px; z-index: 90`), eliminating all collisions with canvas view controls and the hamburger menu
+- Responsive HUD layout: full inline pill on PC, micro-badge (`0 XP ★0`) on mobile
+- Replaced mixed Czech variables in English intro apple diagram with authentic English identifiers (`name`, `color1`, `color2`, `found_color`, `score1`, `score2`, `step`, `Apple Harvest`, `Game Over`)
+- Added automatic language synchronization for default SPACE 1 diagram when toggling language
+- Upgraded offline Service Worker cache to `2026-11-09-v11`
+- Česky: přesun a zmenšení HUD odznaku (XP, hodnost) do levého horního rohu bez kolizí s menu a tlačítky pohledu, plně anglický úvodní diagram s jablky v EN verzi, SW cache v11
+
 ## 2026-11-09 · Responsive auto-fit, mobile centering and diagram workspace centering
 
 - Optimized introductory apples diagram (SPACE 1) loading on mobile: automatically centered and scaled to comfortably fit narrow screens with top/bottom toolbars

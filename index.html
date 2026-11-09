@@ -997,28 +997,38 @@
             .menu-mission { border-left: none; border-right: 3px solid transparent; }
             .menu-mission:hover, .menu-mission.current { border-left: none; border-right-color: var(--accent); }
 
-            /* Spodní panel nástrojů - nikdy není překryt sbalenou konzolí a nápisy se nepřekrývají */
+            /* Spodní panel nástrojů - plynulý filmový pás modulů s maskou posunu */
             #toolbar {
                 bottom: max(10px, env(safe-area-inset-bottom, 10px));
                 left: 50%; transform: translateX(-50%);
                 width: calc(100% - 16px); max-width: 540px;
                 overflow-x: auto; flex-wrap: nowrap;
-                justify-content: flex-start; padding: 6px 10px; border-radius: 20px;
+                justify-content: flex-start; padding: 4px 8px; border-radius: 20px;
                 gap: 4px;
                 z-index: 150;
                 box-shadow: 0 8px 30px rgba(0,0,0,0.7), 0 0 15px rgba(0, 229, 255, 0.15);
                 -webkit-overflow-scrolling: touch;
                 scrollbar-width: thin;
-                scrollbar-color: rgba(0, 229, 255, 0.4) transparent;
+                scrollbar-color: rgba(0, 229, 255, 0.5) transparent;
+                mask-image: linear-gradient(to right, black calc(100% - 28px), rgba(0,0,0,0.15));
+                -webkit-mask-image: linear-gradient(to right, black calc(100% - 28px), rgba(0,0,0,0.15));
             }
-            #toolbar::-webkit-scrollbar { height: 3px; }
-            #toolbar::-webkit-scrollbar-track { background: transparent; }
-            #toolbar::-webkit-scrollbar-thumb { background: rgba(0, 229, 255, 0.45); border-radius: 3px; }
+            #toolbar.can-scroll-left {
+                mask-image: linear-gradient(to right, rgba(0,0,0,0.15), black 22px, black calc(100% - 28px), rgba(0,0,0,0.15));
+                -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,0.15), black 22px, black calc(100% - 28px), rgba(0,0,0,0.15));
+            }
+            #toolbar.can-scroll-left:not(.can-scroll-right) {
+                mask-image: linear-gradient(to right, rgba(0,0,0,0.15), black 22px, black 100%);
+                -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,0.15), black 22px, black 100%);
+            }
+            #toolbar::-webkit-scrollbar { height: 3px; display: block; }
+            #toolbar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); border-radius: 3px; }
+            #toolbar::-webkit-scrollbar-thumb { background: rgba(0, 229, 255, 0.6); border-radius: 3px; }
 
             .tool-btn {
-                min-width: 55px;
-                padding: 6px 8px;
-                font-size: 10px;
+                min-width: 44px;
+                padding: 4px 6px;
+                font-size: 9px;
                 line-height: 1.15;
                 letter-spacing: -0.2px;
                 flex-shrink: 0;
@@ -1026,18 +1036,35 @@
                 user-select: none;
                 -webkit-user-select: none;
             }
-            .tool-btn .icon { font-size: 16px; line-height: 1; margin-bottom: 2px; }
+            .tool-btn .icon { font-size: 14px; line-height: 1; margin-bottom: 2px; }
             @media (max-width: 420px) {
-                .tool-btn { min-width: 48px; padding: 5px 6px; font-size: 9.5px; }
+                .tool-btn { min-width: 38px; padding: 3px 4px; font-size: 8.5px; }
+                .tool-btn .icon { font-size: 13px; }
             }
 
-            /* Spodní terminál na mobilu jako výsuvný Bottom Sheet */
+            /* Spodní terminál na mobilu jako výsuvný Bottom Sheet s kompaktní lištou */
             #console-panel {
                 height: 40vh;
                 border-radius: 20px 20px 0 0;
                 z-index: 250;
                 box-shadow: 0 -12px 40px rgba(0,0,0,0.85);
             }
+            .console-header {
+                padding: 0 10px;
+                height: 42px;
+            }
+            .console-header .tit-sub { display: none; }
+            .console-dock-hint { display: none; }
+            .sim-speed-trigger {
+                min-width: 52px;
+                min-height: 28px;
+                height: 28px;
+                padding: 0 6px;
+                font-size: 10px;
+                border-radius: 6px;
+                gap: 4px;
+            }
+            .sim-speed-trigger svg { width: 12px; height: 12px; }
             #console-panel:not(.open) {
                 transform: translateY(100%);
             }
@@ -1394,7 +1421,7 @@ body{height:100vh;height:100dvh;padding:env(safe-area-inset-top) env(safe-area-i
         <div class="bottom-sheet-handle"></div>
         <div class="console-header" onclick="App.toggleConsolePanel(event)">
             <div style="display: flex; gap: 12px; align-items: center; min-width: 0;">
-                <span class="tit"><b>Terminal</b> // CodeFlowChart Execution Engine v1.1</span>
+                <span class="tit"><b>Terminal</b> <span class="tit-sub">// CodeFlowChart Execution Engine v1.1</span></span>
                 <span class="console-dock-hint"><svg class="caret" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg> konzole</span>
                 <div class="sim-controls" onclick="event.stopPropagation()">
                     <div class="speed-control" id="speed-control">
@@ -8103,7 +8130,10 @@ document.getElementById('languageButton').addEventListener('click',()=>{pmLangua
 function flowSpeedSync(){
  const select=document.getElementById('sim-speed-select'),current=document.getElementById('sim-speed-current');
  if(!select||!current)return;
- const option=select.options[select.selectedIndex];if(option)current.textContent=option.textContent;
+ const isMobile=window.innerWidth<=768;
+ const shortMap={'1':'1×','2':'2×','100':'MAX'};
+ const fullText=select.options[select.selectedIndex]?.textContent||'';
+ current.textContent=isMobile?(shortMap[select.value]||fullText):fullText;
  document.querySelectorAll('#sim-speed-menu [data-speed]').forEach(item=>item.setAttribute('aria-selected',String(item.dataset.speed===select.value)));
 }
 function flowSpeedInit(){

@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "learning-methodologies": {
+      "source": "siberius/learning-methodologies",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "52a8cf652ce3d53d07bf4db7714c750cd46b7ac31cf555a21f8c4f2a8891e3a9"
+    }
+  }
+}

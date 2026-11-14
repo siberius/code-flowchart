@@ -10,7 +10,7 @@ revize funkčnosti F0–F9).
 ## Nadřazená pravidla — POVINNÉ ČTENÍ
 Žádná pravidla v tomto souboru NEJSOU náhradou za nadřazené dokumenty.
 Před jakýmkoliv rozhodováním nebo první úpravou přečti:
-1. `/home/lu/Dokumenty/aicoding/MASTER-AGENTS.md` — pracovní jádro aicoding
+1. `/home/lu/Dokumenty/aicoding/AGENTS.md` — pracovní jádro aicoding
    (hranice, provedení, kontext/routování, git/verifikace/dokončení).
    Mapa projektů a operace: `governance/PROJECT-MAP.md` a `governance/PROJECT-OPERATIONS.md`.
 2. `/home/lu/Dokumenty/aicoding/governance/REFLECT-AUDIT.md` — procesní audit,
